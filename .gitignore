@@ -9,3 +9,4 @@
 /src/api/Yu.Model/obj
 /src/api/Yu.Service/obj
 /src/client/node_modules
+src/client/ws.code-workspace
