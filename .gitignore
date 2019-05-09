@@ -3,8 +3,10 @@
 ################################################################################
 
 /src/api/Yu.Core/obj
-/src/api/.vs/YuApi/v15
+/src/api/Yu.Core/bin
+/src/api/.vs
 /src/api/Yu.Api/obj
+/src/api/Yu.Api/bin
 /src/api/Yu.Data/obj
 /src/api/Yu.Model/obj
 /src/api/Yu.Service/obj

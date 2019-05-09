@@ -1,0 +1,36 @@
+<div class="fullwindow">
+  <nz-card class="login-card" [nzBordered]="true">
+    <h1>YuM</h1>
+    <form #loginForm="ngForm" (ngSubmit)="submit(loginForm)">
+      <nz-form-item>
+        <nz-form-control>
+          <nz-input-group [nzPrefix]="userPrefix">
+            <input type="text" nz-input placeholder="请输入用户名" />
+          </nz-input-group>
+          <ng-template #userPrefix><i nz-icon type="user"></i></ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control>
+          <nz-input-group [nzPrefix]="passwordPrefix">
+            <input type="password" nz-input placeholder="请输入密码" />
+          </nz-input-group>
+          <ng-template #passwordPrefix><i nz-icon type="lock"></i></ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control nzSpan="12">
+          <input type="password" nz-input placeholder="验证码" />
+        </nz-form-control>
+        <nz-form-control nzSpan="12">
+          <img [src]="imagesrc" (click)="refresh()">
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control>
+          <button nz-button nzType="primary" nzBlock>登录系统</button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </nz-card>
+</div>
