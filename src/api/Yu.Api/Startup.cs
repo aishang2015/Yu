@@ -27,6 +27,8 @@ namespace Yu.Api
             });
 
             services.AddCaptcha(Configuration); // 配置登录验证码工具
+
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

@@ -8,6 +8,7 @@ namespace Yu.Core.Captcha
 {
     public static class CaptchaExtension
     {
+        // 注入配置文件和工具类
         public static void AddCaptcha(this IServiceCollection services,IConfiguration configuration)
         {
             services.Configure<CaptchaOption>(configuration.GetSection("CaptchaOption"));
