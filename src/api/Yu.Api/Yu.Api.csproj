@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Yu.Core\Yu.Core.csproj" />
+    <ProjectReference Include="..\Yu.Data\Yu.Data.csproj" />
   </ItemGroup>
 
 </Project>
