@@ -8,7 +8,11 @@
 /src/api/Yu.Api/obj
 /src/api/Yu.Api/bin
 /src/api/Yu.Data/obj
+/src/api/Yu.Data/bin
+/src/api/Yu.Data/Yu.Data.csproj.user
 /src/api/Yu.Model/obj
+/src/api/Yu.Model/bin
 /src/api/Yu.Service/obj
+/src/api/Yu.Service/bin
 /src/client/node_modules
 src/client/ws.code-workspace
