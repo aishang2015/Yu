@@ -9,6 +9,7 @@ import { HomeComponent } from './home/home.component';
 import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import {BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,8 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
+    BrowserAnimationsModule,
+    NgZorroAntdModule
 
     // 引入module。这里注意懒加载的模块不需要在这里进行加载，否则就会导致出现错误。
 

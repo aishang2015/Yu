@@ -7,6 +7,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
+  isCollapsed = false;
+  isReverseArrow = false;
+  width = 200;
+  
   constructor() { }
 
   ngOnInit() {
