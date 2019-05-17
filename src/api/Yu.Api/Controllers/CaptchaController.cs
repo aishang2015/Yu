@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Yu.Core.Captcha;
-using Yu.Data.Entities;
-using Yu.Data.Repositories;
 
 namespace Yu.Api.Controllers
 {
@@ -10,6 +8,7 @@ namespace Yu.Api.Controllers
     [ApiController]
     public class CaptchaController : ControllerBase
     {
+
         private readonly CaptchaHelper _captchaHelper;
 
         public CaptchaController(CaptchaHelper captchaHelper)
@@ -24,6 +23,7 @@ namespace Yu.Api.Controllers
         [HttpGet]
         public IActionResult GetCaptcha()
         {
+
             var code = _captchaHelper.GetValidateCode();
             var stream = _captchaHelper.CreateImageStream(code);
             HttpContext.Session.SetString("ValidateCode", code);

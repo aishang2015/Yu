@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Yu.Core\Yu.Core.csproj" />
   </ItemGroup>
   
+  <ItemGroup>
+    <Folder Include="Entities\" />
+  </ItemGroup>
+  
 </Project>
