@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Yu.Core.Captcha;
+using Yu.Data.Entities;
+using Yu.Data.Repositories;
 
 namespace Yu.Api.Controllers
 {

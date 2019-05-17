@@ -37,11 +37,11 @@ namespace Yu.Data.Infrasturctures
                         SqlLiteBuilder.UseSqlLite(builder, connectionString, sqliteDbContextOptionsBuilder => { });
                         break;
                     case DatabaseType.SqlServe:
-                        SqlLiteBuilder.UseSqlLite(builder, connectionString, sqliteDbContextOptionsBuilder => { });
+                        SqlServerBuilder.UseSqlServer(builder, connectionString, sqlServerDbContextOptionsBuilder => { });
                         break;
                 }
             })
-            .AddIdentity<BaseUser<Guid>,BaseRole<Guid>>(setupAction)     // 使用user和role 进行认证
+            .AddIdentity<BaseUser<Guid>, BaseRole<Guid>>(setupAction)     // 使用user和role 进行认证
             .AddEntityFrameworkStores<BaseDbContext>()       // 使用dbcontext存储
             .AddDefaultTokenProviders();    // 添加默认token生成工具，用其生成的token用来进行密码重置。
         }

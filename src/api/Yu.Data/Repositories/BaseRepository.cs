@@ -15,13 +15,13 @@ namespace Yu.Data.Repositories
     /// <typeparam name="TEntity">数据类型</typeparam>
     /// <typeparam name="TPrimaryKey">类型主键</typeparam>
     public class BaseRepository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey>
-        where TEntity : IEntity<TPrimaryKey>
+        where TEntity : BaseEntity<TPrimaryKey>
     {
         private readonly BaseDbContext _context;
 
         private readonly DbSet<TEntity> _dataSet;
 
-        protected BaseRepository(BaseDbContext dbContext)
+        public BaseRepository(BaseDbContext dbContext)
         {
             _context = dbContext;
             _dataSet = _context.Set<TEntity>();

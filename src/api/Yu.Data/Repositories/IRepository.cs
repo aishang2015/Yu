@@ -11,7 +11,7 @@ namespace Yu.Data.Repositories
     /// </summary>
     /// <typeparam name="TEntity">数据类型</typeparam>
     /// <typeparam name="TPrimaryKey">类型主键</typeparam>
-    public interface IRepository<TEntity, TPrimaryKey> where TEntity : IEntity<TPrimaryKey>
+    public interface IRepository<TEntity, TPrimaryKey> where TEntity : BaseEntity<TPrimaryKey>
 
     {
         /// <summary>

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Yu.Core.Captcha;
+using Yu.Data.Entities;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 
@@ -35,6 +36,8 @@ namespace Yu.Api
 
             services.AddIdentityDbContext(Configuration.GetConnectionString("SqlServerConnection"), DatabaseType.SqlServe); // 认证数据库上下文
 
+            services.AddRepositories(); // 批量注入Yu.Data内实体的仓储实现
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -49,6 +52,8 @@ namespace Yu.Api
             }
 
             app.UseSession(); // 使用Session
+
+            app.SeedDbData();
 
             app.UseHttpsRedirection();
             app.UseMvc();
