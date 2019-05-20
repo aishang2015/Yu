@@ -16,15 +16,24 @@
     <nz-layout>
         <nz-header style="background: #fff; padding:0;">
             <div style="line-height: 64px;float: right;padding:0 16px;">
+                
                 <nz-avatar nzIcon="user" style="background-color:#87d068;"></nz-avatar>
+                <nz-dropdown [nzTrigger]="'click'">
+                    <a nz-dropdown> ABCDE<i nz-icon type="down"></i> </a>
+                    <ul nz-menu>
+                        <li nz-menu-item>我的信息</li>
+                        <li nz-menu-item>注销</li>   
+                    </ul>
+                </nz-dropdown>
+
             </div>
         </nz-header>
-        <nz-content style="margin:0 16px;">
+        <nz-content style="margin:0 16px;min-height: auto;">
             <nz-breadcrumb style="margin:16px 0;">
-                <nz-breadcrumb-item>User</nz-breadcrumb-item>
-                <nz-breadcrumb-item>Bill</nz-breadcrumb-item>
+                <nz-breadcrumb-item>权限管理</nz-breadcrumb-item>
+                <nz-breadcrumb-item>用户管理</nz-breadcrumb-item>
             </nz-breadcrumb>
-            <div style="padding:24px; background: #fff; height: 100%;">
+            <div style="padding:24px; background: #fff; min-height: calc(100% - 80px);">
                 <router-outlet></router-outlet>
             </div>
         </nz-content>
