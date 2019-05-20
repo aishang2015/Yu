@@ -8,9 +8,9 @@ using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Config;
 using System;
+using Yu.Core.AutoMapper;
 using Yu.Core.Captcha;
 using Yu.Core.Cors;
-using Yu.Data.Entities;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 
@@ -35,7 +35,9 @@ namespace Yu.Api
                 ops.IdleTimeout = TimeSpan.FromMinutes(5);
             });
 
-            services.AddCaptcha(Configuration); // 配置登录验证码工具
+            services.AddCaptcha(Configuration); // 配置验证码工具
+
+            services.AddAutoMapper();   // 配置AutoMapper
 
             services.AddCustomCors(Configuration);  // 配置自定义跨域策略
 

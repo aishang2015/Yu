@@ -5,6 +5,7 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
   </ItemGroup>

@@ -77,5 +77,61 @@ namespace Yu.Core.Extensions
 
             return typeList;
         }
+
+        /// <summary>
+        /// 在指定程序集范围内查找类的子类
+        /// </summary>
+        /// <param name="type">父类型</param>
+        /// <returns>子类型</returns>
+        public static List<Type> GetAllChildType(this Type type, string assemblyName)
+        {
+            // 过滤系统包和nuget包
+            var libs = DependencyContext.Default.CompileLibraries.Where(lib => !lib.Serviceable && lib.Type != "package").ToList();
+
+            // 指定程序集的包
+            var serviceLib = libs.Where(c => c.Assemblies.Contains(assemblyName)).FirstOrDefault();
+
+            // 获取全部继承type的类型
+            var assembly = AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(serviceLib.Name));
+
+            return assembly.GetTypes().Where(x => x.HasImplementedRawGeneric(type)).ToList();
+        }
+
+        /// <summary>
+        /// 获取全部接口类型
+        /// </summary>
+        /// <param name="assemblyName">指定程序集</param>
+        /// <returns>接口类型</returns>
+        public static List<Type> GetInterfaces(string assemblyName)
+        {
+            // 过滤系统包和nuget包
+            var libs = DependencyContext.Default.CompileLibraries.Where(lib => !lib.Serviceable && lib.Type != "package");
+
+            // 指定程序集的包
+            var serviceLib = libs.Where(c => c.Assemblies.Contains(assemblyName)).FirstOrDefault();
+
+            // 获取全部接口类型
+            var assembly = AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(serviceLib.Name));
+            return assembly.GetTypes().Where(x => x.IsInterface).ToList();
+        }
+
+
+        /// <summary>
+        /// 获取全部类类型
+        /// </summary>
+        /// <param name="assemblyName">指定程序集</param>
+        /// <returns>类类型</returns>
+        public static List<Type> GetClasses(string assemblyName)
+        {
+            // 过滤系统包和nuget包
+            var libs = DependencyContext.Default.CompileLibraries.Where(lib => !lib.Serviceable && lib.Type != "package");
+
+            // 指定程序集的包
+            var serviceLib = libs.Where(c => c.Assemblies.Contains(assemblyName)).FirstOrDefault();
+
+            // 获取全部接口类型
+            var assembly = AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(serviceLib.Name));
+            return assembly.GetTypes().Where(x => x.IsClass).ToList();
+        }
     }
 }

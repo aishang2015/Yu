@@ -18,6 +18,7 @@ namespace Yu.Core.Jwt
             _jwtOption = jwtOption.Value;
         }
 
+        // 解析jwttoken
         public ClaimsPrincipal DecodeJwtToken(string token)
         {
             return new JwtSecurityTokenHandler().ValidateToken(token, new TokenValidationParameters
@@ -32,6 +33,7 @@ namespace Yu.Core.Jwt
             }, out SecurityToken securityToken);
         }
 
+        // 生成jwttoken
         public string GenerateJwtToken(List<(string, string)> tuples)
         {
             var userClaims = new List<Claim>();
@@ -49,6 +51,7 @@ namespace Yu.Core.Jwt
             return token;
         }
 
+        // 刷新jwttoken
         public string RefreshJwtToken(string oldToken)
         {
             // 解析旧token

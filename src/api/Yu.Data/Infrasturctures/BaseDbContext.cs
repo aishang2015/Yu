@@ -20,7 +20,7 @@ namespace Yu.Data.Infrasturctures
         {
             base.OnModelCreating(builder);
 
-            // 所有对baseEntity的实现
+            // 查找所有对baseEntity的实现
             var typeList = typeof(BaseEntity<>).GetAllChildType();
             typeList.ForEach(type => builder.Entity(type));
         }
