@@ -7,7 +7,7 @@ using Yu.Core.Extensions;
 
 namespace Yu.Core.AutoMapper
 {
-    public static class AutoMapperExtension
+    public static class AutoMapperServiceCollectionExtension
     {
         public static void AddAutoMapper(this IServiceCollection serviceCollection)
         {

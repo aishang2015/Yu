@@ -11,6 +11,7 @@ using System;
 using Yu.Core.AutoMapper;
 using Yu.Core.Captcha;
 using Yu.Core.Cors;
+using Yu.Core.Validators;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 
@@ -28,7 +29,7 @@ namespace Yu.Api
         // 配置服务
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddFluentValidators();  // 配置fluentvalidation
 
             services.AddSession(ops =>
             {

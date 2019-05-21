@@ -2,10 +2,10 @@
 # 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
 ################################################################################
 
+/src/api/.vs
 /src/api/Yu.Core/obj
 /src/api/Yu.Core/bin
 /src/api/Yu.Core/Yu.Core.csproj.user
-/src/api/.vs
 /src/api/Yu.Api/obj
 /src/api/Yu.Api/bin
 /src/api/Yu.Data/obj

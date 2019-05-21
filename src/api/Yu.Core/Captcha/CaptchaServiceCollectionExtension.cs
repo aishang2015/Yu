@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Yu.Core.Captcha
 {
-    public static class CaptchaExtension
+    public static class CaptchaServiceCollectionExtension
     {
         // 注入配置文件和工具类
         public static void AddCaptcha(this IServiceCollection services,IConfiguration configuration)

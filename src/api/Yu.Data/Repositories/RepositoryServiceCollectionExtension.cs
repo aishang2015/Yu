@@ -12,7 +12,7 @@ namespace Yu.Data.Repositories
     /// <summary>
     /// 仓储类相关的扩展
     /// </summary>
-    public static class RepositoryExtension
+    public static class RepositoryServiceCollectionExtension
     {
         /// <summary>
         /// 服务内添加仓储合集

@@ -8,7 +8,7 @@ using Yu.Data.Infrasturctures.SqlServer;
 
 namespace Yu.Data.Infrasturctures
 {
-    public static class DbContextExtension
+    public static class DbContextServiceCollectionExtension
     {
         /// <summary>
         /// 添加认证数据库上下文服务

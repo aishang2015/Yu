@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Yu.Core.Jwt
 {
-    public static class JwtExtension
+    public static class JwtServiceCollectionExtension
     {
         public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {

@@ -9,7 +9,7 @@ namespace Yu.Core.Cors
     /// <summary>
     /// 跨域设置扩展
     /// </summary>
-    public static class CorsExtension
+    public static class CorsServiceCollectionExtension
     {
 
         // 跨域策略名

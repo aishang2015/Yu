@@ -40,7 +40,7 @@ namespace Yu.Core.Extensions
         }
 
         /// <summary>
-        /// 获取类型的泛型参数类型
+        /// 获取当前类型的泛型参数类型
         /// </summary>
         /// <param name="type">类型</param>
         /// <returns>泛型参数的类型</returns>
@@ -56,7 +56,7 @@ namespace Yu.Core.Extensions
         }
 
         /// <summary>
-        /// 在全部程序集范围内查找类的子类
+        /// 在全部程序集范围内查找当前类的子类
         /// </summary>
         /// <param name="type">父类型</param>
         /// <returns>子类型</returns>
@@ -79,7 +79,7 @@ namespace Yu.Core.Extensions
         }
 
         /// <summary>
-        /// 在指定程序集范围内查找类的子类
+        /// 在指定程序集范围内查找当前类的子类
         /// </summary>
         /// <param name="type">父类型</param>
         /// <returns>子类型</returns>
@@ -132,6 +132,28 @@ namespace Yu.Core.Extensions
             // 获取全部接口类型
             var assembly = AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(serviceLib.Name));
             return assembly.GetTypes().Where(x => x.IsClass).ToList();
+        }
+
+        /// <summary>
+        /// 获取当前程序全部的自定义程序集
+        /// </summary>
+        /// <param name="assemblyName">指定程序集</param>
+        /// <returns>程序集列表</returns>
+        public static List<Assembly> GetAssemblies()
+        {
+            // 过滤系统包和nuget包
+            var libs = DependencyContext.Default.CompileLibraries.Where(lib => !lib.Serviceable && lib.Type != "package");
+
+            // 结果集合
+            var result = new List<Assembly>();
+
+            // 循环包数据
+            foreach (var lib in libs)
+            {
+                result.Add( AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(lib.Name)));
+            }
+
+            return result;
         }
     }
 }
