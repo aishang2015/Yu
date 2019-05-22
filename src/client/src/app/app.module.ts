@@ -9,7 +9,7 @@ import { HomeComponent } from './home/home.component';
 import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import {BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [

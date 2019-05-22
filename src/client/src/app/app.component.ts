@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CommonConstant } from './core/constants/common-constant';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'yuweb';
+
+  // 用户是否登录
+  isLogin: boolean = localStorage.getItem(CommonConstant.AuthToken) == null;
+
 }
