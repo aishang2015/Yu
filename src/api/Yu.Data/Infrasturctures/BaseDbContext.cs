@@ -1,29 +1,20 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using System;
-using Yu.Core.Extensions;
-using Yu.Data.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Yu.Data.Infrasturctures
 {
     /// <summary>
-    /// 数据库上下文
+    /// 普通数据库上下文
     /// </summary>
-    /// <remarks>
-    /// 继承IdentityDbContext来使用asp net core的identity.并使用主键为GUID的用户和角色.
-    /// </remarks>
-    public class BaseDbContext : IdentityDbContext<BaseUser<Guid>, BaseRole<Guid>, Guid>
+    public class BaseDbContext : DbContext
     {
-        public BaseDbContext(DbContextOptions options) : base(options) { }
+        public BaseDbContext(DbContextOptions<BaseDbContext> options) : base(options) { }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
-            // 查找所有对baseEntity的实现
-            var typeList = typeof(BaseEntity<>).GetAllChildType();
-            typeList.ForEach(type => builder.Entity(type));
+            // 配置entity以及configuration
+            modelBuilder.SetEntityConfiguration(GetType());
         }
-
     }
 }

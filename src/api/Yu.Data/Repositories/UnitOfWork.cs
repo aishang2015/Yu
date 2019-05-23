@@ -8,9 +8,9 @@ namespace Yu.Data.Repositories
     /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly BaseDbContext _dbContext;
+        private readonly BaseIdentityDbContext _dbContext;
 
-        public UnitOfWork(BaseDbContext dbContext)
+        public UnitOfWork(BaseIdentityDbContext dbContext)
         {
             _dbContext = dbContext;
         }

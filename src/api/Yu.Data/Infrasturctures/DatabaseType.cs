@@ -14,6 +14,6 @@ namespace Yu.Data.Infrasturctures
         MySql,
         PostgreSql,
         SqlLite,
-        SqlServe,
+        SqlServer,
     }
 }

@@ -1,35 +1,33 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Yu.Data.Infrasturctures;
-using Microsoft.Extensions.DependencyInjection;
 using Yu.Data.Entities;
 
 namespace Yu.Data.Repositories
 {
-    /// <summary>
-    /// 数据仓储基本实现
-    /// </summary>
-    /// <typeparam name="TDbContextKeyType">认证数据库上下文主键类型</typeparam>
-    /// <typeparam name="TEntity">数据类型</typeparam>
-    /// <typeparam name="TPrimaryKey">类型主键</typeparam>
-    public class BaseRepository<TEntity, TPrimaryKey, TDbContext> : IRepository<TEntity, TPrimaryKey>
+    public class RWSplittingRepository<TEntity, TPrimaryKey, TReadDbContext, TWriteDbContext> : IRepository<TEntity, TPrimaryKey>
         where TEntity : BaseEntity<TPrimaryKey>
-        where TDbContext : DbContext
+        where TReadDbContext : DbContext
+        where TWriteDbContext : DbContext
     {
-        private readonly DbContext _context;
+        private readonly DbContext _readContext;
+        private readonly DbContext _writeContext;
 
-        private readonly DbSet<TEntity> _dataSet;
+        private readonly DbSet<TEntity> _readDataSet;
+        private readonly DbSet<TEntity> _writeDataSet;
 
-        public BaseRepository(IHttpContextAccessor httpContextAccessor)
+        public RWSplittingRepository(IHttpContextAccessor httpContextAccessor)
         {
-            _context = httpContextAccessor.HttpContext.RequestServices.GetService<TDbContext>();
-            _dataSet = _context.Set<TEntity>();
+            _readContext = httpContextAccessor.HttpContext.RequestServices.GetService<TReadDbContext>();
+            _readDataSet = _readContext.Set<TEntity>();
+
+            _writeContext = httpContextAccessor.HttpContext.RequestServices.GetService<TWriteDbContext>();
+            _writeDataSet = _readContext.Set<TEntity>();
         }
 
         /// <summary>
@@ -38,7 +36,7 @@ namespace Yu.Data.Repositories
         /// <param name="entity">删除的数据</param>
         public void Delete(TEntity entity)
         {
-            _dataSet.Remove(entity);
+            _writeDataSet.Remove(entity);
         }
 
         /// <summary>
@@ -56,7 +54,7 @@ namespace Yu.Data.Repositories
         /// <param name="entities">删除的数据</param>
         public void DeleteRange(IEnumerable<TEntity> entities)
         {
-            _dataSet.RemoveRange(entities);
+            _writeDataSet.RemoveRange(entities);
         }
 
         /// <summary>
@@ -74,7 +72,7 @@ namespace Yu.Data.Repositories
         /// <returns>数据查询结果</returns>
         public IQueryable<TEntity> GetAll()
         {
-            return _dataSet;
+            return _readDataSet.AsNoTracking();
         }
 
         /// <summary>
@@ -83,7 +81,7 @@ namespace Yu.Data.Repositories
         /// <returns>数据查询结果</returns>
         public IQueryable<TEntity> GetAllNoTracking()
         {
-            return _dataSet.AsNoTracking();
+            return _readDataSet.AsNoTracking();
         }
 
         /// <summary>
@@ -93,7 +91,7 @@ namespace Yu.Data.Repositories
         /// <returns>数据查询结果</returns>
         public TEntity GetById(TPrimaryKey key)
         {
-            return _dataSet.Find(key);
+            return _readDataSet.Find(key);
         }
 
         /// <summary>
@@ -116,7 +114,7 @@ namespace Yu.Data.Repositories
         /// <returns>数据查询结果</returns>
         public IQueryable<TEntity> GetByWhere(Expression<Func<TEntity, bool>> where)
         {
-            return _dataSet.Where(where);
+            return _readDataSet.Where(where);
         }
 
         /// <summary>
@@ -126,7 +124,7 @@ namespace Yu.Data.Repositories
         /// <returns>数据查询结果</returns>
         public IQueryable<TEntity> GetByWhereNoTracking(Expression<Func<TEntity, bool>> where)
         {
-            return _dataSet.AsNoTracking().Where(where);
+            return _readDataSet.AsNoTracking().Where(where);
         }
 
         /// <summary>
@@ -136,7 +134,7 @@ namespace Yu.Data.Repositories
         /// <returns>实体对象</returns>
         public async Task<TEntity> InsertAsync(TEntity entity)
         {
-            var result = await _dataSet.AddAsync(entity);
+            var result = await _writeContext.AddAsync(entity);
             return result.Entity;
         }
 
@@ -147,7 +145,7 @@ namespace Yu.Data.Repositories
         /// <returns>实体对象</returns>
         public async Task InsertRangeAsync(IEnumerable<TEntity> entities)
         {
-            await _dataSet.AddRangeAsync(entities);
+            await _writeContext.AddRangeAsync(entities);
         }
 
         /// <summary>
@@ -179,8 +177,8 @@ namespace Yu.Data.Repositories
         public void Update(TEntity entity)
         {
             // 关联实体,然后设置状态
-            _dataSet.Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
+            _writeContext.Attach(entity);
+            _writeContext.Entry(entity).State = EntityState.Modified;
         }
 
         /// <summary>
@@ -191,10 +189,10 @@ namespace Yu.Data.Repositories
         public void UpdatePartial(TEntity entity, Expression<Func<TEntity, object>>[] properties)
         {
             // 关联实体,然后设置状态
-            _dataSet.Attach(entity);
+            _writeContext.Attach(entity);
             foreach (var property in properties)
             {
-                _context.Entry(entity).Property(property).IsModified = true;
+                _writeContext.Entry(entity).Property(property).IsModified = true;
             }
         }
 
@@ -204,7 +202,7 @@ namespace Yu.Data.Repositories
         /// <param name="entities">批量更新的对象</param>
         public void UpdateRange(IEnumerable<TEntity> entities)
         {
-            _dataSet.UpdateRange(entities);
+            _writeContext.UpdateRange(entities);
         }
     }
 }

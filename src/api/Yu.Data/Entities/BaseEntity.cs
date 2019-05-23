@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Yu.Data.Repositories
+namespace Yu.Data.Entities
 {
     /// <summary>
     /// 所有数据实体的基类

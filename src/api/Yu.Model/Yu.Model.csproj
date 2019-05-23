@@ -5,7 +5,12 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="8.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Account\OutputModels\" />
   </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@ using System;
 
 namespace Yu.Data.Infrasturctures
 {
-    public partial class BaseUser<T> : IdentityUser<T> where T : IEquatable<T>
+    public partial class BaseIdentityUser : IdentityUser<Guid>
     {
     }
 }

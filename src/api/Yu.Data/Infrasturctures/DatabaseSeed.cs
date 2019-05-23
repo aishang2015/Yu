@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Yu.Data.Infrasturctures
 {
@@ -15,15 +15,17 @@ namespace Yu.Data.Infrasturctures
         /// 启动时初始化数据
         /// </summary>
         /// <param name="app"></param>
-        public static void SeedDbData(this IApplicationBuilder app)
+        public static void SeedDbData<TDbContext>(this IApplicationBuilder app, Action<TDbContext> dataSeed) where TDbContext : DbContext
         {
             using (var serviceScope = app.ApplicationServices.CreateScope())
             {
                 // 检查数据库状态
-                if (serviceScope.ServiceProvider.GetRequiredService<BaseDbContext>().Database.EnsureCreated())
+                if (serviceScope.ServiceProvider.GetRequiredService<TDbContext>().Database.EnsureCreated())
                 {
                     // 初始化数据
-                    var dbContext = serviceScope.ServiceProvider.GetRequiredService<BaseDbContext>();
+                    var dbContext = serviceScope.ServiceProvider.GetRequiredService<TDbContext>();
+
+                    dataSeed(dbContext);
                 }
             }
         }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Yu.Data.Infrasturctures
 {
-    public class BaseRole<T> : IdentityRole<T> where T : IEquatable<T>
+    public class BaseIdentityRole : IdentityRole<Guid>
     {
     }
 }

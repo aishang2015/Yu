@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Yu.Data.Infrasturctures.MySql;
@@ -18,10 +20,14 @@ namespace Yu.Data.Infrasturctures
         /// <param name="connectionString">数据库连接串</param>
         /// <param name="databaseType">数据库类型</param>
         /// <param name="setupAction">用户认证选项</param>
-        public static void AddIdentityDbContext(this IServiceCollection services, string connectionString, DatabaseType databaseType,
+        public static void AddIdentityDbContext<TDbContext, TUser, TRole, Tkey>(this IServiceCollection services, string connectionString, DatabaseType databaseType,
             Action<IdentityOptions> setupAction = null)
+            where TDbContext : IdentityDbContext<TUser, TRole, Tkey>
+            where TUser : IdentityUser<Tkey>
+            where TRole : IdentityRole<Tkey>
+            where Tkey : IEquatable<Tkey>
         {
-            services.AddDbContext<BaseDbContext>((provider, builder) =>
+            services.AddDbContext<TDbContext>((provider, builder) =>
             {
                 // 微软efcore支持的数据库提供程序
                 // https://docs.microsoft.com/zh-cn/ef/core/providers/
@@ -36,14 +42,40 @@ namespace Yu.Data.Infrasturctures
                     case DatabaseType.SqlLite:
                         SqlLiteBuilder.UseSqlLite(builder, connectionString, sqliteDbContextOptionsBuilder => { });
                         break;
-                    case DatabaseType.SqlServe:
+                    case DatabaseType.SqlServer:
                         SqlServerBuilder.UseSqlServer(builder, connectionString, sqlServerDbContextOptionsBuilder => { });
                         break;
                 }
             })
-            .AddIdentity<BaseUser<Guid>, BaseRole<Guid>>(setupAction)     // 使用user和role 进行认证
-            .AddEntityFrameworkStores<BaseDbContext>()       // 使用dbcontext存储
+            .AddIdentity<TUser, TRole>(setupAction)     // 使用user和role 进行认证
+            .AddEntityFrameworkStores<TDbContext>()       // 使用dbcontext存储
             .AddDefaultTokenProviders();    // 添加默认token生成工具，用其生成的token用来进行密码重置。
+        }
+
+
+        public static void AddCommonDbContext<TDbContext>(this IServiceCollection services, string connectionString, DatabaseType databaseType)
+            where TDbContext : DbContext
+        {
+            services.AddDbContext<TDbContext>((provider, builder) =>
+            {
+                // 微软efcore支持的数据库提供程序
+                // https://docs.microsoft.com/zh-cn/ef/core/providers/
+                switch (databaseType)
+                {
+                    case DatabaseType.MySql:
+                        MySqlBuilder.UseMySql(builder, connectionString, mySqlDbContextOptionsBuilder => { });
+                        break;
+                    case DatabaseType.PostgreSql:
+                        PostgreSqlBuilder.UsePostgreSql(builder, connectionString, npgsqlDbContextOptionsBuilder => { });
+                        break;
+                    case DatabaseType.SqlLite:
+                        SqlLiteBuilder.UseSqlLite(builder, connectionString, sqliteDbContextOptionsBuilder => { });
+                        break;
+                    case DatabaseType.SqlServer:
+                        SqlServerBuilder.UseSqlServer(builder, connectionString, sqlServerDbContextOptionsBuilder => { });
+                        break;
+                }
+            });
         }
     }
 }
