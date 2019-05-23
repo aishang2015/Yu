@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using Yu.Data.Infrasturctures;
 
 namespace Yu.Data.Repositories
@@ -6,11 +7,11 @@ namespace Yu.Data.Repositories
     /// <summary>
     /// 工作单元实现
     /// </summary>
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext> where TDbContext : DbContext
     {
-        private readonly BaseIdentityDbContext _dbContext;
+        private readonly TDbContext _dbContext;
 
-        public UnitOfWork(BaseIdentityDbContext dbContext)
+        public UnitOfWork(TDbContext dbContext)
         {
             _dbContext = dbContext;
         }

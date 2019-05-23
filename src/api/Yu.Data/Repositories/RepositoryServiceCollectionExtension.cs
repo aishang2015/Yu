@@ -36,7 +36,7 @@ namespace Yu.Data.Repositories
             }
 
             // 工作单元
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork<TDbContext>, UnitOfWork<TDbContext>>();
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Yu.Data.Repositories
             }
 
             // 工作单元
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork<TWriteDbContext>, UnitOfWork<TWriteDbContext>>();
         }
 
 
