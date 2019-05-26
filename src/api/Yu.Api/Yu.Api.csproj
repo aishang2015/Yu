@@ -15,6 +15,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Yu.Core\Yu.Core.csproj" />
     <ProjectReference Include="..\Yu.Data\Yu.Data.csproj" />
+    <ProjectReference Include="..\Yu.Model\Yu.Model.csproj" />
+    <ProjectReference Include="..\Yu.Service\Yu.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -44,7 +44,7 @@ namespace Yu.Api
             services.AddRepositories<BaseIdentityDbContext>(); // 批量注入仓储
 
             services.AddCommonDbContext<BaseDbContext>
-                (Configuration.GetConnectionString("SqlServerConnection2"), DatabaseType.SqlServer);
+                (Configuration.GetConnectionString("SqlServerConnection2"), DatabaseType.SqlServer); // 添加多个数据库
 
             services.AddRepositories<BaseDbContext>(); // 批量注入仓储
 
