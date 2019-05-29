@@ -17,7 +17,7 @@ namespace Yu.Core.Extensions
         {
             // 获取全部接口和类类型
             var typeList = TypeExtension.GetInterfaces(assemblyName);
-            var classList = TypeExtension.GetInterfaces(assemblyName);
+            var classList = TypeExtension.GetClasses(assemblyName);
 
             // 假定接口名为IXXXX则类型名为XXXX
             foreach (var type in typeList)
@@ -41,7 +41,7 @@ namespace Yu.Core.Extensions
         {
             // 获取全部接口和类类型
             var typeList = TypeExtension.GetInterfaces(assemblyName);
-            var classList = TypeExtension.GetInterfaces(assemblyName);
+            var classList = TypeExtension.GetClasses(assemblyName);
 
             // 假定接口名为IXXXX则类型名为XXXX
             foreach (var type in typeList)
@@ -65,7 +65,7 @@ namespace Yu.Core.Extensions
         {
             // 获取全部接口和类类型
             var typeList = TypeExtension.GetInterfaces(assemblyName);
-            var classList = TypeExtension.GetInterfaces(assemblyName);
+            var classList = TypeExtension.GetClasses(assemblyName);
 
             // 假定接口名为IXXXX则类型名为XXXX
             foreach (var type in typeList)

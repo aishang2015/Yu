@@ -3,8 +3,8 @@
 export class UriConstant {
 
     // api地址
-    static readonly BaseApiUri: string = 'https://localhost:44334/api';
+    static readonly BaseApiUri: string = 'https://localhost:44334/api/';
 
     // 登录地址
-    static readonly LoginUri = UriConstant.BaseApiUri + '/login';
+    static readonly LoginUri = UriConstant.BaseApiUri + 'account/login';
 }

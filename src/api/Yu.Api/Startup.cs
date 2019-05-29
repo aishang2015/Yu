@@ -7,9 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NLog.Config;
 using System;
+using System.Linq;
 using Yu.Core.AutoMapper;
 using Yu.Core.Captcha;
 using Yu.Core.Cors;
+using Yu.Core.Extensions;
+using Yu.Core.Jwt;
 using Yu.Core.Validators;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
@@ -28,7 +31,9 @@ namespace Yu.Api
         // 配置服务
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddFluentValidators();  // 配置fluentvalidation
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddFluentValidators(); // 添加fluentvalidation支持
+
+            services.ConfigureFluentValidationModelErrors(); // 统一模型验证结果的一致性
 
             services.AddSession(ops => ops.IdleTimeout = TimeSpan.FromMinutes(5)); // 设置session
 
@@ -37,6 +42,8 @@ namespace Yu.Api
             services.AddAutoMapper();   // 配置AutoMapper
 
             services.AddCustomCors(Configuration);  // 配置自定义跨域策略
+
+            services.AddJwtAuthentication(Configuration); // 配置jwt认证
 
             services.AddIdentityDbContext<BaseIdentityDbContext, BaseIdentityUser, BaseIdentityRole, Guid>
                 (Configuration.GetConnectionString("SqlServerConnection1"), DatabaseType.SqlServer); // 认证数据库上下文
@@ -48,6 +55,8 @@ namespace Yu.Api
 
             services.AddRepositories<BaseDbContext>(); // 批量注入仓储
 
+            services.AddScopedBatch("Yu.Service.dll"); // 批量注入service
+
 
         }
 
@@ -57,12 +66,13 @@ namespace Yu.Api
             LogManager.Configuration.Install(new InstallationContext());
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseDevelopExceptionHandler();
             }
             else
             {
-                app.UseHsts();
+                app.UseHsts(); // 严格http传输
             }
+
 
             app.UseSession();   // 使用Session
 
@@ -73,6 +83,7 @@ namespace Yu.Api
                 var user = new BaseIdentityUser
                 {
                     UserName = "admin",
+                    NormalizedUserName = "ADMIN"
                 };
                 user.PasswordHash = new PasswordHasher<BaseIdentityUser>().HashPassword(user, "P@ssword1");
                 context.Set<BaseIdentityUser>().Add(user);

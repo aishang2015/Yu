@@ -14,6 +14,7 @@ namespace Yu.Core.Jwt
             // 注入Jwt配置文件
             services.Configure<JwtOption>(configuration.GetSection("JwtOption"));
 
+            // 取得配置文件
             var option = services.BuildServiceProvider().GetRequiredService<IOptions<JwtOption>>().Value;
 
             services.AddAuthentication(ops =>
@@ -40,6 +41,9 @@ namespace Yu.Core.Jwt
                     OnMessageReceived = context => { return Task.CompletedTask; }
                 };
             });
+
+            // 注入factory
+            services.AddScoped<IJwtFactory, JwtFactory>();
         }
     }
 }

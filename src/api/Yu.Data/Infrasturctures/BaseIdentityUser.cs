@@ -5,5 +5,6 @@ namespace Yu.Data.Infrasturctures
 {
     public partial class BaseIdentityUser : IdentityUser<Guid>
     {
+        public string OpenId { get; set; }
     }
 }

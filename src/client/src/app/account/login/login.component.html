@@ -3,24 +3,27 @@
     <h1>YuM</h1>
     <form #loginForm="ngForm" (ngSubmit)="submit(loginForm)">
       <nz-form-item>
-        <nz-form-control>
-          <nz-input-group [nzPrefix]="userPrefix">
-            <input type="text" nz-input placeholder="请输入用户名" />
+        <nz-form-control  nzHasFeedback>
+          <nz-input-group [nzPrefix]="userPrefix" nzValidateStatus="userName">
+            <input type="text" nz-input placeholder="请输入用户名" autocomplete="off" name="userName" [(ngModel)]="loginModel.userName" #userName="ngModel" required/>
+            <ng-template #userPrefix><i nz-icon type="user"></i></ng-template>
           </nz-input-group>
-          <ng-template #userPrefix><i nz-icon type="user"></i></ng-template>
+          <nz-form-explain *ngIf="userName.invalid && userName.dirty" class="pull-left">请输入用户名</nz-form-explain>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
         <nz-form-control>
           <nz-input-group [nzPrefix]="passwordPrefix">
-            <input type="password" nz-input placeholder="请输入密码" />
+            <input type="password" nz-input placeholder="请输入密码" autocomplete="off" name="password" [(ngModel)]="loginModel.password" #password="ngModel"/>
+            <ng-template #passwordPrefix><i nz-icon type="lock"></i></ng-template>
           </nz-input-group>
-          <ng-template #passwordPrefix><i nz-icon type="lock"></i></ng-template>
+          <nz-form-explain  *ngIf="password.invalid && password.dirty" class="pull-left">请输入密码</nz-form-explain>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
         <nz-form-control nzSpan="12">
-          <input type="password" nz-input placeholder="验证码" />
+          <input type="password" nz-input placeholder="验证码" autocomplete="off" name="captchaCode" [(ngModel)]="loginModel.captchaCode" #captchaCode="ngModel"/>
+          <nz-form-explain  *ngIf="captchaCode.invalid && captchaCode.dirty" class="pull-left">请输入验证码</nz-form-explain>
         </nz-form-control>
         <nz-form-control nzSpan="12">
           <img [src]="imagesrc" (click)="refresh()">
@@ -28,7 +31,7 @@
       </nz-form-item>
       <nz-form-item>
         <nz-form-control>
-          <button nz-button nzType="primary" nzBlock>登录系统</button>
+          <button nz-button nzType="primary" nzBlock [disabled]="!loginForm.valid">登录系统</button>
         </nz-form-control>
       </nz-form-item>
     </form>
