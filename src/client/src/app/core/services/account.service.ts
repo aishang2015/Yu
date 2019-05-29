@@ -15,6 +15,11 @@ export class AccountService extends BaseService {
 
   // 用户名密码登陆
   login(loginModel: LoginModel) {
-    return this.http.post(UriConstant.LoginUri, loginModel, { responseType: 'text' });
+    return this.http.post(UriConstant.LoginUri, loginModel);
+  }
+
+  // 取得验证码图片
+  getCaptchaImage() {
+    return this.http.get(UriConstant.CaptchaUri, { observe: 'response', responseType: 'blob' });
   }
 }

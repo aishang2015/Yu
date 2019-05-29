@@ -1,15 +1,14 @@
-﻿using FluentValidation;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading.Tasks;
 using Yu.Core.Constants;
 using Yu.Core.Jwt;
 using Yu.Core.Mvc;
 using Yu.Model.Account;
 using Yu.Model.Account.InputModels;
-using Yu.Model.Account.Validators;
 using Yu.Service.Account;
 
 namespace Yu.Api.Controllers
@@ -21,10 +20,13 @@ namespace Yu.Api.Controllers
 
         private readonly IAccountService _accountService;
 
-        public AccountController(IJwtFactory jwtFactory,IAccountService accountService)
+        private readonly IMemoryCache _memoryCache;
+
+        public AccountController(IJwtFactory jwtFactory, IAccountService accountService, IMemoryCache memoryCache)
         {
             _jwtFactory = jwtFactory;
             _accountService = accountService;
+            _memoryCache = memoryCache;
         }
 
         [HttpPost]
@@ -42,20 +44,39 @@ namespace Yu.Api.Controllers
             // 针对app普通用户,商户用户,平台管理员等不同的用户角色考虑直接在userclaim上添加不同平台的区分
             // 例如后台运维用户则直接在用户声明里添加(userPlatformType,customerUser/bussinessUser/operatioinUser)
 
-            var userName = await _accountService.FindUser(model.UserName, model.Password);
+            // 检查验证码
+            var result = _memoryCache.TryGetValue(model.CaptchaCodeId, out string code);
 
+            // 无法取得说明已过期
+            if (!result)
+            {
+                ModelState.AddModelError("CaptchaCode", ErrorMessages.Account_E004);
+                return BadRequest(ModelState);
+            }
+            else
+            {
+                // 验证数值是否相同
+                if (code != model.CaptchaCode)
+                {
+                    ModelState.AddModelError("CaptchaCode", ErrorMessages.Account_E005);
+                    return BadRequest(ModelState);
+                }
+            }
+
+            // 检查用户名密码
+            var userName = await _accountService.FindUser(model.UserName, model.Password);
             if (string.IsNullOrEmpty(userName))
             {
-                ModelState.AddModelError("UserName,Password", "用户名或密码错误0");
+                ModelState.AddModelError("UserName,Password", ErrorMessages.Account_E006);
                 return BadRequest(ModelState);
             }
 
             // 生成JwtToken
-            var token = _jwtFactory.GenerateJwtToken(new List<(string,string)>{
+            var token = _jwtFactory.GenerateJwtToken(new List<(string, string)>{
                 (CustomClaimTypes.UserName,userName)
             });
 
-            return Ok(token);
+            return Ok(new { token = token });
         }
 
     }

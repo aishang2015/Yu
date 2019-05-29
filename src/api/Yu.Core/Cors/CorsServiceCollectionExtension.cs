@@ -14,7 +14,7 @@ namespace Yu.Core.Cors
 
         // 跨域策略名
         private static string _policyName;
-        
+
         /// <summary>
         /// 添加跨域配置
         /// </summary>
@@ -66,7 +66,7 @@ namespace Yu.Core.Cors
                 // 设置ExposedHeaders
                 if (!string.IsNullOrEmpty(exposedHeaders))
                 {
-                    builder.WithExposedHeaders();
+                    builder.WithExposedHeaders(exposedHeaders.Split(','));
                 }
 
             };

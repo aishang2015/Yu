@@ -24,5 +24,10 @@ namespace Yu.Model.Account.InputModels
         /// </summary>
         public string CaptchaCode { get; set; }
 
+        /// <summary>
+        /// 缓存中的验证码的Id
+        /// </summary>
+        public string CaptchaCodeId { get; set; }
+
     }
 }

@@ -4,6 +4,7 @@ import { AccountService } from 'src/app/core/services/account.service';
 import { CommonConstant } from 'src/app/core/constants/common-constant';
 import { NzMessageService } from 'ng-zorro-antd';
 import { Router } from '@angular/router';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-login',
@@ -12,15 +13,20 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
 
-  imagesrc: string = "https://localhost:44334/captcha";
+  // 验证码图片地址
+  imagesrc: SafeUrl = "";
 
+  // 编辑模型
   loginModel: LoginModel = new LoginModel();
 
   constructor(private accountService: AccountService,
     private messageService: NzMessageService,
-    private router: Router) { }
+    private router: Router,
+    private sanitizer: DomSanitizer) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.refresh();
+  }
 
   submit(loginForm) {
 
@@ -29,15 +35,15 @@ export class LoginComponent implements OnInit {
       this.accountService.login(this.loginModel)
         .subscribe(
           token => {
-            
+
             // jwt 保存localstorage
-            localStorage.setItem(CommonConstant.AuthToken, token);
+            localStorage.setItem(CommonConstant.AuthToken, token['token']);
             this.messageService.success("登录成功！");
-            this.router.navigate(["/dashboard"]);
+            this.router.navigate(["dashboard"]);
           },
           error => {
             this.accountService.HandleError(error); // 通用错误处理
-            this.imagesrc = "https://localhost:44334/captcha?" + Math.random(); // 刷新验证码
+            this.refresh(); // 刷新验证码
           }
         )
     }
@@ -45,7 +51,20 @@ export class LoginComponent implements OnInit {
 
   // 点击刷新验证码
   refresh() {
-    this.imagesrc = "https://localhost:44334/captcha?" + Math.random();
+    let that = this;
+    this.accountService.getCaptchaImage()
+      .subscribe(
+        response => {
+          // 保存codeid
+          let codeId = response.headers.get('CaptchaCodeId');
+          that.loginModel.captchaCodeId = codeId;
+
+          let image = response.body;  // 获取blob
+          let str = URL.createObjectURL(image);
+          let url = this.sanitizer.bypassSecurityTrustUrl(str); // url安全转换
+          that.imagesrc = url;
+        }
+      )
   }
 
 }

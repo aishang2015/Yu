@@ -1,19 +1,24 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using System;
 using Yu.Core.Captcha;
+using Yu.Core.Constants;
 
 namespace Yu.Api.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class CaptchaController : ControllerBase
     {
 
         private readonly CaptchaHelper _captchaHelper;
 
-        public CaptchaController(CaptchaHelper captchaHelper)
+        private readonly IMemoryCache _memoryCache;
+
+        public CaptchaController(CaptchaHelper captchaHelper, IMemoryCache memoryCache)
         {
             _captchaHelper = captchaHelper;
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -23,10 +28,19 @@ namespace Yu.Api.Controllers
         [HttpGet]
         public IActionResult GetCaptcha()
         {
-
+            // 验证码的值
             var code = _captchaHelper.GetValidateCode();
+
+            // 生成验证码图片流
             var stream = _captchaHelper.CreateImageStream(code);
-            HttpContext.Session.SetString("ValidateCode", code);
+
+            // 保存到缓存
+            // todo 整理缓存服务，配置化过期时间
+            var codeId = Guid.NewGuid().ToString();
+            _memoryCache.Set(codeId, code, new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(2)));
+
+            // 将id保存到header返回客户端
+            Response.Headers.Add(CommonConstants.CaptchaCodeId, codeId.ToString());
             return File(stream.ToArray(), @"image/png");
         }
     }

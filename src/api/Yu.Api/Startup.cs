@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NLog.Config;
 using System;
-using System.Linq;
 using Yu.Core.AutoMapper;
 using Yu.Core.Captcha;
 using Yu.Core.Cors;
@@ -31,11 +31,7 @@ namespace Yu.Api
         // 配置服务
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddFluentValidators(); // 添加fluentvalidation支持
-
-            services.ConfigureFluentValidationModelErrors(); // 统一模型验证结果的一致性
-
-            services.AddSession(ops => ops.IdleTimeout = TimeSpan.FromMinutes(5)); // 设置session
+            services.AddMemoryCache(); // 添加缓存
 
             services.AddCaptcha(Configuration); // 配置验证码工具
 
@@ -57,7 +53,9 @@ namespace Yu.Api
 
             services.AddScopedBatch("Yu.Service.dll"); // 批量注入service
 
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddFluentValidators(); // 添加fluentvalidation支持
 
+            services.ConfigureFluentValidationModelErrors(); // 统一模型验证结果的一致性
         }
 
         // 构建管道
@@ -72,9 +70,6 @@ namespace Yu.Api
             {
                 app.UseHsts(); // 严格http传输
             }
-
-
-            app.UseSession();   // 使用Session
 
             app.UseCustomCors();    // 使用自定义跨域策略
 
