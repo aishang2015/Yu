@@ -5,10 +5,10 @@
             <li nz-submenu>
                 <span title><i nz-icon nzType="idcard" nzTheme="outline"></i><span class="nav-text">权限管理</span></span>
                 <ul>
-                    <li nz-menu-item><i nz-icon nzType="user" nzTheme="outline"></i>用户管理</li>
-                    <li nz-menu-item><i nz-icon nzType="audit" nzTheme="outline"></i>角色管理</li>
-                    <li nz-menu-item><i nz-icon nzType="ordered-list" nzTheme="outline"></i>菜单管理</li>
-                    <li nz-menu-item><i nz-icon nzType="team" nzTheme="outline"></i>组织管理</li>
+                    <li nz-menu-item [routerLink]="[ '/right/user' ]"><i nz-icon nzType="user" nzTheme="outline"></i>用户管理</li>
+                    <li nz-menu-item [routerLink]="[ '/right/role' ]"><i nz-icon nzType="audit" nzTheme="outline"></i>角色管理</li>
+                    <li nz-menu-item [routerLink]="[ '/right/menu' ]"><i nz-icon nzType="ordered-list" nzTheme="outline"></i>菜单管理</li>
+                    <li nz-menu-item [routerLink]="[ '/right/group' ]"><i nz-icon nzType="team" nzTheme="outline"></i>组织管理</li>
                 </ul>
             </li>
         </ul>

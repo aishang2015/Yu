@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
             // jwt 保存localstorage
             localStorage.setItem(CommonConstant.AuthToken, token['token']);
             this.messageService.success("登录成功！");
-            this.router.navigate(["dashboard"]);
+            this.router.navigate(["/dashboard"]);
           },
           error => {
             this.accountService.HandleError(error); // 通用错误处理

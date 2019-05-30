@@ -17,6 +17,7 @@ export class LoginGuard implements CanActivate {
 
     // 已登录情况下禁止跳转到login
     if (route.routeConfig.path == 'login' && localStorage.getItem(CommonConstant.AuthToken) != null) {
+      this.router.navigate(['/dashboard']);
       return false;
     }
 
