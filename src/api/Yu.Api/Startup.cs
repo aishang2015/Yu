@@ -13,6 +13,7 @@ using Yu.Core.Captcha;
 using Yu.Core.Cors;
 using Yu.Core.Extensions;
 using Yu.Core.Jwt;
+using Yu.Core.Swagger;
 using Yu.Core.Validators;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
@@ -56,6 +57,8 @@ namespace Yu.Api
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddFluentValidators(); // 添加fluentvalidation支持
 
             services.ConfigureFluentValidationModelErrors(); // 统一模型验证结果的一致性
+
+            services.AddSwaggerConfiguration(); // 配置swagger
         }
 
         // 构建管道
@@ -86,6 +89,8 @@ namespace Yu.Api
             });   // 初始化BaseIdentityDbContext数据
 
             app.SeedDbData<BaseDbContext>(context => { }); // 初始化BaseDbContext数据
+
+            app.UserSwaggerConfiguration(); // 使用Swagger
 
             app.UseHttpsRedirection();
             app.UseMvc();

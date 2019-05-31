@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
+using AutoMapper.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Yu.Core.Extensions;
 
 namespace Yu.Core.AutoMapper
@@ -13,10 +11,14 @@ namespace Yu.Core.AutoMapper
         {
             // 取得所有Profile文件 加入配置。
             var mapperProfiles = typeof(Profile).GetAllChildType();
-            foreach(var profile in mapperProfiles)
+
+            // 整合profile添加 初始化mapper
+            var mapperConfigurationExpression = new MapperConfigurationExpression();
+            foreach (var profile in mapperProfiles)
             {
-                Mapper.Initialize(config => config.AddProfile(profile));
+                mapperConfigurationExpression.AddProfile(profile);
             }
+            Mapper.Initialize(mapperConfigurationExpression);
         }
 
         private class AutoMapperProfile : Profile

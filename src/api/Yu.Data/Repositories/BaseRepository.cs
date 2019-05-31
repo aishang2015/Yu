@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Yu.Data.Infrasturctures;
-using Microsoft.Extensions.DependencyInjection;
 using Yu.Data.Entities;
 
 namespace Yu.Data.Repositories
@@ -103,10 +101,14 @@ namespace Yu.Data.Repositories
         /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">页面大小</param>
         /// <returns>数据查询结果</returns>
-        public IQueryable<TEntity> GetByPage(IQueryable<TEntity> query, int pageIndex, int pageSize)
+        public PagedData<TEntity> GetByPage(IQueryable<TEntity> query, int pageIndex, int pageSize)
         {
             var skip = pageSize * (pageIndex - 1);
-            return query.Skip(skip).Take(pageSize);
+            return new PagedData<TEntity>
+            {
+                Total = query.Count(), // 满足条件总条数
+                Data = query.Skip(skip).Take(pageSize).ToList()
+            };
         }
 
         /// <summary>

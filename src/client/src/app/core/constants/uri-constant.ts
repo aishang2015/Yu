@@ -10,4 +10,7 @@ export class UriConstant {
 
     // 验证码图片地址
     static readonly CaptchaUri = UriConstant.BaseApiUri + 'captcha';
+
+    // 用户概要地址
+    static readonly UserOutlineUri = UriConstant.BaseApiUri + 'userOutline';
 }

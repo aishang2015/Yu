@@ -1,24 +1,40 @@
-<nz-table #headerTable [nzData]="listOfData" [nzFrontPagination]="false" [nzBordered]="true">
-  <thead>
-    <tr>
-      <th nzAlign="center" nzWidth="100px">序号</th>
-      <th nzAlign="center" nzWidth="150px">用户名</th>
-      <th nzAlign="center" nzWidth="150px">手机号</th>
-      <th nzAlign="center" nzWidth="150px">邮箱</th>
-      <th nzAlign="center" nzWidth="150px">OpenId</th>
-      <th nzAlign="center">操作</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let data of listOfData">
-      <td nzAlign="center" nzWidth="100px">{{ data.no }}</td>
-      <td nzAlign="center" nzWidth="150px">{{ data.userName }}</td>
-      <td nzAlign="center" nzWidth="150px">{{ data.telephone }}</td>
-      <td nzAlign="center" nzWidth="150px">{{ data.email }}</td>
-      <td nzAlign="center" nzWidth="150px">{{ data.openId }}</td>
-      <td nzAlign="center">编辑 删除</td>
-    </tr>
-  </tbody>
-</nz-table>
-<nz-pagination [(nzPageIndex)]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" nzShowSizeChanger
-  [nzPageSizeOptions]="[10,20,30,40,50]" (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
+<div nz-row>
+  <div class="searchInput">
+    <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+      <input type="text" nz-input placeholder="用户名/手机号/邮箱/昵称等" name="searchText" [(ngModel)]="searchText"/>
+    </nz-input-group>
+    <ng-template #suffixIconButton>
+      <button nz-button nzType="default" nzSearch (click)="searchData()"><i nz-icon type="search"></i></button>
+    </ng-template>
+  </div>
+</div>
+
+<div nz-row class="mt-10">
+  <nz-table #headerTable [nzData]="listOfData" [nzFrontPagination]="false" nzHideOnSinglePage="true"
+    [nzBordered]="true">
+    <thead>
+      <tr>
+        <th nzAlign="center" nzWidth="100px">序号</th>
+        <th nzAlign="center" nzWidth="150px">用户名</th>
+        <th nzAlign="center" nzWidth="150px">手机号</th>
+        <th nzAlign="center" nzWidth="150px">邮箱</th>
+        <th nzAlign="center" nzWidth="150px">OpenId</th>
+        <th nzAlign="center">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of listOfData;let i = index">
+        <td nzAlign="center" nzWidth="100px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td nzAlign="center" nzWidth="150px">{{ data.userName }}</td>
+        <td nzAlign="center" nzWidth="150px">{{ data.telephone }}</td>
+        <td nzAlign="center" nzWidth="150px">{{ data.email }}</td>
+        <td nzAlign="center" nzWidth="150px">{{ data.openId }}</td>
+        <td nzAlign="center">详细信息 编辑 删除</td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>
+<div nz-row class="mt-10">
+  <nz-pagination [(nzPageIndex)]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" nzShowSizeChanger
+    [nzPageSizeOptions]="[10,20,30,40,50]" (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
+</div>

@@ -71,7 +71,7 @@ namespace Yu.Data.Repositories
         /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">页面大小</param>
         /// <returns>数据查询结果</returns>
-        IQueryable<TEntity> GetByPage(IQueryable<TEntity> query, int pageIndex, int pageSize);
+        PagedData<TEntity> GetByPage(IQueryable<TEntity> query, int pageIndex, int pageSize);
 
         /// <summary>
         /// 插入一条数据

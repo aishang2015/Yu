@@ -5,12 +5,19 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.1.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   
   <ItemGroup>
     <Folder Include="Account\OutputModels\" />
+    <Folder Include="WebAdmin\User\InputModels\" />
+    <Folder Include="WebAdmin\User\Validators\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Yu.Data\Yu.Data.csproj" />
   </ItemGroup>
 
 </Project>

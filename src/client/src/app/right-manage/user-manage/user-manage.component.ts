@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from 'src/app/core/services/user.service';
+import { NzMessageService } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-user-manage',
@@ -12,40 +14,46 @@ export class UserManageComponent implements OnInit {
   pageIndex = 1;
   total = 100;
 
+  // 搜索关键字
+  searchText = '';
+
   // 表格数据源
   listOfData: any[] = [];
 
-  constructor() { }
+  constructor(private userService: UserService,
+    private messageService: NzMessageService) { }
 
   ngOnInit() {
 
-    // 初始化表格数据
-    for (let i = 20 * (this.pageIndex - 1); i < 20 * this.pageIndex; i++) {
-      this.listOfData.push({
-        no: i + 1,
-        userName: "admin",
-        telephone: 13852145236,
-        email: "GAWGAWg@163.com",
-        openId: "#$HW%$Y#$134213H%$Y#^YHHEE6th"
-      });
-    }
-
+    this.getUserInfo();
   }
 
+
+  // 初始化用户数据
+  getUserInfo() {
+    this.userService.getUserOutlines(this.pageIndex, this.pageSize, this.searchText)
+      .subscribe(
+        (result: any) => {
+          this.total = result.total;
+          this.listOfData = result.data;
+          this.messageService.success("数据取得完毕。")
+        },
+        error => {
+          this.userService.HandleError(error);
+        }
+      )
+  }
+
+
+  // 页码发生变化
   pageIndexChange() {
-
-    // 初始化表格数据
-    this.listOfData = [];
-    for (let i = 20 * (this.pageIndex - 1); i < 20 * this.pageIndex; i++) {
-      this.listOfData.push({
-        no: i + 1,
-        userName: "admin",
-        telephone: 13852145236,
-        email: "GAWGAWg@163.com",
-        openId: "#$HW%$Y#$134213H%$Y#^YHHEE6th"
-      });
-    }
-
+    this.getUserInfo();
   }
+
+  // 搜索数据
+  searchData() {
+    this.getUserInfo();
+  }
+
 
 }
