@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Yu.Core.Extensions;
+using Yu.Core.Utils;
 using Yu.Data.Entities;
 
 namespace Yu.Data.Infrasturctures
@@ -24,7 +25,7 @@ namespace Yu.Data.Infrasturctures
             entityTypeList.ForEach(type => builder.Entity(type));
 
             // 寻找entity的configuration
-            var assemblies = TypeExtension.GetAssemblies();
+            var assemblies = ReflectionUtil.GetAssemblies();
             foreach (var assemliy in assemblies)
             {
                 // 从程序及载入configuration

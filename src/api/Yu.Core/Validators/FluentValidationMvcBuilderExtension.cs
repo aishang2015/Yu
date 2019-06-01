@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Yu.Core.Extensions;
+using Yu.Core.Utils;
 
 namespace Yu.Core.Validators
 {
@@ -11,7 +12,7 @@ namespace Yu.Core.Validators
         public static void AddFluentValidators(this IMvcBuilder builder)
         {
             // 通过RegisterValidatorsFromAssemblies来自动注册程序集内的所有验证器
-            builder.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblies(TypeExtension.GetAssemblies()));
+            builder.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblies(ReflectionUtil.GetAssemblies()));
 
             // 验证模式设置为遇错即终止
             ValidatorOptions.CascadeMode = CascadeMode.StopOnFirstFailure;

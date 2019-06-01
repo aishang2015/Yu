@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using Yu.Core.Utils;
 
 namespace Yu.Core.Extensions
 {
@@ -16,8 +17,8 @@ namespace Yu.Core.Extensions
         public static void AddScopedBatch(this IServiceCollection services, string assemblyName)
         {
             // 获取全部接口和类类型
-            var typeList = TypeExtension.GetInterfaces(assemblyName);
-            var classList = TypeExtension.GetClasses(assemblyName);
+            var typeList = ReflectionUtil.GetInterfaces(assemblyName);
+            var classList = ReflectionUtil.GetClasses(assemblyName);
 
             // 假定接口名为IXXXX则类型名为XXXX
             foreach (var type in typeList)
@@ -40,8 +41,8 @@ namespace Yu.Core.Extensions
         public static void AddSingletonBatch(this IServiceCollection services, string assemblyName)
         {
             // 获取全部接口和类类型
-            var typeList = TypeExtension.GetInterfaces(assemblyName);
-            var classList = TypeExtension.GetClasses(assemblyName);
+            var typeList = ReflectionUtil.GetInterfaces(assemblyName);
+            var classList = ReflectionUtil.GetClasses(assemblyName);
 
             // 假定接口名为IXXXX则类型名为XXXX
             foreach (var type in typeList)
@@ -64,8 +65,8 @@ namespace Yu.Core.Extensions
         public static void AddTransientBatch(this IServiceCollection services, string assemblyName)
         {
             // 获取全部接口和类类型
-            var typeList = TypeExtension.GetInterfaces(assemblyName);
-            var classList = TypeExtension.GetClasses(assemblyName);
+            var typeList = ReflectionUtil.GetInterfaces(assemblyName);
+            var classList = ReflectionUtil.GetClasses(assemblyName);
 
             // 假定接口名为IXXXX则类型名为XXXX
             foreach (var type in typeList)
