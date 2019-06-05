@@ -6,8 +6,8 @@ using Yu.Data.Infrasturctures;
 
 namespace Yu.Data.Entities.Account
 {
+    // todo 整合到baseidentityuser 即将删除此表
     // 用户基本数据
-    [BelongTo(typeof(BaseIdentityDbContext))]
     public class BaseUserInfo : BaseEntity<Guid>
     {
         // 昵称
@@ -17,6 +17,6 @@ namespace Yu.Data.Entities.Account
         public string Avatar { get; set; }
 
         // 性别
-        public GenderEnum Gender { get; set; }
+        public Gender Gender { get; set; }
     }
 }

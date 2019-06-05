@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using Yu.Core.Mvc;
-using Yu.Model.WebAdmin.User;
+using Yu.Model.WebAdmin.User.InputModels;
+using Yu.Model.WebAdmin.User.OutputModels;
 using Yu.Service.WebAdmin;
 
 namespace Yu.Api.Areas.WebAdmin.Controllers
@@ -26,18 +28,34 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         /// <param name="pageSize">页面大小</param>
         /// <returns></returns>
         [HttpGet("userOutline")]
-        public IActionResult GetUserOutlines([FromQuery]int pageIndex, [FromQuery]int pageSize, [FromQuery]string searchText)
+        public IActionResult GetUserOutlines([FromQuery]UserOutlineQuery query)
         {
-            // 校验参数
-            if (pageIndex <= 0 || pageSize <= 0 || pageSize > 100)
-            {
-                ModelState.AddModelError("PageIndex,PageSize", ErrorMessages.WebAdmin_User_E001);
-                return BadRequest(ModelState);
-            }
-
             // 取得数据            
-            var result = _userService.GetUserOutlines(pageIndex, pageSize, searchText);
+            var result = _userService.GetUserOutlines(query.PageIndex, query.PageSize, query.SearchText);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// 取得用户详细数据
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpGet("userDetail")]
+        public async Task<IActionResult> GetUserDetail([FromQuery]UserDetailQuery query)
+        {
+            var user = await _userService.GetUserDetail(query.UserId);
+            return Ok(user);
+        }
+
+        /// <summary>
+        /// 更新用户数据
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPut("userDetail")]
+        public async Task<IActionResult> UpdateUserDetail([FromBody]UserDetail query)
+        {
+            return Ok();
         }
 
     }

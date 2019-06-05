@@ -11,6 +11,9 @@ export class UriConstant {
     // 验证码图片地址
     static readonly CaptchaUri = UriConstant.BaseApiUri + 'captcha';
 
-    // 用户概要地址
+    // 用户概要数据地址
     static readonly UserOutlineUri = UriConstant.BaseApiUri + 'userOutline';
+
+    // 用户详细数据地址
+    static readonly UserDetailUri = UriConstant.BaseApiUri + 'userDetail';
 }

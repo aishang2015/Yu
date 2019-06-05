@@ -36,6 +36,8 @@ export abstract class BaseService {
       for (var i in error.error) {
         msg += error.error[i];
       }
+    } else {
+      msg += '发生未知错误！';
     }
     this.messageService.error(msg);
   }

@@ -12,8 +12,6 @@
   
   <ItemGroup>
     <Folder Include="Account\OutputModels\" />
-    <Folder Include="WebAdmin\User\InputModels\" />
-    <Folder Include="WebAdmin\User\Validators\" />
   </ItemGroup>
   
   <ItemGroup>

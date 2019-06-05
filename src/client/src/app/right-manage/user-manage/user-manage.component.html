@@ -1,7 +1,8 @@
 <div nz-row>
   <div class="searchInput">
     <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
-      <input type="text" nz-input placeholder="用户名/手机号/邮箱/昵称等" name="searchText" [(ngModel)]="searchText"/>
+      <input type="text" nz-input placeholder="用户名/手机号/邮箱/昵称等" name="searchText" [(ngModel)]="searchText"
+        autocomplete="off" />
     </nz-input-group>
     <ng-template #suffixIconButton>
       <button nz-button nzType="default" nzSearch (click)="searchData()"><i nz-icon type="search"></i></button>
@@ -9,6 +10,7 @@
   </div>
 </div>
 
+<!--信息展示-->
 <div nz-row class="mt-10">
   <nz-table #headerTable [nzData]="listOfData" [nzFrontPagination]="false" nzHideOnSinglePage="true"
     [nzBordered]="true">
@@ -29,7 +31,9 @@
         <td nzAlign="center" nzWidth="150px">{{ data.telephone }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.email }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.openId }}</td>
-        <td nzAlign="center">详细信息 编辑 删除</td>
+        <td nzAlign="center">
+          <a (click)="viewUserDetail(data,viewContentTpl)">详细信息</a>
+          <a (click)="editUser(data,editContentTpl)">编辑</a> 删除</td>
       </tr>
     </tbody>
   </nz-table>
@@ -38,3 +42,111 @@
   <nz-pagination [(nzPageIndex)]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" nzShowSizeChanger
     [nzPageSizeOptions]="[10,20,30,40,50]" (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
 </div>
+
+<!-- 用户详细信息 -->
+<ng-template #viewContentTpl>
+  <nz-divider nzText="认证信息"></nz-divider>
+
+  <div nz-row class="mt-5">
+    <div class="propDescribe">用户名:</div>
+    <div class="propValue">{{ userDetail.userName }}</div>
+  </div>
+  <div nz-row class="mt-5">
+    <div class="propDescribe">电子邮箱:</div>
+    <div class="propValue">{{ userDetail.email }}</div>
+  </div>
+  <div nz-row class="mt-5">
+    <div class="propDescribe">联系电话:</div>
+    <div class="propValue">{{ userDetail.phoneNumber }}</div>
+  </div>
+  <div nz-row class="mt-5">
+    <div class="propDescribe">OPENID:</div>
+    <div class="propValue">{{ userDetail.openId }}</div>
+  </div>
+
+  <nz-divider nzText="基本信息"></nz-divider>
+  <div nz-row class="mt-5">
+    <div class="propDescribe">头像:</div>
+    <div class="propValue">
+      <nz-avatar nzIcon="user" [nzSrc]="userDetail.avatar"></nz-avatar>
+    </div>
+  </div>
+  <div nz-row class="mt-5">
+    <div class="propDescribe">昵称:</div>
+    <div class="propValue">{{ userDetail.nickName }}</div>
+  </div>
+  <div nz-row class="mt-5">
+    <div class="propDescribe">性别:</div>
+    <div class="propValue">{{ userDetail.gender | gender }}</div>
+  </div>
+</ng-template>
+
+<!--信息编辑-->
+<ng-template #editContentTpl>
+  <form nz-form #editForm="ngForm" (ngSubmit)="editSubmit(editForm)">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">用户名</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input nz-input autocomplete="off" type="text" name="userName" #userName="ngModel"
+          [(ngModel)]="editUserDetail.userName" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">电子邮箱</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input nz-input autocomplete="off" type="text" name="email" [(ngModel)]="editUserDetail.email" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">联系电话</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input nz-input autocomplete="off" type="text" name="phoneNumber" [(ngModel)]="editUserDetail.phoneNumber"
+          #phoneNumber="ngModel" appTelephone />
+        <nz-form-explain
+          *ngIf="phoneNumber.invalid && (phoneNumber.dirty || phoneNumber.touched) && phoneNumber.errors.telephone">
+          电话号码格式不正确！</nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">OPENID</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input nz-input autocomplete="off" type="text" name="openId" [(ngModel)]="editUserDetail.openId" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">头像</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <nz-avatar nzSize="large" nzIcon="user" [nzSrc]="editUserDetail.avatar">
+        </nz-avatar>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">昵称</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input nz-input autocomplete="off" type="text" name="nickName" [(ngModel)]="editUserDetail.nickName" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">性别</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <nz-select [(ngModel)]="editUserDetail.gender" name="gender">
+          <nz-option *ngFor="let item of genders" [nzLabel]="item.name" [nzValue]="item.value"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control [nzSpan]="12" [nzOffset]="5">
+        <button class="mr-5" nz-button nzType="primary" type="submit">提交</button>
+        <button class="mr-5" nz-button nzType="primary" type="button" (click)="cancelEdit()">取消</button>
+      </nz-form-control>
+    </nz-form-item>
+
+  </form>
+</ng-template>

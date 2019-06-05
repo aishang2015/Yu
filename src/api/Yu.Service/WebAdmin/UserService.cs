@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Yu.Core.Utils;
 using Yu.Data.Entities;
 using Yu.Data.Infrasturctures;
@@ -16,6 +18,17 @@ namespace Yu.Service.WebAdmin
         public UserService(UserManager<BaseIdentityUser> userManager)
         {
             _userManager = userManager;
+        }
+
+        /// <summary>
+        /// 取得用户详细数据
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>用户数据</returns>
+        public async Task<UserDetail> GetUserDetail(Guid userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            return Mapper.Map<UserDetail>(user);
         }
 
         /// <summary>

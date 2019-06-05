@@ -3,7 +3,7 @@
     /// <summary>
     /// 性别枚举
     /// </summary>
-    public enum GenderEnum
+    public enum Gender
     {
         未知 = 0,
         男性 = 1,

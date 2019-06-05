@@ -14,8 +14,8 @@ namespace Yu.Data.Configurations.Account
             builder.HasKey(baseUserInfo=> baseUserInfo.Id);
             builder.Property(baseUserInfo => baseUserInfo.Id).ValueGeneratedNever();
             builder.Property(baseUserInfo => baseUserInfo.Gender)
-                .HasConversion(v => (int)v, v => (GenderEnum)v)
-                .HasDefaultValue(GenderEnum.未知);
+                .HasConversion(v => (int)v, v => (Gender)v)
+                .HasDefaultValue(Gender.未知);
         }
     }
 }

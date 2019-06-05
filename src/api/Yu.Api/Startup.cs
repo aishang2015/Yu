@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -54,7 +53,10 @@ namespace Yu.Api
 
             services.AddScopedBatch("Yu.Service.dll"); // 批量注入service
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddFluentValidators(); // 添加fluentvalidation支持
+            services.AddMvc(ops =>
+            {
+                ops.ModelBindingMessageProvider.SetAttemptedValueIsInvalidAccessor((value, name) => $"值'{value}'不是合法的'{name}'(SYSTEM)");
+            }).AddFluentValidators(); // 添加fluentvalidation支持
 
             services.ConfigureFluentValidationModelErrors(); // 统一模型验证结果的一致性
 
