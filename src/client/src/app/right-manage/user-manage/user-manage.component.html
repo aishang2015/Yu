@@ -32,8 +32,8 @@
         <td nzAlign="center" nzWidth="150px">{{ data.email }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.openId }}</td>
         <td nzAlign="center">
-          <a (click)="viewUserDetail(data,viewContentTpl)">详细信息</a>
-          <a (click)="editUser(data,editContentTpl)">编辑</a> 删除</td>
+          <a (appThrottleClick)="viewUserDetail(data,viewContentTpl)">详细信息</a>&nbsp;&nbsp;
+          <a (appThrottleClick)="editUser(data,editContentTpl)">编辑</a> 删除</td>
       </tr>
     </tbody>
   </nz-table>
