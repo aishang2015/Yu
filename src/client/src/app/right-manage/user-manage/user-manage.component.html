@@ -33,14 +33,16 @@
         <td nzAlign="center" nzWidth="150px">{{ data.openId }}</td>
         <td nzAlign="center">
           <a (appThrottleClick)="viewUserDetail(data,viewContentTpl)">详细信息</a>&nbsp;&nbsp;
-          <a (appThrottleClick)="editUser(data,editContentTpl)">编辑</a> 删除</td>
+          <a (appThrottleClick)="editUser(data,editContentTpl)">编辑</a>&nbsp;&nbsp;
+          <a (appThrottleClick)="deleteUser(data)">删除</a>
+        </td>
       </tr>
     </tbody>
   </nz-table>
 </div>
 <div nz-row class="mt-10">
   <nz-pagination [(nzPageIndex)]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" nzShowSizeChanger
-    [nzPageSizeOptions]="[10,20,30,40,50]" (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
+    [nzPageSizeOptions]="[10,20,30,40,50]" (nzPageSizeChange)="pageSizeChange($event)" (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
 </div>
 
 <!-- 用户详细信息 -->

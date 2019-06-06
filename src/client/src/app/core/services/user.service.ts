@@ -30,4 +30,10 @@ export class UserService extends BaseService {
     let uri = UriConstant.UserDetailUri;
     return this.http.put(uri, userDetail, { headers: this.AuthorizationHeader() });
   }
+
+  // 删除用户数据
+  deleteUser(userId) {
+    let uri = `${UriConstant.UserDetailUri}?userId=${userId}`;
+    return this.http.delete(uri, { headers: this.AuthorizationHeader() });
+  }
 }

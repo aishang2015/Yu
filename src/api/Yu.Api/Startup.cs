@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
@@ -80,14 +79,18 @@ namespace Yu.Api
 
             app.SeedDbData<BaseIdentityDbContext>(context =>
             {
-                var user = new BaseIdentityUser
+                for (int i = 0; i < 85; i++)
                 {
-                    UserName = "admin",
-                    NormalizedUserName = "ADMIN"
-                };
-                user.PasswordHash = new PasswordHasher<BaseIdentityUser>().HashPassword(user, "P@ssword1");
-                context.Set<BaseIdentityUser>().Add(user);
-                context.SaveChanges();
+                    var user = new BaseIdentityUser
+                    {
+                        UserName = $"admin{i}",
+                        NormalizedUserName = $"ADMIN{i}",
+                        SecurityStamp = Guid.NewGuid().ToString()
+                    };
+                    user.PasswordHash = new PasswordHasher<BaseIdentityUser>().HashPassword(user, "P@ssword1");
+                    context.Set<BaseIdentityUser>().Add(user);
+                    context.SaveChanges();
+                }
             });   // 初始化BaseIdentityDbContext数据
 
             app.SeedDbData<BaseDbContext>(context => { }); // 初始化BaseDbContext数据

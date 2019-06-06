@@ -55,6 +55,19 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [HttpPut("userDetail")]
         public async Task<IActionResult> UpdateUserDetail([FromBody]UserDetail query)
         {
+            await _userService.UpdateUserDetail(query);
+            return Ok();
+        }
+
+        /// <summary>
+        /// 删除用户数据
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpDelete("userDetail")]
+        public async Task<IActionResult> DeleteUser([FromQuery]UserDetailQuery query)
+        {
+            await _userService.DeleteUser(query.UserId);
             return Ok();
         }
 

@@ -11,6 +11,7 @@ namespace Yu.Model.WebAdmin.User
             AllowNullCollections = true;
             CreateMap<BaseIdentityUser, UserOutline>();
             CreateMap<BaseIdentityUser, UserDetail>();
+            CreateMap<UserDetail, BaseIdentityUser>();
         }
     }
 }

@@ -22,5 +22,18 @@ namespace Yu.Service.WebAdmin
         /// <returns>用户数据</returns>
         Task<UserDetail> GetUserDetail(Guid userId);
 
+        /// <summary>
+        /// 更新用户信息
+        /// </summary>
+        /// <param name="userDetail">用户信息</param>
+        Task UpdateUserDetail(UserDetail userDetail);
+
+        /// <summary>
+        /// 删除用户
+        /// </summary>
+        /// <param name="userId">用户Id</param>
+        /// <returns></returns>
+        Task DeleteUser(Guid userId);
+
     }
 }

@@ -21,6 +21,17 @@ namespace Yu.Service.WebAdmin
         }
 
         /// <summary>
+        /// 删除用户
+        /// </summary>
+        /// <param name="userId">用户Id</param>
+        /// <returns></returns>
+        public async Task DeleteUser(Guid userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            await _userManager.DeleteAsync(user);
+        }
+
+        /// <summary>
         /// 取得用户详细数据
         /// </summary>
         /// <param name="userId">用户ID</param>
@@ -56,9 +67,20 @@ namespace Yu.Service.WebAdmin
             // 生成结果
             return new PagedData<UserOutline>
             {
-                Total = users.Where(filter).Count(),
+                Total = _userManager.Users.Where(filter).Count(),
                 Data = Mapper.Map<List<UserOutline>>(users)
             };
+        }
+
+        /// <summary>
+        /// 更新用户信息
+        /// </summary>
+        /// <param name="userDetail">用户信息</param>
+        public async Task UpdateUserDetail(UserDetail userDetail)
+        {
+            var user = await _userManager.FindByIdAsync(userDetail.Id.ToString());
+            Mapper.Map(userDetail, user);
+            await _userManager.UpdateAsync(user);
         }
     }
 }

@@ -67,6 +67,12 @@ export class UserManageComponent implements OnInit {
     this.getUserInfo();
   }
 
+  // 每页条数发生变化
+  pageSizeChange($event) {
+    this.pageSize = $event;
+    this.getUserInfo();
+  }
+
   // 搜索数据
   searchData() {
     this.getUserInfo();
@@ -134,6 +140,23 @@ export class UserManageComponent implements OnInit {
           error => this.userService.HandleError(error)
         )
     }
+  }
+
+  // 删除用户
+  deleteUser(userOutline) {
+    this.modalService.confirm({
+      nzTitle: '是否要删除该用户？',
+      nzOnOk: _ => {
+        this.userService.deleteUser(userOutline.id)
+          .subscribe(
+            result => {
+              this.messageService.success("删除成功！");
+              this.getUserInfo();
+            },
+            error => this.userService.HandleError(error)
+          )
+      }
+    })
   }
 
 }
