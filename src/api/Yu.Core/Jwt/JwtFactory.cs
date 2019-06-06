@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using Yu.Core.Constants;
 using Yu.Core.Extensions;
@@ -61,8 +61,13 @@ namespace Yu.Core.Jwt
             var oldExpires = claimsPrincipal.GetClaimValue(CustomClaimTypes.Expires);
             var expireDateTime = Utils.DateTimeUtil.GetDateTime(oldExpires);
 
-            // TODO 比较时间判断是否能够刷新。
+            // 当超过刷新间或者token仍在有效期内的情况下不刷新token
+            if (expireDateTime.AddMinutes(_jwtOption.RefreshEffectiveTime) < DateTime.Now || expireDateTime > DateTime.Now)
+            {
+                return null;
+            }
 
+            // 生成新的token
             var jwtSecurityToken = new JwtSecurityToken(
                 issuer: _jwtOption.Issuer,
                 audience: _jwtOption.Audience,

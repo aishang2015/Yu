@@ -18,10 +18,9 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
   }
 
-
   // 注销
   logout() {
-    localStorage.removeItem(CommonConstant.AuthToken);
     this.router.navigate(["login"]);
+    localStorage.removeItem(CommonConstant.AuthToken);
   }
 }

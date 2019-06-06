@@ -13,7 +13,7 @@ import { LoginGuard } from '../core/services/login-guard.service';
     CommonModule,
     CoreModule,
     RouterModule.forChild([
-      { path: '', component: LoginComponent, canActivate: [LoginGuard] }
+      { path: '', component: LoginComponent }
     ])
   ]
 })

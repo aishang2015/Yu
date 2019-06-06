@@ -7,6 +7,8 @@ import { RoleManageComponent } from './role-manage/role-manage.component';
 import { LoginGuard } from '../core/services/login-guard.service';
 import { MenuManageComponent } from './menu-manage/menu-manage.component';
 import { GroupManageComponent } from './group-manage/group-manage.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthHeaderInterceptor } from '../core/Interceptors/AuthHeaderInterceptor';
 
 @NgModule({
   declarations: [

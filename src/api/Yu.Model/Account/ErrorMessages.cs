@@ -13,5 +13,7 @@ namespace Yu.Model.Account
         public static readonly string Account_E004 = "验证码已过期，请重新获取！";
         public static readonly string Account_E005 = "验证码不正确!";
         public static readonly string Account_E006 = "用户名或密码不正确!";
+
+        public static readonly string Account_E007 = "Token刷新失败!";
     }
 }

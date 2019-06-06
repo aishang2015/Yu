@@ -6,6 +6,8 @@ import { GenderPipe } from './pipes/gender.pipe';
 import { TelephoneValidatorDirective } from './validators/telephone-validator.directive';
 import { DebounceClickDirective } from './directives/debounce-click.directive';
 import { ThrottleClickDirective } from './directives/throttle-click.directive';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthHeaderInterceptor } from './Interceptors/AuthHeaderInterceptor';
 
 @NgModule({
   imports: [

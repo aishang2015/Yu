@@ -8,6 +8,9 @@ export class UriConstant {
     // 登录地址
     static readonly LoginUri = UriConstant.BaseApiUri + 'account/login';
 
+    // 登录地址
+    static readonly RefreshTokenUri = UriConstant.BaseApiUri + 'account/refreshToken';
+
     // 验证码图片地址
     static readonly CaptchaUri = UriConstant.BaseApiUri + 'captcha';
 

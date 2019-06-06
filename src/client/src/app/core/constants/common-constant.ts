@@ -2,5 +2,5 @@
 export class CommonConstant{
 
     // jwt token 存储在localstorage的key
-    static readonly AuthToken = 'auth_token';
+    static readonly AuthToken = 'yu_auth_token';
 }

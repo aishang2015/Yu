@@ -1,26 +1,33 @@
-import { HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpHeaders, HttpErrorResponse, HttpClient } from '@angular/common/http';
 import { CommonConstant } from '../constants/common-constant';
 import { Injector } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd';
 import { HttpCodeConstant } from '../constants/httpcode-constant';
+import { observable, Observable } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
+import { UriConstant } from '../constants/uri-constant';
 
 export abstract class BaseService {
 
-  protected messageService: NzMessageService;
+  private _messageService: NzMessageService;
+
+  private _httpClient: HttpClient;
 
   // 可以从injector内获取任意对象
   constructor(private baseInjector: Injector) {
-    this.messageService = this.baseInjector.get(NzMessageService);
+    this._messageService = this.baseInjector.get(NzMessageService);
+    this._httpClient = this.baseInjector.get(HttpClient);
   }
 
-  // 授权header
-  protected AuthorizationHeader() {
-    return new HttpHeaders({ 'authorization': 'Bearer ' + localStorage[CommonConstant.AuthToken] });
-  }
-
-  // 检查token是否过期
-  public CheckToken() {
-
+  public SafeRequest(operate: Observable<any>) {
+    return this._httpClient.post(UriConstant.RefreshTokenUri, null).pipe(
+      map(token => {
+        return token;
+      }),
+      mergeMap(_ => {
+        return operate;
+      })
+    );
   }
 
   // 错误处理
@@ -39,7 +46,7 @@ export abstract class BaseService {
     } else {
       msg += '发生未知错误！';
     }
-    this.messageService.error(msg);
+    this._messageService.error(msg);
   }
 
 
