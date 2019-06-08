@@ -54,8 +54,18 @@ namespace Yu.Core.Jwt
         // 刷新jwttoken
         public string RefreshJwtToken(string oldToken)
         {
+            ClaimsPrincipal claimsPrincipal;
+
             // 解析旧token
-            var claimsPrincipal = DecodeJwtToken(oldToken);
+            try
+            {
+                claimsPrincipal = DecodeJwtToken(oldToken);
+            }
+            catch
+            {
+                // token无法解析
+                return null;
+            }
 
             // 取得旧token过期时间
             var oldExpires = claimsPrincipal.GetClaimValue(CustomClaimTypes.Expires);

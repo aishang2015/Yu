@@ -5,6 +5,7 @@ import { CommonConstant } from 'src/app/core/constants/common-constant';
 import { NzMessageService } from 'ng-zorro-antd';
 import { Router } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { JwtHelperService } from "@auth0/angular-jwt"
 
 @Component({
   selector: 'app-login',
@@ -37,12 +38,17 @@ export class LoginComponent implements OnInit {
           token => {
 
             // jwt 保存localstorage
-            localStorage.setItem(CommonConstant.AuthToken, token['token']);
             this.messageService.success("登录成功！");
-            this.router.navigate(["dashboard"]);
+            location.reload();
+            localStorage.setItem(CommonConstant.AuthToken, token['token']);
+
+            // 解析jwt
+            const jwtTokenHelper = new JwtHelperService();
+            let decodeToken = jwtTokenHelper.decodeToken(token['token']);
+            localStorage.setItem('expires', decodeToken['exp']); // 保存过期时间
+
           },
           error => {
-            this.accountService.HandleError(error); // 通用错误处理
             this.refresh(); // 刷新验证码
           }
         )

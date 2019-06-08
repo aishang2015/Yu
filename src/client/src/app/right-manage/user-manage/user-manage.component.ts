@@ -55,9 +55,6 @@ export class UserManageComponent implements OnInit {
           this.total = result.total;
           this.listOfData = result.data;
           this.messageService.success("数据取得完毕。")
-        },
-        error => {
-          this.userService.HandleError(error);
         }
       )
   }
@@ -91,9 +88,6 @@ export class UserManageComponent implements OnInit {
             nzFooter: null,
             nzClosable: false
           });
-        },
-        error => {
-          this.userService.HandleError(error);
         }
       );
   }
@@ -113,9 +107,6 @@ export class UserManageComponent implements OnInit {
             nzClosable: false,
             nzMaskClosable: false
           });
-        },
-        error => {
-          this.userService.HandleError(error);
         }
       );
   }
@@ -136,8 +127,7 @@ export class UserManageComponent implements OnInit {
             this.messageService.success("修改成功！");
             this.editModal.destroy();
             this.getUserInfo();
-          },
-          error => this.userService.HandleError(error)
+          }
         )
     }
   }
@@ -152,8 +142,7 @@ export class UserManageComponent implements OnInit {
             result => {
               this.messageService.success("删除成功！");
               this.getUserInfo();
-            },
-            error => this.userService.HandleError(error)
+            }
           )
       }
     })

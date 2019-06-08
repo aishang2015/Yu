@@ -9,6 +9,6 @@ import { CommonConstant } from './core/constants/common-constant';
 export class AppComponent {
 
   // 用户是否登录
-  isLogin(): boolean { return localStorage.getItem(CommonConstant.AuthToken) != null }
+  isLogin: boolean = localStorage.getItem(CommonConstant.AuthToken) != null;
 
 }

@@ -7,7 +7,8 @@ import { HomeComponent } from './home/home.component';
 import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AuthHeaderInterceptor } from './core/Interceptors/AuthHeaderInterceptor';
+import { AuthHeaderInterceptor } from './core/Interceptors/auth-header-interceptor';
+import { ErrorHandlerInterceptor } from './core/Interceptors/error-handler-Interceptor';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { AuthHeaderInterceptor } from './core/Interceptors/AuthHeaderInterceptor
 
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthHeaderInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthHeaderInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorHandlerInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })

@@ -20,7 +20,7 @@ export class HomeComponent implements OnInit {
 
   // 注销
   logout() {
-    this.router.navigate(["login"]);
+    location.reload();
     localStorage.removeItem(CommonConstant.AuthToken);
   }
 }

@@ -1,11 +1,11 @@
-import { HttpHeaders, HttpErrorResponse, HttpClient } from '@angular/common/http';
-import { CommonConstant } from '../constants/common-constant';
+import { HttpErrorResponse, HttpClient } from '@angular/common/http';
 import { Injector } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd';
 import { HttpCodeConstant } from '../constants/httpcode-constant';
-import { observable, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { UriConstant } from '../constants/uri-constant';
+import { CommonConstant } from '../constants/common-constant';
 
 export abstract class BaseService {
 
@@ -20,33 +20,25 @@ export abstract class BaseService {
   }
 
   public SafeRequest(operate: Observable<any>) {
-    return this._httpClient.post(UriConstant.RefreshTokenUri, null).pipe(
-      map(token => {
-        return token;
-      }),
-      mergeMap(_ => {
-        return operate;
-      })
-    );
-  }
 
-  // 错误处理
-  public HandleError(error: HttpErrorResponse) {
-    let msg = '';
-    if (error.status == HttpCodeConstant.Code401) {
-      msg = '没有操作权限！';
-    } else if (error.status == HttpCodeConstant.Code404) {
-      msg = '没有找到资源！';
-    } else if (error.status == HttpCodeConstant.Code500) {
-      msg = '服务器内部发生错误！';
-    } else if (error.status == HttpCodeConstant.Code400) {
-      for (var i in error.error) {
-        msg += error.error[i];
-      }
+    // 取得token过期时间
+    const expire = parseInt(localStorage.getItem('expires'));
+
+    // 过期情况下，刷新token再执行操作
+    if (expire < Date.now() / 1000) {
+      return this._httpClient.post(UriConstant.RefreshTokenUri, null).pipe(
+        map(token => {
+          return token;
+        }),
+        mergeMap(_ => {
+          return operate;
+        })
+      );
     } else {
-      msg += '发生未知错误！';
+
+      // 未过期情况下直接返回对象
+      return operate;
     }
-    this._messageService.error(msg);
   }
 
 
