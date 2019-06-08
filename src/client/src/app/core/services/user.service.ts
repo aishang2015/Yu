@@ -16,7 +16,7 @@ export class UserService extends BaseService {
   // 取得用户概要数据
   getUserOutlines(pageindex, pageSize, searchText) {
     let uri = `${UriConstant.UserOutlineUri}?pageIndex=${pageindex}&pageSize=${pageSize}&searchText=${searchText}`;
-    return this.http.get(uri);
+    return this.SafeRequest(this.http.get(uri));
   }
 
   // 取得用户详细数据
@@ -28,12 +28,12 @@ export class UserService extends BaseService {
   // 更新用户信息
   updateUserDetail(userDetail) {
     let uri = UriConstant.UserDetailUri;
-    return this.http.put(uri, userDetail);
+    return this.SafeRequest(this.http.put(uri, userDetail));
   }
 
   // 删除用户数据
   deleteUser(userId) {
     let uri = `${UriConstant.UserDetailUri}?userId=${userId}`;
-    return this.http.delete(uri);
+    return this.SafeRequest(this.http.delete(uri));
   }
 }
