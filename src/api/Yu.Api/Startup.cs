@@ -39,10 +39,10 @@ namespace Yu.Api
 
             services.AddCustomCors(Configuration);  // 配置自定义跨域策略
 
-            services.AddJwtAuthentication(Configuration); // 配置jwt认证
-
             services.AddIdentityDbContext<BaseIdentityDbContext, BaseIdentityUser, BaseIdentityRole, Guid>
                 (Configuration.GetConnectionString("SqlServerConnection1"), DatabaseType.SqlServer); // 认证数据库上下文
+
+            services.AddJwtAuthentication(Configuration); // 配置jwt认证
 
             services.AddRepositories<BaseIdentityDbContext>(); // 批量注入仓储
 
@@ -97,6 +97,8 @@ namespace Yu.Api
             });   // 初始化BaseIdentityDbContext数据
 
             app.SeedDbData<BaseDbContext>(context => { }); // 初始化BaseDbContext数据
+
+            app.UseAuthentication(); // 使用认证策略
 
             app.UseStaticFiles(Configuration); // 配置静态文件访问路径和服务器目录
 
