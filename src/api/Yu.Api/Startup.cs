@@ -10,6 +10,7 @@ using Yu.Core.AutoMapper;
 using Yu.Core.Captcha;
 using Yu.Core.Cors;
 using Yu.Core.Extensions;
+using Yu.Core.FileManage;
 using Yu.Core.Jwt;
 using Yu.Core.Swagger;
 using Yu.Core.Validators;
@@ -38,10 +39,10 @@ namespace Yu.Api
 
             services.AddCustomCors(Configuration);  // 配置自定义跨域策略
 
-            services.AddJwtAuthentication(Configuration); // 配置jwt认证
-
             services.AddIdentityDbContext<BaseIdentityDbContext, BaseIdentityUser, BaseIdentityRole, Guid>
                 (Configuration.GetConnectionString("SqlServerConnection1"), DatabaseType.SqlServer); // 认证数据库上下文
+
+            services.AddJwtAuthentication(Configuration); // 配置jwt认证
 
             services.AddRepositories<BaseIdentityDbContext>(); // 批量注入仓储
 
@@ -60,6 +61,8 @@ namespace Yu.Api
             services.ConfigureFluentValidationModelErrors(); // 统一模型验证结果的一致性
 
             services.AddSwaggerConfiguration(); // 配置swagger
+
+            services.AddFileManage(); // 静态文件操作类
         }
 
         // 构建管道
@@ -94,6 +97,10 @@ namespace Yu.Api
             });   // 初始化BaseIdentityDbContext数据
 
             app.SeedDbData<BaseDbContext>(context => { }); // 初始化BaseDbContext数据
+
+            app.UseAuthentication(); // 使用认证策略
+
+            app.UseStaticFiles(Configuration); // 配置静态文件访问路径和服务器目录
 
             app.UserSwaggerConfiguration(); // 使用Swagger
 
