@@ -29,11 +29,7 @@ namespace Yu.Core.Utils
                     var left = Expression.Property(t, tuple.Item1);
 
                     // 右侧表达式
-                    var propertyType = typeof(T).GetProperty(tuple.Item1).PropertyType;
-
-                    // 把值进行类型转换
-                    var value = Convert.ChangeType(tuple.Item2, propertyType);
-                    var right = Expression.Constant(value);
+                    var right = Expression.Constant(tuple.Item2);
 
                     switch (tuple.Item3)
                     {
@@ -54,6 +50,17 @@ namespace Yu.Core.Utils
                             var containExpression = Expression.Call(left, typeof(string).GetMethod("Contains", new Type[] { typeof(string) }), right);
                             expressionList.Add(containExpression);
                             break;
+
+                        // 包含(List<T>的bool Contains(T t)方法)
+                        case ExpressionType.ListContain:
+
+                            var propertyType = typeof(T).GetProperty(tuple.Item1).PropertyType;
+                            var genericListType = typeof(List<>).MakeGenericType(propertyType);
+                            var listContainExpression = Expression.Call(right, genericListType.GetMethod("Contains", new Type[] { propertyType }), left);
+                            expressionList.Add(listContainExpression);
+                            break;
+
+
                     }
                 }
             }
@@ -110,7 +117,8 @@ namespace Yu.Core.Utils
     {
         Equal = 1, // 相等
         NotEqual = 2, // 不相等
-        StringContain = 3 // 字符串包含
+        StringContain = 3, // 字符串包含
+        ListContain = 4, // list包含
 
         // todo 添加更多
     }
