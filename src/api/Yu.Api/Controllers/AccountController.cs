@@ -8,6 +8,7 @@ using Yu.Core.Jwt;
 using Yu.Core.Mvc;
 using Yu.Model.Account;
 using Yu.Model.Account.InputModels;
+using Yu.Model.Account.OutputModels;
 using Yu.Service.Account;
 
 namespace Yu.Api.Controllers
@@ -55,9 +56,12 @@ namespace Yu.Api.Controllers
                 }
             }
 
+            // 验证通过删除验证码缓存
+            _memoryCache.Remove(model.CaptchaCodeId);
+
             // 检查用户名密码
-            var userName = await _accountService.FindUser(model.UserName, model.Password);
-            if (string.IsNullOrEmpty(userName))
+            var user = await _accountService.FindUser(model.UserName, model.Password);
+            if (user == null)
             {
                 ModelState.AddModelError("UserName,Password", ErrorMessages.Account_E006);
                 return BadRequest(ModelState);
@@ -65,10 +69,16 @@ namespace Yu.Api.Controllers
 
             // 生成JwtToken
             var token = _jwtFactory.GenerateJwtToken(new List<(string, string)>{
-                (CustomClaimTypes.UserName,userName)
+                (CustomClaimTypes.UserName,user.UserName)
             });
 
-            return Ok(new { token = token });
+            // 返回结果
+            return Ok(new LoginResult
+            {
+                Token = token,
+                UserName = user.UserName,
+                AvatarUrl = user.Avatar ?? string.Empty
+            });
         }
 
         /// <summary>

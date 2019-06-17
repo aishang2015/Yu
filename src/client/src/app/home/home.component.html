@@ -17,9 +17,9 @@
         <nz-header style="background: #fff; padding:0;">
             <div style="line-height: 64px;float: right;padding:0 16px;">
                 
-                <nz-avatar nzIcon="user" style="background-color:#87d068;"></nz-avatar>
+                <nz-avatar nzIcon="user" [nzSrc]="avatarUrl"></nz-avatar>
                 <nz-dropdown [nzTrigger]="'click'">
-                    <a nz-dropdown> ABCDE<i nz-icon type="down"></i> </a>
+                    <a nz-dropdown>{{ userName }}<i nz-icon type="down"></i> </a>
                     <ul nz-menu>
                         <li nz-menu-item>我的信息</li>
                         <li nz-menu-item (click)="logout()">注销</li>   

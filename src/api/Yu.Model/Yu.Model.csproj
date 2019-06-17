@@ -11,10 +11,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="Account\OutputModels\" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <ProjectReference Include="..\Yu.Data\Yu.Data.csproj" />
   </ItemGroup>
 

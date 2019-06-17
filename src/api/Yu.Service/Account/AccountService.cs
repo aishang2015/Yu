@@ -17,13 +17,14 @@ namespace Yu.Service.Account
         }
 
         // 验证用户密码
-        public async Task<string> FindUser(string userName, string password)
+        public async Task<BaseIdentityUser> FindUser(string userName, string password)
         {
             // 查找用户
             var user = await _userManager.FindByNameAsync(userName);
 
             // 用户存在
-            if (user != null) { 
+            if (user != null)
+            {
 
                 // 验证密码
                 var result = await _userManager.CheckPasswordAsync(user, password);
@@ -31,11 +32,10 @@ namespace Yu.Service.Account
                 // 密码正确
                 if (result)
                 {
-                    return user.UserName;
+                    return user;
                 }
             }
-            return string.Empty;
-
+            return null;
         }
     }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonConstant } from '../core/constants/common-constant';
 import { Router } from '@angular/router';
+import { LocalStorageService } from '../core/services/local-storage.service';
 
 @Component({
   selector: 'app-home',
@@ -13,14 +14,23 @@ export class HomeComponent implements OnInit {
   isReverseArrow = false;
   width = 200;
 
-  constructor(private router: Router) { }
+  // 用户名
+  userName = '';
+
+  // 头像地址
+  avatarUrl = '';
+
+  constructor(private router: Router,
+    private _localStorageService: LocalStorageService) { }
 
   ngOnInit() {
+    this.userName = this._localStorageService.getUserName();
+    this.avatarUrl = this._localStorageService.getAvatarUrl();
   }
 
   // 注销
   logout() {
     location.reload();
-    localStorage.removeItem(CommonConstant.AuthToken);
+    localStorage.clear();
   }
 }

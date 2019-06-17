@@ -5,11 +5,13 @@ import { HttpCodeConstant } from '../constants/httpcode-constant';
 import { CommonConstant } from '../constants/common-constant';
 import { NzMessageService } from 'ng-zorro-antd';
 import { Injectable } from '@angular/core';
+import { LocalStorageService } from '../services/local-storage.service';
 
 @Injectable()
 export class ErrorHandlerInterceptor implements HttpInterceptor {
 
-    constructor(private _messageService: NzMessageService) { }
+    constructor(private _messageService: NzMessageService,
+        private _localStorageService: LocalStorageService) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(req).pipe(
@@ -25,7 +27,7 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
                     for (var key in error.error) {
                         if (key == 'Token') {
                             location.reload();
-                            localStorage.removeItem(CommonConstant.AuthToken);
+                            this._localStorageService.clear();
                             this._messageService.error('登陆信息过期，请重新登陆');
                             return;
                         }

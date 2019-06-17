@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
+using Yu.Data.Infrasturctures;
 
 namespace Yu.Service.Account
 {
     public interface IAccountService
     {
-        Task<string> FindUser(string userName, string password);
+        Task<BaseIdentityUser> FindUser(string userName, string password);
     }
 }

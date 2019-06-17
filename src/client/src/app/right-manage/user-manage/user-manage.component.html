@@ -41,8 +41,10 @@
   </nz-table>
 </div>
 <div nz-row class="mt-10">
-  <nz-pagination [(nzPageIndex)]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" nzShowSizeChanger
-    [nzPageSizeOptions]="[10,20,30,40,50]" (nzPageSizeChange)="pageSizeChange($event)" (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
+  <nz-pagination [(nzPageIndex)]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" [nzShowTotal]="totalTemplate"
+    nzShowSizeChanger [nzPageSizeOptions]="[10,20,30,40,50]" (nzPageSizeChange)="pageSizeChange($event)"
+    (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
+  <ng-template #totalTemplate let-total> 共计 {{ total }} 用户 </ng-template>
 </div>
 
 <!-- 用户详细信息 -->
