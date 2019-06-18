@@ -16,7 +16,8 @@
     [nzBordered]="true">
     <thead>
       <tr>
-        <th nzAlign="center" nzWidth="100px">序号</th>
+        <th nzAlign="center" nzWidth="75px">序号</th>
+        <th nzAlign="center" nzWidth="75px">头像</th>
         <th nzAlign="center" nzWidth="150px">用户名</th>
         <th nzAlign="center" nzWidth="150px">手机号</th>
         <th nzAlign="center" nzWidth="150px">邮箱</th>
@@ -26,13 +27,17 @@
     </thead>
     <tbody>
       <tr *ngFor="let data of listOfData;let i = index">
-        <td nzAlign="center" nzWidth="100px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td nzAlign="center" nzWidth="75px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td nzAlign="center" nzWidth="75px">
+          <nz-avatar nzIcon="user" [nzSrc]="data.avatar | imageUri" class="smallAvatar"></nz-avatar>
+        </td>
         <td nzAlign="center" nzWidth="150px">{{ data.userName }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.telephone }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.email }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.openId }}</td>
         <td nzAlign="center">
           <a (appThrottleClick)="viewUserDetail(data,viewContentTpl)">详细信息</a>&nbsp;&nbsp;
+          <a (appThrottleClick)="editAvatar(data,avatarEdit)">设置头像</a>&nbsp;&nbsp;
           <a (appThrottleClick)="editUser(data,editContentTpl)">编辑</a>&nbsp;&nbsp;
           <a (appThrottleClick)="deleteUser(data)">删除</a>
         </td>
@@ -72,7 +77,7 @@
   <div nz-row class="mt-5">
     <div class="propDescribe">头像:</div>
     <div class="propValue">
-      <nz-avatar nzIcon="user" [nzSrc]="userDetail.avatar"></nz-avatar>
+      <nz-avatar nzIcon="user" [nzSrc]="userDetail.avatar | imageUri" class="middleAvatar"></nz-avatar>
     </div>
   </div>
   <div nz-row class="mt-5">
@@ -122,14 +127,6 @@
     </nz-form-item>
 
     <nz-form-item>
-      <nz-form-label [nzSpan]="5">头像</nz-form-label>
-      <nz-form-control [nzSpan]="12">
-        <nz-avatar nzSize="large" nzIcon="user" [nzSrc]="editUserDetail.avatar">
-        </nz-avatar>
-      </nz-form-control>
-    </nz-form-item>
-
-    <nz-form-item>
       <nz-form-label [nzSpan]="5">昵称</nz-form-label>
       <nz-form-control [nzSpan]="12">
         <input nz-input autocomplete="off" type="text" name="nickName" [(ngModel)]="editUserDetail.nickName" />
@@ -153,4 +150,22 @@
     </nz-form-item>
 
   </form>
+</ng-template>
+
+<!--头像编辑-->
+<ng-template #avatarEdit>
+  <h2>点击修改头像</h2>
+  <small>只能上传JPG格式图片，图片大小必须小于2MB，图像高宽必须一致。</small>
+  <div  class="avatar-uploader" >
+    <nz-upload [nzAction]="uploadUrl" nzName="avatar" nzListType="picture-card"
+      [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload" (nzChange)="handleChange($event)">
+      <ng-container *ngIf="!avatarUrl">
+        <i class="upload-icon" nz-icon [nzType]="loading ? 'loading' : 'plus'"></i>
+        <div class="ant-upload-text">Upload</div>
+      </ng-container>
+      <img *ngIf="avatarUrl" [src]="avatarUrl" class="avatar" />
+    </nz-upload>
+  </div>
+  <button class="mt-5" nz-button nzType="primary" (click)="closeModal()">关闭</button>
+
 </ng-template>

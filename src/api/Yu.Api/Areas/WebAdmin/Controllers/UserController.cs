@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
 using Yu.Model.WebAdmin.User.InputModels;
@@ -68,6 +70,17 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         public async Task<IActionResult> DeleteUser([FromQuery]UserDetailQuery query)
         {
             await _userService.DeleteUser(query.UserId);
+            return Ok();
+        }
+
+        /// <summary>
+        /// 设置用户头像
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("userAvatar")]
+        public async Task<IActionResult> SetUserAvatar([FromQuery]Guid userId, [FromForm]IFormFile file)
+        {
+            await _userService.UpdateUserAvatar(userId, Request.Form.Files[0]);
             return Ok();
         }
 

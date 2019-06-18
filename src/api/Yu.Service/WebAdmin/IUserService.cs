@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Threading.Tasks;
 using Yu.Data.Entities;
 using Yu.Model.WebAdmin.User.OutputModels;
@@ -27,6 +28,14 @@ namespace Yu.Service.WebAdmin
         /// </summary>
         /// <param name="userDetail">用户信息</param>
         Task UpdateUserDetail(UserDetail userDetail);
+
+        /// <summary>
+        /// 更新用户头像
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="formFile">表单头像文件</param>
+        /// <returns></returns>
+        Task UpdateUserAvatar(Guid userId, IFormFile formFile);
 
         /// <summary>
         /// 删除用户

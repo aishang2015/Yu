@@ -17,3 +17,32 @@
 .searchInput{
     width: 250px;
 }
+
+.avatar-uploader{
+    width: 100%;
+    text-align: center;
+    nz-upload{
+        display: inline-block;
+    }
+}
+.avatar{
+    height: 128px;
+    width: 128px;
+}
+.upload-icon {
+    font-size: 32px;
+    color: #999;
+}
+.ant-upload-text {
+    margin-top: 8px;
+    color: #666;
+}
+
+.middleAvatar{
+    height: 64px;
+    width: 64px;
+}
+.smallAvatar{
+    height: 50px;
+    width: 50px;
+}

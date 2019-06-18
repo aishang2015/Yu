@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
-import { NzMessageService, NzModalService, NzModalRef } from 'ng-zorro-antd';
+import { NzMessageService, NzModalService, NzModalRef, UploadFile } from 'ng-zorro-antd';
 import { UserDetail } from '../models/user-detail';
+import { Observable, Observer } from 'rxjs';
+import { CommonConstant } from 'src/app/core/constants/common-constant';
+import { UriConstant } from 'src/app/core/constants/uri-constant';
 
 @Component({
   selector: 'app-user-manage',
@@ -36,6 +39,15 @@ export class UserManageComponent implements OnInit {
 
   // 编辑模态框
   editModal: NzModalRef;
+
+  // 头像地址
+  avatarUrl: string;
+
+  // 上传头像地址
+  uploadUrl: string;
+
+  // 上传按钮状态
+  loading: boolean = false;
 
   constructor(private userService: UserService,
     private messageService: NzMessageService,
@@ -147,5 +159,95 @@ export class UserManageComponent implements OnInit {
       }
     })
   }
+
+  // 编辑用户头像
+  editAvatar(userOutline, tplContent) {
+    this.uploadUrl = UriConstant.UserAvatarUri + `?userId=${userOutline.id}`
+    this.editModal = this.modalService.create({
+      nzContent: tplContent, // 模板
+      nzFooter: null,
+      nzClosable: false,
+      nzMaskClosable: false,
+    });
+
+  }
+
+  // 关闭编辑头像对话框
+  closeModal(){
+    this.getUserInfo();
+    this.editModal.destroy();
+  }
+
+  // 图片上传校验
+  beforeUpload = (file: File) => {
+    return new Observable((observer: Observer<boolean>) => {
+      const isJPG = file.type === 'image/jpeg';
+      if (!isJPG) {
+        this.messageService.error('你只能上传JPG格式的文件!');
+        observer.complete();
+        return;
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+        this.messageService.error('图像必须小于2MB!');
+        observer.complete();
+        return;
+      }
+      // check height
+      this.checkImageDimension(file).then(dimensionRes => {
+        if (!dimensionRes) {
+          this.messageService.error('图像必须高宽一致!');
+          observer.complete();
+          return;
+        }
+
+        observer.next(isJPG && isLt2M && dimensionRes);
+        observer.complete();
+      });
+    });
+  };
+
+  // 校验图片大小
+  private checkImageDimension(file: File): Promise<boolean> {
+    return new Promise(resolve => {
+      const img = new Image(); // create image
+      img.src = window.URL.createObjectURL(file);
+      img.onload = () => {
+        const width = img.naturalWidth;
+        const height = img.naturalHeight;
+        window.URL.revokeObjectURL(img.src!);
+        resolve(width === height);
+      };
+    });
+  }
+
+  // 文件转化为base64
+  private getBase64(img: File, callback: (img: string) => void): void {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result!.toString()));
+    reader.readAsDataURL(img);
+  }
+
+
+  // 控制上传图标变化
+  handleChange(info: { file: UploadFile }): void {
+    switch (info.file.status) {
+      case 'uploading':
+        this.loading = true;
+        break;
+      case 'done':
+        this.getBase64(info.file!.originFileObj!, (img: string) => {
+          this.loading = false;
+          this.avatarUrl = img;
+        });
+        break;
+      case 'error':
+        this.messageService.error('网络错误!');
+        this.loading = false;
+        break;
+    }
+  }
+
+
 
 }

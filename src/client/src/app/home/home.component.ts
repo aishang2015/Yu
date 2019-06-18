@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonConstant } from '../core/constants/common-constant';
 import { Router } from '@angular/router';
 import { LocalStorageService } from '../core/services/local-storage.service';
+import { UriConstant } from '../core/constants/uri-constant';
 
 @Component({
   selector: 'app-home',
@@ -25,7 +26,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.userName = this._localStorageService.getUserName();
-    this.avatarUrl = this._localStorageService.getAvatarUrl();
+    this.avatarUrl = UriConstant.ServerUri + this._localStorageService.getAvatarUrl();
   }
 
   // 注销

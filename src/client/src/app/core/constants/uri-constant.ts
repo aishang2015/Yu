@@ -2,6 +2,9 @@
 // api地址常量
 export class UriConstant {
 
+    // 服务应用地址
+    static readonly ServerUri: string = 'https://localhost:44334/';
+
     // api地址
     static readonly BaseApiUri: string = 'https://localhost:44334/api/';
 
@@ -19,4 +22,7 @@ export class UriConstant {
 
     // 用户详细数据地址
     static readonly UserDetailUri = UriConstant.BaseApiUri + 'userDetail';
+
+    // 用户头像上传地址
+    static readonly UserAvatarUri = UriConstant.BaseApiUri + 'userAvatar';
 }

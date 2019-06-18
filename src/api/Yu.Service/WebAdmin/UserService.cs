@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Yu.Core.FileManage;
 using Yu.Core.Utils;
 using Yu.Data.Entities;
 using Yu.Data.Infrasturctures;
@@ -15,9 +18,12 @@ namespace Yu.Service.WebAdmin
     {
         private UserManager<BaseIdentityUser> _userManager;
 
-        public UserService(UserManager<BaseIdentityUser> userManager)
+        private IFileStore _fileStore;
+
+        public UserService(UserManager<BaseIdentityUser> userManager, IFileStore fileStore)
         {
             _userManager = userManager;
+            _fileStore = fileStore;
         }
 
         /// <summary>
@@ -70,6 +76,28 @@ namespace Yu.Service.WebAdmin
                 Total = _userManager.Users.Where(filter).Count(),
                 Data = Mapper.Map<List<UserOutline>>(users)
             };
+        }
+
+        /// <summary>
+        /// 更新用户头像
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="formFile">表单头像文件</param>
+        /// <returns></returns>
+        public async Task UpdateUserAvatar(Guid userId, IFormFile formFile)
+        {
+            // 生成新文件名
+            var endfix = formFile.FileName.Split('.').Last();
+            var newName = Path.Combine(DateTime.Now.ToString("MMddHHmmssfff") + '.' + endfix);
+
+            // 可以替换成其他的文件保存方式，当前是直接利用静态文件目录的方式保存到服务器磁盘上。
+            await _fileStore.CreateFile(newName, formFile.OpenReadStream());
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            // 删除旧头像
+            _fileStore.DeleteFile(user.Avatar);
+            user.Avatar = newName;
+            await _userManager.UpdateAsync(user);
         }
 
         /// <summary>
