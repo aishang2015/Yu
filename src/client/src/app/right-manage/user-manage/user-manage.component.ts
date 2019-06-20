@@ -84,6 +84,7 @@ export class UserManageComponent implements OnInit {
 
   // 搜索数据
   searchData() {
+    this.pageIndex = 1;
     this.getUserInfo();
   }
 
@@ -173,7 +174,7 @@ export class UserManageComponent implements OnInit {
   }
 
   // 关闭编辑头像对话框
-  closeModal(){
+  closeModal() {
     this.getUserInfo();
     this.editModal.destroy();
   }

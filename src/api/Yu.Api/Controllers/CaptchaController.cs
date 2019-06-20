@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System;
+using System.ComponentModel;
 using Yu.Core.Captcha;
 using Yu.Core.Constants;
+using Yu.Core.Mvc;
 
 namespace Yu.Api.Controllers
 {
+
     [Route("api/[controller]")]
-    [ApiController]
-    public class CaptchaController : ControllerBase
+    [Description("验证码")]
+    public class CaptchaController : AnonymousController
     {
 
         private readonly CaptchaHelper _captchaHelper;
@@ -26,6 +29,7 @@ namespace Yu.Api.Controllers
         /// </summary>
         /// <returns>验证码图片</returns>
         [HttpGet]
+        [Description("获取验证码")]
         public IActionResult GetCaptcha()
         {
             // 验证码的值

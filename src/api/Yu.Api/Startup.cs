@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
@@ -80,21 +79,7 @@ namespace Yu.Api
 
             app.UseCustomCors();    // 使用自定义跨域策略
 
-            app.SeedDbData<BaseIdentityDbContext>(context =>
-            {
-                for (int i = 0; i < 85; i++)
-                {
-                    var user = new BaseIdentityUser
-                    {
-                        UserName = $"admin{i}",
-                        NormalizedUserName = $"ADMIN{i}",
-                        SecurityStamp = Guid.NewGuid().ToString()
-                    };
-                    user.PasswordHash = new PasswordHasher<BaseIdentityUser>().HashPassword(user, "P@ssword1");
-                    context.Set<BaseIdentityUser>().Add(user);
-                    context.SaveChanges();
-                }
-            });   // 初始化BaseIdentityDbContext数据
+            app.SeedIdentityDbData<BaseIdentityDbContext>();   // 初始化BaseIdentityDbContext数据
 
             app.SeedDbData<BaseDbContext>(context => { }); // 初始化BaseDbContext数据
 

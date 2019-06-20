@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { UriConstant } from '../constants/uri-constant';
 import { LocalStorageService } from './local-storage.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 export abstract class BaseService {
 
@@ -21,7 +22,39 @@ export abstract class BaseService {
     this._localStorageService = this.baseInjector.get(LocalStorageService);
   }
 
-  public SafeRequest(operate: Observable<any>) {
+  protected SafeRequest(operate: Observable<any>): Observable<any> {
+
+    // 取得token过期时间
+    const expire = parseInt(this._localStorageService.getExpires());
+
+    // 过期情况下，刷新token再执行操作
+    if (expire < Date.now() / 1000) {
+      return this._httpClient.post(UriConstant.RefreshTokenUri, null).pipe(
+        map(result => {
+
+          // 保存token
+          this._localStorageService.setToken(result['token']);
+
+          // 解析jwt
+          const jwtTokenHelper = new JwtHelperService();
+          let decodeToken = jwtTokenHelper.decodeToken(result['token']);
+
+          // 保存过期时间
+          this._localStorageService.setExpires(decodeToken['exp']);
+          return result;
+        }),
+        mergeMap(_ => {
+          return operate;
+        })
+      );
+    } else {
+
+      // 未过期情况下直接返回对象
+      return operate;
+    }
+  }
+
+  protected SafeRequestGeneric<T>(operate: Observable<T>): Observable<T> {
 
     // 取得token过期时间
     const expire = parseInt(this._localStorageService.getExpires());

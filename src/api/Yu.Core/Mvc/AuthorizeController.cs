@@ -9,7 +9,7 @@ namespace Yu.Core.Mvc
     [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize]
-    public class AuthorizeController : ControllerBase
+    public abstract class AuthorizeController : ControllerBase
     {
     }
 }

@@ -13,7 +13,7 @@ namespace Yu.Core.Mvc
     [Route("api/[controller]/[action]")]
     [ApiController]
     [AllowAnonymous]
-    public class AnonymousController : ControllerBase
+    public abstract class AnonymousController : ControllerBase
     {
     }
 }

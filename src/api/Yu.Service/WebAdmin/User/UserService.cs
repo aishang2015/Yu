@@ -12,7 +12,7 @@ using Yu.Data.Entities;
 using Yu.Data.Infrasturctures;
 using Yu.Model.WebAdmin.User.OutputModels;
 
-namespace Yu.Service.WebAdmin
+namespace Yu.Service.WebAdmin.User
 {
     public class UserService : IUserService
     {
@@ -56,14 +56,18 @@ namespace Yu.Service.WebAdmin
         /// <returns>用户数据</returns>
         public PagedData<UserOutline> GetUserOutlines(int pageIndex, int pageSize, string searchText)
         {
-            // 生成过滤器
+            // 生成表达式组
             var expressions = ExpressionUtil<BaseIdentityUser>.GetExpressions(new List<(string, object, ExpressionType)>
             {
                 ("UserName",searchText,ExpressionType.StringContain),
                 ("PhoneNumber",searchText,ExpressionType.StringContain),
                 ("Email",searchText,ExpressionType.StringContain),
             });
+
+            // 组合表达式
             var expression = ExpressionUtil<BaseIdentityUser>.CombinExpressions(expressions, ExpressionCombineType.Or);
+
+            // 生成过滤器
             var filter = ExpressionUtil<BaseIdentityUser>.GetLambda(expression);
 
             // 分页取得用户

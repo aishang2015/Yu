@@ -1,3 +1,29 @@
-<p>
-  menu-manage works!
-</p>
+<div class="explorer">
+
+  <div nz-col nzSpan="6" class="tree">
+    <div class="mt-5">
+      <nz-button-group>
+        <button nz-button nzType="default" (appThrottleClick)="createMenu(tplContent)"><i nz-icon
+            type="plus"></i></button>
+        <button nz-button nzType="default" (appThrottleClick)="editMenu(tplContent)"><i nz-icon
+            type="edit"></i></button>
+        <button nz-button nzType="default" (appThrottleClick)="deleteMenu()"><i nz-icon type="delete"></i></button>
+      </nz-button-group>
+    </div>
+    <div class="mt-5">
+      <nz-tree [nzData]="nodes" nzShowIcon></nz-tree>
+    </div>
+  </div>
+
+  <div nz-col nzSpan="18" class="content">
+    <div class="mt-5">
+      <nz-button-group>
+        <button nz-button nzType="default" (appThrottleClick)="createElement(tplContent)"><i nz-icon
+            type="plus"></i></button>
+        <button nz-button nzType="default" (appThrottleClick)="editElement(tplContent)"><i nz-icon
+            type="edit"></i></button>
+        <button nz-button nzType="default" (appThrottleClick)="deleteElement()"><i nz-icon type="delete"></i></button>
+      </nz-button-group>
+    </div>
+  </div>
+</div>

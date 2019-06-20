@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.userName = this._localStorageService.getUserName();
-    this.avatarUrl = UriConstant.ServerUri + this._localStorageService.getAvatarUrl();
+    this.avatarUrl = this._localStorageService.getAvatarUrl() ? UriConstant.ServerUri + this._localStorageService.getAvatarUrl() : '';
   }
 
   // 注销

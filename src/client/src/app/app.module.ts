@@ -13,7 +13,7 @@ import { ErrorHandlerInterceptor } from './core/Interceptors/error-handler-Inter
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
   ],
   imports: [
     BrowserModule,

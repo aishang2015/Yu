@@ -86,6 +86,7 @@ namespace Yu.Api.Controllers
         /// </summary>
         /// <returns>新token</returns>
         [HttpPost]
+        [Description("刷新token")]
         public IActionResult RefreshToken()
         {
             var oldToken = Request.Headers["Authorization"].ToString();

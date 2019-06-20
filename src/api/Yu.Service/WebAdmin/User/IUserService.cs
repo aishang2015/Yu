@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Yu.Data.Entities;
 using Yu.Model.WebAdmin.User.OutputModels;
 
-namespace Yu.Service.WebAdmin
+namespace Yu.Service.WebAdmin.User
 {
     public interface IUserService
     {

@@ -29,7 +29,7 @@
       <tr *ngFor="let data of listOfData;let i = index">
         <td nzAlign="center" nzWidth="75px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
         <td nzAlign="center" nzWidth="75px">
-          <nz-avatar nzIcon="user" [nzSrc]="data.avatar | imageUri" class="smallAvatar"></nz-avatar>
+          <nz-avatar nzIcon="user" [nzSrc]="data.avatar | imageUri" nzSize="large"></nz-avatar>
         </td>
         <td nzAlign="center" nzWidth="150px">{{ data.userName }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.telephone }}</td>
@@ -77,7 +77,7 @@
   <div nz-row class="mt-5">
     <div class="propDescribe">头像:</div>
     <div class="propValue">
-      <nz-avatar nzIcon="user" [nzSrc]="userDetail.avatar | imageUri" class="middleAvatar"></nz-avatar>
+      <nz-avatar nzIcon="user" [nzSrc]="userDetail.avatar | imageUri" nzSize="large"></nz-avatar>
     </div>
   </div>
   <div nz-row class="mt-5">
