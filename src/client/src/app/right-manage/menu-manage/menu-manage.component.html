@@ -3,27 +3,86 @@
   <div nz-col nzSpan="6" class="tree">
     <div class="mt-5">
       <nz-button-group>
-        <button nz-button nzType="default" (appThrottleClick)="createMenu(tplContent)"><i nz-icon
+        <button nz-button nzType="default" (appThrottleClick)="createMenu()" [disabled]="isEditMode"><i nz-icon
             type="plus"></i></button>
-        <button nz-button nzType="default" (appThrottleClick)="editMenu(tplContent)"><i nz-icon
+        <button nz-button nzType="default" (appThrottleClick)="editMenu()" [disabled]="isEditMode"><i nz-icon
             type="edit"></i></button>
-        <button nz-button nzType="default" (appThrottleClick)="deleteMenu()"><i nz-icon type="delete"></i></button>
+        <button nz-button nzType="default" (appThrottleClick)="deleteMenu()" [disabled]="isEditMode"><i nz-icon
+            type="delete"></i></button>
       </nz-button-group>
     </div>
     <div class="mt-5">
-      <nz-tree [nzData]="nodes" nzShowIcon></nz-tree>
+      <nz-tree #tree [(nzData)]="nodes" nzShowIcon (nzClick)="treeClick($event)"></nz-tree>
     </div>
   </div>
 
   <div nz-col nzSpan="18" class="content">
     <div class="mt-5">
-      <nz-button-group>
-        <button nz-button nzType="default" (appThrottleClick)="createElement(tplContent)"><i nz-icon
-            type="plus"></i></button>
-        <button nz-button nzType="default" (appThrottleClick)="editElement(tplContent)"><i nz-icon
-            type="edit"></i></button>
-        <button nz-button nzType="default" (appThrottleClick)="deleteElement()"><i nz-icon type="delete"></i></button>
-      </nz-button-group>
+
+      <nz-form-item>
+        <nz-form-label [nzSpan]="5">上级元素</nz-form-label>
+        <nz-form-control [nzSpan]="12">
+          <input class="w250 cb" nz-input [ngModel]="getElementName(editedElement.upId)" name="upperName"
+            [disabled]="true" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <form nz-form #editForm="ngForm" (ngSubmit)="submit(editForm)">
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="5">元素名称</nz-form-label>
+          <nz-form-control [nzSpan]="12"
+            [ngClass]="{'has-error': name.invalid && (name.dirty || name.touched || isSubmit)}">
+            <input class="w250 cb" nz-input autocomplete="off" type="text" name="name" [(ngModel)]="editedElement.name"
+              #name="ngModel" required [disabled]="!isEditMode" />
+            <nz-form-explain *ngIf="name.invalid && (name.dirty || name.touched || isSubmit) && name.errors.required">
+              请输入元素名称</nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="5">元素识别</nz-form-label>
+          <nz-form-control [nzSpan]="12"
+            [ngClass]="{'has-error': elementType.invalid && (elementType.dirty || elementType.touched || isSubmit)}">
+            <nz-select class="w250 cb" [(ngModel)]="editedElement.elementType" nzAllowClear name="elementType"
+              #elementType="ngModel" required [disabled]="!isEditMode">
+              <nz-option *ngFor="let option of elementTypes" [nzValue]="option.value" [nzLabel]="option.name">
+              </nz-option>
+            </nz-select>
+            <nz-form-explain
+              *ngIf="elementType.invalid && (elementType.dirty || elementType.touched || isSubmit) && elementType.errors.required">
+              请选择元素类型</nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="5">元素唯一标识</nz-form-label>
+          <nz-form-control [nzSpan]="12"
+            [ngClass]="{'has-error': identification.invalid && (identification.dirty || identification.touched || isSubmit)}">
+            <input class="w250 cb" nz-input autocomplete="off" type="text" name="identification"
+              [(ngModel)]="editedElement.identification" #identification="ngModel" required [disabled]="!isEditMode" />
+            <nz-form-explain
+              *ngIf="identification.invalid && (identification.dirty || identification.touched || isSubmit) && identification.errors.required">
+              请输入元素元素唯一标识</nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="5">路由</nz-form-label>
+          <nz-form-control [nzSpan]="12">
+            <input class="w250 cb" nz-input autocomplete="off" type="text" name="route"
+              [(ngModel)]="editedElement.route" #route="ngModel" [disabled]="!isEditMode" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item *ngIf="isEditMode">
+          <nz-form-control [nzSpan]="12" [nzOffset]="5">
+            <button class="mr-5" nz-button nzType="primary" type="submit">提交</button>
+            <button class="mr-5" nz-button nzType="primary" type="button" (click)="cancelEdit(editForm)">取消</button>
+          </nz-form-control>
+        </nz-form-item>
+
+      </form>
     </div>
   </div>
 </div>

@@ -22,7 +22,7 @@
     "@auth0/angular-jwt": "^2.1.0",
     "@tinymce/tinymce-angular": "^3.0.1",
     "core-js": "^2.5.4",
-    "ng-zorro-antd": "^7.3.3",
+    "ng-zorro-antd": "^7.5.1",
     "rxjs": "~6.3.3",
     "tinymce": "^5.0.5",
     "tslib": "^1.9.0",
