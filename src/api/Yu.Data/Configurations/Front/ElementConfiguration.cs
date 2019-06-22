@@ -10,7 +10,7 @@ namespace Yu.Data.Configurations.Front
         public void Configure(EntityTypeBuilder<Element> builder)
         {
             builder.HasKey(e => e.Id);
-            builder.Property(e => e.Id).ValueGeneratedOnAdd();
+            builder.Property(e => e.Id).ValueGeneratedNever();
             builder.Property(e => e.ElementType).HasConversion(et => (int)et, et => (ElementType)et);
         }
     }
