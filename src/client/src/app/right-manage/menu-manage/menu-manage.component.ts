@@ -2,8 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Element } from '../models/element';
 import { EnumConstant } from 'src/app/core/constants/enum-constant';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-import { NzTreeComponent, NzTreeNodeOptions, NzModalService } from 'ng-zorro-antd';
+import { NzTreeComponent, NzTreeNodeOptions, NzModalService, NzMessageService } from 'ng-zorro-antd';
 import { element } from '@angular/core/src/render3';
+import { ElementService } from 'src/app/core/services/element.service';
+import { resource } from 'selenium-webdriver/http';
 
 @Component({
   selector: 'app-menu-manage',
@@ -41,21 +43,11 @@ export class MenuManageComponent implements OnInit {
   // 是否提交
   isSubmit: boolean = false;
 
-  constructor(private _modalService: NzModalService) { }
+  constructor(private _modalService: NzModalService, private _elementService: ElementService,
+    private _messageService: NzMessageService) { }
 
   ngOnInit() {
-    this.elements = [
-      { id: '0001', upId: '', name: '权限管理', elementType: 1, identification: 'rightmanagemenu', route: '' },
-      { id: '00001', upId: '0001', name: '用户管理', elementType: 1, identification: 'rightmanagemenu', route: '' },
-      { id: '00002', upId: '0001', name: '角色管理', elementType: 1, identification: 'rightmanagemenu', route: '' },
-      { id: '00003', upId: '0001', name: 'API管理', elementType: 1, identification: 'rightmanagemenu', route: '' },
-      { id: '00004', upId: '0001', name: '页面管理', elementType: 1, identification: 'rightmanagemenu', route: '' },
-      { id: '00005', upId: '0001', name: '组织管理', elementType: 1, identification: 'rightmanagemenu', route: '' },
-      { id: '000001', upId: '00001', name: '删除用户', elementType: 2, identification: 'rightmanagemenu', route: '' },
-    ];
-
-    this.makeNodes();
-
+    this.initData();
   }
 
   // 创建子元素
@@ -70,10 +62,23 @@ export class MenuManageComponent implements OnInit {
 
   // 删除菜单
   deleteMenu() {
-    if (!this.isEditMode) {
+    if (!this.isEditMode && this.editedElement.id) {
       this._modalService.confirm({
         nzTitle: '是否要删除该元素？',
-        nzContent: '删除该元素会删除所有子元素'
+        nzContent: '删除该元素会删除所有子元素',
+        nzOnOk: () => {
+          this._elementService.deleteElement(this.editedElement.id).subscribe(
+
+            result => {
+              this._messageService.success("删除成功!");
+              this.initData();
+
+              this.selectedNode = null;
+              this.editedElement = new Element();
+            }
+
+          )
+        }
       });
     }
   }
@@ -90,10 +95,27 @@ export class MenuManageComponent implements OnInit {
       this.isSubmit = false;
       let name = form.controls['name'].value;
 
-      // todo
-      this.editedElement.id = '1122';
-      this.elements.push(this.editedElement);
-      this.makeNodes();
+      if (this.editedElement.id) {
+        this._elementService.updateElement(this.editedElement).subscribe(
+          result => {
+            this._messageService.success("修改成功!");
+            this.initData();
+
+            // 重置编辑表单
+            this.cancelEdit(form);
+          }
+        );
+      } else {
+        this._elementService.addElement(this.editedElement).subscribe(
+          result => {
+            this._messageService.success("添加成功!");
+            this.initData();
+
+            // 重置编辑表单
+            this.cancelEdit(form);
+          }
+        );
+      }
     }
   }
 
@@ -121,6 +143,17 @@ export class MenuManageComponent implements OnInit {
     if (id) {
       return this.getNzTreeNodeOption(id).title;
     } return '';
+  }
+
+  // 初始化数据
+  private initData() {
+    this._elementService.getAllElement().subscribe(
+      result => {
+        this.elements = result;
+        this.makeNodes();
+        this._messageService.success("数据初始化完毕。");
+      }
+    )
   }
 
   // 构建树

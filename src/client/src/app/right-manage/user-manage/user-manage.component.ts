@@ -66,7 +66,7 @@ export class UserManageComponent implements OnInit {
           // 设置数据总数
           this.total = result.total;
           this.listOfData = result.data;
-          this.messageService.success("数据取得完毕。")
+          this.messageService.success("数据取得完毕。");
         }
       )
   }

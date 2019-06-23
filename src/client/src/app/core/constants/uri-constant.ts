@@ -28,4 +28,7 @@ export class UriConstant {
     
     // API数据地址
     static readonly ApiUri = UriConstant.BaseApiUri + 'api';
+
+    // 页面元素数据地址
+    static readonly ElementUri = UriConstant.BaseApiUri + 'element';
 }

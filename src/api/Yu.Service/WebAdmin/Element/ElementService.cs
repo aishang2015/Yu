@@ -34,6 +34,24 @@ namespace Yu.Service.WebAdmin.Element
         }
 
         /// <summary>
+        /// 检查元素唯一识别（创建元素）
+        /// </summary>
+        public List<string> HaveSameIdentification(string identification)
+        {
+            var eles = _elementRepository.GetByWhereNoTracking(e => e.Identification == identification);
+            return eles.Select(ele => ele.Name).ToList();
+        }
+
+        /// <summary>
+        /// 检查元素唯一识别（更新元素）
+        /// </summary>
+        public List<string> HaveSameIdentification(Guid elementId, string identification)
+        {
+            var eles = _elementRepository.GetByWhereNoTracking(e => e.Identification == identification && e.Id != elementId);
+            return eles.Select(ele => ele.Name).ToList();
+        }
+
+        /// <summary>
         /// 创建新元素
         /// </summary>
         /// <param name="elementDetail">元素内容</param>
@@ -77,7 +95,7 @@ namespace Yu.Service.WebAdmin.Element
         {
             var eletree = _elementTreeRepository.GetByWhere(et => et.Ancestor == elementId).Select(et => et.Descendant);
             _elementRepository.DeleteRange(e => eletree.Contains(e.Id));
-            _elementTreeRepository.DeleteRange(et => et.Ancestor == elementId);
+            _elementTreeRepository.DeleteRange(et => et.Ancestor == elementId || et.Descendant == elementId);
 
             // 工作单元提交
             await _unitOfWork.CommitAsync();
@@ -97,7 +115,7 @@ namespace Yu.Service.WebAdmin.Element
                 result.Add(new ElementResult
                 {
                     Id = element.Id.ToString(),
-                    UpId = elementTree == null ? string.Empty : elementTree.Id.ToString(),
+                    UpId = elementTree == null ? string.Empty : elementTree.Ancestor.ToString(),
                     ElementType = (int)element.ElementType,
                     Identification = element.Identification,
                     Name = element.Name,

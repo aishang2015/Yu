@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
+using Yu.Model.WebAdmin.Element;
 using Yu.Model.WebAdmin.Element.InputModels;
 using Yu.Service.WebAdmin.Element;
 
@@ -25,7 +26,6 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         /// <summary>
         /// 取得页面元素
         /// </summary>
-        /// <returns></returns>
         [Description("取得页面元素")]
         [HttpGet("element")]
         public IActionResult GetAllElements()
@@ -37,11 +37,19 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         /// <summary>
         /// 添加新元素
         /// </summary>
-        /// <returns></returns>
         [Description("添加新元素")]
         [HttpPost("element")]
         public async Task<IActionResult> AddElement([FromBody]ElementDetail elementDetail)
         {
+            // 验证唯一识别
+            var eles = _elementService.HaveSameIdentification(elementDetail.Identification);
+            if (eles.Count() > 0)
+            {
+                ModelState.AddModelError("Identification",
+                    string.Format(ErrorMessages.WebAdmin_Element_E004, string.Join(',', eles)));
+                return BadRequest(ModelState);
+            }
+
             await _elementService.CreateElement(elementDetail);
             return Ok();
         }
@@ -49,11 +57,31 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         /// <summary>
         /// 添加新元素
         /// </summary>
-        /// <returns></returns>
         [Description("删除元素")]
-        [HttpPost("element")]
-        public IActionResult DeleteElement([FromBody]ElementDetail elementDetail)
-        {            
+        [HttpDelete("element")]
+        public async Task<IActionResult> DeleteElement([FromQuery]ElementQuery elementQuery)
+        {
+            await _elementService.DeleteElement(elementQuery.ElementId);
+            return Ok();
+        }
+
+        /// <summary>
+        /// 更新元素
+        /// </summary>
+        [Description("更新元素")]
+        [HttpPut("element")]
+        public async Task<IActionResult> UpdateElement([FromBody]ElementDetail elementDetail)
+        {
+            // 验证唯一识别
+            var eles = _elementService.HaveSameIdentification(Guid.Parse(elementDetail.Id), elementDetail.Identification);
+            if (eles.Count() > 0)
+            {
+                ModelState.AddModelError("Identification",
+                    string.Format(ErrorMessages.WebAdmin_Element_E004, string.Join(',', eles)));
+                return BadRequest(ModelState);
+            }
+
+            await _elementService.UpdateElement(elementDetail);
             return Ok();
         }
     }
