@@ -1,15 +1,15 @@
 <nz-layout style="height:100vh;">
     <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzWidth]="width" [nzReverseArrow]="isReverseArrow">
-        <div class="logo" [routerLink]="[ '/dashboard']">Yu.Web</div>
+        <div class="logo" [routerLink]="[ '/dashboard']" (click)="setBreadCrumb('仪表盘','')">Yu.Web</div>
         <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
             <li nz-submenu>
                 <span title><i nz-icon nzType="idcard" nzTheme="outline"></i><span class="nav-text">权限管理</span></span>
                 <ul>
-                    <li nz-menu-item [routerLink]="[ '/right/user' ]"><i nz-icon nzType="user" nzTheme="outline"></i>用户管理</li>
-                    <li nz-menu-item [routerLink]="[ '/right/role' ]"><i nz-icon nzType="audit" nzTheme="outline"></i>角色管理</li>
-                    <li nz-menu-item [routerLink]="[ '/right/api' ]"><i nz-icon nzType="api" nzTheme="outline"></i>API管理</li>
-                    <li nz-menu-item [routerLink]="[ '/right/menu' ]"><i nz-icon nzType="ordered-list" nzTheme="outline"></i>页面管理</li>
-                    <li nz-menu-item [routerLink]="[ '/right/group' ]"><i nz-icon nzType="team" nzTheme="outline"></i>组织管理</li>
+                    <li nz-menu-item [routerLink]="[ '/right/user' ]" (click)="setBreadCrumb('权限管理','用户管理')"><i nz-icon nzType="user" nzTheme="outline"></i>用户管理</li>
+                    <li nz-menu-item [routerLink]="[ '/right/role' ]" (click)="setBreadCrumb('权限管理','角色管理')"><i nz-icon nzType="audit" nzTheme="outline"></i>角色管理</li>
+                    <li nz-menu-item [routerLink]="[ '/right/api' ]" (click)="setBreadCrumb('权限管理','API管理')"><i nz-icon nzType="api" nzTheme="outline"></i>API管理</li>
+                    <li nz-menu-item [routerLink]="[ '/right/menu' ]" (click)="setBreadCrumb('权限管理','页面管理')"><i nz-icon nzType="ordered-list" nzTheme="outline"></i>页面管理</li>
+                    <li nz-menu-item [routerLink]="[ '/right/group' ]" (click)="setBreadCrumb('权限管理','组织管理')"><i nz-icon nzType="team" nzTheme="outline"></i>组织管理</li>
                 </ul>
             </li>
         </ul>
@@ -31,8 +31,8 @@
         </nz-header>
         <nz-content style="margin:0 16px;min-height: auto;">
             <nz-breadcrumb style="margin:16px 0;">
-                <nz-breadcrumb-item>权限管理</nz-breadcrumb-item>
-                <nz-breadcrumb-item>用户管理</nz-breadcrumb-item>
+                <nz-breadcrumb-item *ngIf="prefix">{{ prefix }}</nz-breadcrumb-item>
+                <nz-breadcrumb-item *ngIf="endfix">{{ endfix }}</nz-breadcrumb-item>
             </nz-breadcrumb>
             <div style="padding:24px; background: #fff; min-height: calc(100% - 80px);">
                 <router-outlet></router-outlet>

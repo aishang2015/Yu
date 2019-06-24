@@ -7,9 +7,9 @@ namespace Yu.Core.FileManage
 {
     public static class StaticFileApplicationBuilderExtension
     {
-        public static void UseStaticFiles(this IApplicationBuilder app, IConfiguration configuration)
+        public static void UseStaticFiles(this IApplicationBuilder app, IConfiguration configuration, string group)
         {
-            var serverFileStorePath = configuration["StaticFileOptions:ServerFileStorePath"];
+            var serverFileStorePath = configuration[$"{group}:ServerFileStorePath"];
             if (!Directory.Exists(serverFileStorePath))
             {
                 Directory.CreateDirectory(serverFileStorePath);
@@ -19,7 +19,7 @@ namespace Yu.Core.FileManage
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(serverFileStorePath),
-                RequestPath = configuration["StaticFileOptions:RequestPath"]
+                RequestPath = configuration[$"{group}:RequestPath"]
             });
         }
     }

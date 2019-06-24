@@ -1,0 +1,29 @@
+// 父元素只设置minheight的情况下，子元素设置height：100%不会起作用。需要父元素设置height属性；
+.explorer{
+    height: 800px;
+
+    .tree{
+        border: 1px solid lightgray;
+        height: 100%;
+        padding: 10px;
+    }
+    
+    .content{
+        border: 1px solid lightgray;
+        border-left: none;
+        height: 100%;
+        padding: 10px;
+    }
+}
+
+.w250{
+    width: 250px;
+}
+
+.w550{
+    width: 550px;
+}
+
+.cb{
+    color: black;
+}

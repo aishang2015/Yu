@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileProviders.Physical;
+﻿using Microsoft.Extensions.FileProviders.Physical;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,16 +8,9 @@ namespace Yu.Core.FileManage
 {
     public class FileManageStore : IFileStore
     {
-        // 文件存储的物理路径
-        private readonly string _rootPhysicalPath;
 
         // 文件访问的服务器路径
         private readonly string _requestPath;
-
-        public FileManageStore(IConfiguration configuration)
-        {
-            _rootPhysicalPath = configuration["StaticFileOptions:ServerFileStorePath"];
-        }
 
         /// <summary>
         /// 取得文件信息
@@ -26,9 +18,9 @@ namespace Yu.Core.FileManage
         /// <param name="relativePath">相对路径</param>
         /// <param name="rootPhysicalPath">物理根路径</param>
         /// <returns>文件信息</returns>
-        public IFileEntity GetFileInfo(string relativePath)
+        public IFileEntity GetFileInfo(string relativePath, string rootPhysicalPath)
         {
-            var path = GetFilePhysicalPath(relativePath);
+            var path = GetFilePhysicalPath(relativePath, rootPhysicalPath);
             var fileInfo = new PhysicalFileInfo(new FileInfo(path));
             return fileInfo.Exists ? new FileManageEntity
             {
@@ -47,9 +39,9 @@ namespace Yu.Core.FileManage
         /// <param name="relativePath">相对路径</param>
         /// <param name="rootPhysicalPath">物理根路径</param>
         /// <returns>目录信息</returns>
-        public IFileEntity GetDirectoryInfo(string relativePath)
+        public IFileEntity GetDirectoryInfo(string relativePath, string rootPhysicalPath)
         {
-            var path = GetFilePhysicalPath(relativePath);
+            var path = GetFilePhysicalPath(relativePath, rootPhysicalPath);
             var directoryInfo = new PhysicalDirectoryInfo(new DirectoryInfo(path));
             return directoryInfo.Exists ? new FileManageEntity
             {
@@ -68,10 +60,10 @@ namespace Yu.Core.FileManage
         /// <param name="relativePath">相对路径</param>
         /// <param name="rootPhysicalPath">物理根路径</param>
         /// <returns>目录内容</returns>
-        public IEnumerable<IFileEntity> GetDirectoryContents(string relativePath)
+        public IEnumerable<IFileEntity> GetDirectoryContents(string relativePath, string rootPhysicalPath)
         {
             var results = new List<IFileEntity>();
-            var path = GetFilePhysicalPath(relativePath);
+            var path = GetFilePhysicalPath(relativePath, rootPhysicalPath);
             var directoryInfo = new PhysicalDirectoryInfo(new DirectoryInfo(path));
             if (!directoryInfo.Exists)
             {
@@ -80,11 +72,11 @@ namespace Yu.Core.FileManage
 
             // 全部目录
             Directory.GetDirectories(path).ToList().ForEach(dir =>
-                results.Add(GetDirectoryInfo(dir.Substring(_rootPhysicalPath.Length))));
+                results.Add(GetDirectoryInfo(dir.Substring(rootPhysicalPath.Length), rootPhysicalPath)));
 
             // 全部文件
             Directory.GetFiles(path).ToList().ForEach(file =>
-                results.Add(GetFileInfo(file.Substring(_rootPhysicalPath.Length))));
+                results.Add(GetFileInfo(file.Substring(rootPhysicalPath.Length), rootPhysicalPath)));
 
             return results;
         }
@@ -95,9 +87,9 @@ namespace Yu.Core.FileManage
         /// <param name="relativePath">相对路径</param>
         /// <param name="rootPhysicalPath">物理根路径</param>
         /// <returns>创建结果</returns>
-        public bool CreateDirectory(string relativePath)
+        public bool CreateDirectory(string relativePath, string rootPhysicalPath)
         {
-            var path = GetFilePhysicalPath(relativePath);
+            var path = GetFilePhysicalPath(relativePath, rootPhysicalPath);
 
             // 目录或文件存在无法创建
             if (File.Exists(path) || Directory.Exists(path))
@@ -116,9 +108,9 @@ namespace Yu.Core.FileManage
         /// <param name="relativePath">相对路径</param>
         /// <param name="rootPhysicalPath">物理根路径</param>
         /// <param name="fileStream">文件流</param>
-        public async Task<IFileEntity> CreateFile(string relativePath, Stream fileStream)
+        public async Task<IFileEntity> CreateFile(string relativePath, string rootPhysicalPath, Stream fileStream)
         {
-            var path = GetFilePhysicalPath(relativePath);
+            var path = GetFilePhysicalPath(relativePath, rootPhysicalPath);
             using (var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write))
             {
                 await fileStream.CopyToAsync(stream);
@@ -141,9 +133,9 @@ namespace Yu.Core.FileManage
         /// <param name="relativePath">相对路径</param>
         /// <param name="rootPhysicalPath">物理根路径</param>
         /// <returns>删除结果</returns>
-        public bool DeleteDirectory(string relativePath)
+        public bool DeleteDirectory(string relativePath, string rootPhysicalPath)
         {
-            var path = GetFilePhysicalPath(relativePath);
+            var path = GetFilePhysicalPath(relativePath, rootPhysicalPath);
 
             // 目录不存在
             if (!Directory.Exists(path))
@@ -162,9 +154,9 @@ namespace Yu.Core.FileManage
         /// <param name="relativePath">相对路径</param>
         /// <param name="rootPhysicalPath">物理根路径</param>
         /// <returns>删除结果</returns>
-        public bool DeleteFile(string relativePath)
+        public bool DeleteFile(string relativePath, string rootPhysicalPath)
         {
-            var path = GetFilePhysicalPath(relativePath);
+            var path = GetFilePhysicalPath(relativePath, rootPhysicalPath);
 
             // 文件不存在
             if (!File.Exists(path))
@@ -182,10 +174,10 @@ namespace Yu.Core.FileManage
         /// <param name="relativePath">相对路径</param>
         /// <param name="rootPhysicalPath">物理根路径</param>
         /// <returns>服务器物理路径</returns>
-        private string GetFilePhysicalPath(string relativePath)
+        private string GetFilePhysicalPath(string relativePath, string rootPhysicalPath)
         {
             relativePath = relativePath?.Replace('\\', '/').Trim('/');
-            var resultPath = string.IsNullOrEmpty(relativePath) ? _rootPhysicalPath : Path.Combine(_rootPhysicalPath, relativePath);
+            var resultPath = string.IsNullOrEmpty(relativePath) ? rootPhysicalPath : Path.Combine(rootPhysicalPath, relativePath);
             return resultPath;
         }
     }

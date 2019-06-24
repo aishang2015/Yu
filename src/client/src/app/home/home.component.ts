@@ -21,17 +21,26 @@ export class HomeComponent implements OnInit {
   // 头像地址
   avatarUrl = '';
 
+  // 面包渣导航
+  prefix = '仪表盘';
+  endfix = '';
+
   constructor(private router: Router,
     private _localStorageService: LocalStorageService) { }
 
   ngOnInit() {
     this.userName = this._localStorageService.getUserName();
-    this.avatarUrl = this._localStorageService.getAvatarUrl() ? UriConstant.ServerUri + this._localStorageService.getAvatarUrl() : '';
+    this.avatarUrl = this._localStorageService.getAvatarUrl() ? UriConstant.AvatarBaseUri + this._localStorageService.getAvatarUrl() : '';
   }
 
   // 注销
   logout() {
     location.reload();
     localStorage.clear();
+  }
+
+  setBreadCrumb(item1, item2) {
+    this.prefix = item1;
+    this.endfix = item2;
   }
 }

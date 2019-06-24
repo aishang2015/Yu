@@ -20,10 +20,13 @@ namespace Yu.Service.WebAdmin.User
 
         private IFileStore _fileStore;
 
-        public UserService(UserManager<BaseIdentityUser> userManager, IFileStore fileStore)
+        private string _serverFileRootPath;
+
+        public UserService(UserManager<BaseIdentityUser> userManager, IFileStore fileStore, Microsoft.Extensions.Configuration.IConfiguration configuration)
         {
             _userManager = userManager;
             _fileStore = fileStore;
+            _serverFileRootPath = configuration["AvatarFileOption:ServerFileStorePath"];
         }
 
         /// <summary>
@@ -95,11 +98,11 @@ namespace Yu.Service.WebAdmin.User
             var newName = Path.Combine(DateTime.Now.ToString("MMddHHmmssfff") + '.' + endfix);
 
             // 可以替换成其他的文件保存方式，当前是直接利用静态文件目录的方式保存到服务器磁盘上。
-            await _fileStore.CreateFile(newName, formFile.OpenReadStream());
+            await _fileStore.CreateFile(newName, _serverFileRootPath, formFile.OpenReadStream());
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
             // 删除旧头像
-            _fileStore.DeleteFile(user.Avatar);
+            _fileStore.DeleteFile(user.Avatar, _serverFileRootPath);
             user.Avatar = newName;
             await _userManager.UpdateAsync(user);
         }

@@ -85,7 +85,7 @@ namespace Yu.Api
 
             app.UseAuthentication(); // 使用认证策略
 
-            app.UseStaticFiles(Configuration); // 配置静态文件访问路径和服务器目录
+            app.UseStaticFiles(Configuration, "AvatarFileOption"); // 配置静态文件访问路径和服务器目录
 
             app.UserSwaggerConfiguration(); // 使用Swagger
 

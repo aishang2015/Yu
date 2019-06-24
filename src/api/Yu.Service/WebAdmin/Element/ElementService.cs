@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Yu.Data.Entities.Front;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Element.InputModels;
@@ -93,9 +91,9 @@ namespace Yu.Service.WebAdmin.Element
         /// <param name="elementId">元素ID</param>
         public async Task DeleteElement(Guid elementId)
         {
-            var eletree = _elementTreeRepository.GetByWhere(et => et.Ancestor == elementId).Select(et => et.Descendant);
-            _elementRepository.DeleteRange(e => eletree.Contains(e.Id));
-            _elementTreeRepository.DeleteRange(et => et.Ancestor == elementId || et.Descendant == elementId);
+            var eleIds = _elementTreeRepository.GetByWhere(et => et.Ancestor == elementId).Select(et => et.Descendant);
+            _elementRepository.DeleteRange(e => eleIds.Contains(e.Id));
+            _elementTreeRepository.DeleteRange(et => eleIds.Contains(et.Ancestor) || eleIds.Contains(et.Descendant));
 
             // 工作单元提交
             await _unitOfWork.CommitAsync();

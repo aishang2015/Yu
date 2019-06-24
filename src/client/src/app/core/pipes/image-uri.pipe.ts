@@ -8,7 +8,7 @@ export class ImageUriPipe implements PipeTransform {
 
   transform(value: string, args?: any): any {
     if (value) {
-      return UriConstant.ServerUri + value;
+      return UriConstant.AvatarBaseUri + value;
     }
     return '';
   }
