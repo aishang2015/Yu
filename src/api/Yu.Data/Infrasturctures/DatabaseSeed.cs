@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Yu.Core.Mvc;
 using Yu.Data.Entities.Right;
@@ -31,6 +32,9 @@ namespace Yu.Data.Infrasturctures
 
                     // 初始化API数据
                     InitApi(dbContext, app);
+
+                    // 初始化实体数据表
+                    InitEntityData(dbContext);
 
                     // 初始化成员
                     InitMember(dbContext);
@@ -64,7 +68,7 @@ namespace Yu.Data.Infrasturctures
                 {
                     // 初始化数据
                     var dbContext = serviceScope.ServiceProvider.GetRequiredService<TDbContext>();
-                    
+
                     // 自定义初始方法
                     dataSeed?.Invoke(dbContext);
                 }
@@ -84,6 +88,49 @@ namespace Yu.Data.Infrasturctures
             });
             dbContext.Set<Api>().AddRange(apis);
             dbContext.SaveChanges();
+        }
+
+        // 初始化实体数据表
+        private static void InitEntityData<TDbContext>(TDbContext dbContext) where TDbContext : DbContext
+        {
+            // 所有实体的类型
+            var types = EntityTypeFinder.FindEntityTypes();
+
+            foreach (var type in types)
+            {
+                // 数据库上下文
+                var attribute = type.GetCustomAttributes(typeof(BelongToAttribute), false).FirstOrDefault();
+                var dbcontext = attribute != null ? ((BelongToAttribute)attribute).DbContextType.Name : string.Empty;
+
+                // 表和表名
+                var table = type.Name;
+                attribute = type.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault();
+                var tableDescription = attribute != null ? ((DescriptionAttribute)attribute).Description : string.Empty;
+
+                foreach (var prop in type.GetProperties())
+                {
+                    if (prop.PropertyType.IsPublic)
+                    {
+                        // 字段和字段名
+                        var field = prop.Name;
+                        attribute = prop.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault();
+                        var fieldDescription = attribute != null ? ((DescriptionAttribute)attribute).Description : string.Empty;
+
+                        dbContext.Set<Entity>().Add(new Entity
+                        {
+                            DbContext = dbcontext,
+                            Table = table,
+                            TableDescribe = tableDescription,
+                            Field = field,
+                            FieldDescribe = fieldDescription
+                        });
+                    }
+                }
+            }
+
+            // 保存数据
+            dbContext.SaveChanges();
+
         }
 
         // 初始化成员

@@ -1,0 +1,49 @@
+<nz-card style="margin-top: 5px;background: radial-gradient(white, grey);" *ngFor="let item of option">
+
+  <div nz-row class="mt-5" *ngFor="let condition of item.childCondition">
+    <div nz-col nzSpan="1">
+      <button nz-button nzType="default" nzShape="circle" (click)="removeCondition(condition.id)"><i nz-icon
+          type="minus"></i></button>
+    </div>
+    <div nz-col nzSpan="23">
+      <nz-input-group nzCompact>
+        <nz-select [(ngModel)]="condition.dbContext" style="width: 150px;"
+          (ngModelChange)="dbContextSelectedDataChange(condition)" (nzOpenChange)="initSelectedData(condition)">
+          <nz-option *ngFor="let item of condition.dbContextData" [nzLabel]="item" [nzValue]="item"></nz-option>
+        </nz-select>
+        <nz-select [(ngModel)]="condition.table" style="width: 150px;"
+          (ngModelChange)="tableSelectDataChange(condition)">
+          <nz-option *ngFor="let item of condition.tableData" [nzLabel]="item" [nzValue]="item"></nz-option>
+        </nz-select>
+        <nz-select [(ngModel)]="condition.field" style="width: 150px;">
+          <nz-option *ngFor="let item of condition.fieldData" [nzLabel]="item" [nzValue]="item"></nz-option>
+        </nz-select>
+        <nz-select style="width: 100px;">
+          <nz-option *ngFor="let item of operateData" [nzLabel]="item.name" [nzValue]="item.value"></nz-option>
+        </nz-select>
+        <input nz-input placeholder="" style="width: 300px;">
+      </nz-input-group>
+    </div>
+  </div>
+
+  <div nz-row class="mt-5">
+    <div nz-col nzSpan="24" style="text-align: center">
+      <button nz-button nzType="default" (click)="addCondition(item.id)"><i nz-icon type="plus"></i>添加条件</button>
+    </div>
+  </div>
+
+  <app-rule *ngIf="item.childRuleOption" [option]="item.childRuleOption"></app-rule>
+
+  <div nz-row class="mt-5">
+    <div nz-col nzSpan="23" nzOffset="0">
+      <nz-select style="width: 120px;">
+        <nz-option *ngFor="let item of combineData" [nzValue]="item.value" [nzLabel]="item.name"></nz-option>
+      </nz-select>
+      <button class="ml-5" nz-button nzType="default" (click)="removeGroup(item.id)"><i nz-icon
+          type="delete"></i>删除条件组</button>
+    </div>
+  </div>
+</nz-card>
+<div style="margin-top: 5px;text-align: center">
+  <button nz-button nzType="default" (click)="addGroup(option)"><i nz-icon type="plus"></i>添加条件组</button>
+</div>

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Yu.Core.Utils
+namespace Yu.Core.Expressions
 {
     public static class ExpressionUtil<T> where T : class
-    {        
+    {
         // 生成ParameterExpression用来参与表达式树
         private static ParameterExpression t = Expression.Parameter(typeof(T));
 
@@ -109,31 +109,5 @@ namespace Yu.Core.Utils
 
 
     }
-
-    /// <summary>
-    /// 表达式操作类型
-    /// </summary>
-    public enum ExpressionType
-    {
-        Equal = 1, // 相等
-        NotEqual = 2, // 不相等
-        StringContain = 3, // 字符串包含
-        ListContain = 4, // list包含
-
-        // todo 添加更多
-    }
-
-    /// <summary>
-    /// 表达式组合类型
-    /// </summary>
-    public enum ExpressionCombineType
-    {
-        And = 1, // 相等
-        Or = 2, // 不相等
-
-        // todo 添加更多
-    }
-
-
 
 }

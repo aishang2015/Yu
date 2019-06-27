@@ -39,7 +39,7 @@ namespace Yu.Core.Mvc
                 var descriptionAttribute = (DescriptionAttribute)Attribute.GetCustomAttribute(typeInfo, typeof(DescriptionAttribute));
 
                 // 控制器路由
-                var routeAttribute = (RouteAttribute)(Attribute.GetCustomAttributes(typeInfo, typeof(RouteAttribute))[0]);
+                var routeAttribute = (RouteAttribute)(Attribute.GetCustomAttributes(typeInfo, typeof(RouteAttribute)).FirstOrDefault());
 
                 // 控制器名称
                 var controllerName = typeInfo.Name.Replace("Controller", string.Empty);

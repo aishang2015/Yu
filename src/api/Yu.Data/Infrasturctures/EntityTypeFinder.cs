@@ -13,25 +13,34 @@ namespace Yu.Data.Infrasturctures
         /// </summary>
         /// <param name="dbcontextType">dbcontext类型</param>
         /// <returns>entity类型合集</returns>
-        public static List<Type> FindEntityTypes(Type dbcontextType)
+        public static List<Type> FindEntityTypes(Type dbcontextType = null)
         {
             // 寻找entity
             var typeList = typeof(BaseEntity<>).GetAllChildType();
-            var entityTypeList = new List<Type>();
-            foreach (var type in typeList)
+
+            // 不指定类型时返回所有的baseentity的实现
+            if (dbcontextType == null)
             {
-                // 判断是否有belongto特性
-                var attribute = type.GetCustomAttributes(typeof(BelongToAttribute), false).FirstOrDefault();
-                if (attribute != null)
+                return typeList;
+            }
+            else
+            {
+                var entityTypeList = new List<Type>();
+                foreach (var type in typeList)
                 {
-                    // 判断belongto特性是否和当前dbcontext相同
-                    if (((BelongToAttribute)attribute).DbContextType == dbcontextType)
+                    // 判断是否有belongto特性
+                    var attribute = type.GetCustomAttributes(typeof(BelongToAttribute), false).FirstOrDefault();
+                    if (attribute != null)
                     {
-                        entityTypeList.Add(type);
+                        // 判断belongto特性是否和当前dbcontext相同
+                        if (((BelongToAttribute)attribute).DbContextType == dbcontextType)
+                        {
+                            entityTypeList.Add(type);
+                        }
                     }
                 }
+                return entityTypeList;
             }
-            return entityTypeList;
         }
     }
 }

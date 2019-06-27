@@ -7,7 +7,7 @@ export class UriConstant {
 
     // api地址
     static readonly BaseApiUri: string = 'https://localhost:44334/api/';
-    
+
     // 头像地址
     static readonly AvatarBaseUri: string = UriConstant.ServerUri + 'avatar/';
 
@@ -28,7 +28,7 @@ export class UriConstant {
 
     // 用户头像上传地址
     static readonly UserAvatarUri = UriConstant.BaseApiUri + 'userAvatar';
-    
+
     // API数据地址
     static readonly ApiUri = UriConstant.BaseApiUri + 'api';
 
@@ -37,4 +37,13 @@ export class UriConstant {
 
     // 组织数据地址
     static readonly GroupUri = UriConstant.BaseApiUri + 'group';
+
+    // 实体数据地址
+    static readonly EntitiesUri = UriConstant.BaseApiUri + 'entities';
+
+    // 规则组
+    static readonly RuleGroupUri = UriConstant.BaseApiUri + 'ruleGroup';
+
+    // 规则组内容
+    static readonly RuleDetailUri = UriConstant.BaseApiUri + 'ruleDetail';
 }

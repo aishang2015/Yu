@@ -7,6 +7,7 @@ import { TelephoneValidatorDirective } from './validators/telephone-validator.di
 import { DebounceClickDirective } from './directives/debounce-click.directive';
 import { ThrottleClickDirective } from './directives/throttle-click.directive';
 import { ImageUriPipe } from './pipes/image-uri.pipe';
+import { AppRuleComponent } from './components/app-rule/app-rule.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,8 @@ import { ImageUriPipe } from './pipes/image-uri.pipe';
     NgZorroAntdModule
   ],
   declarations: [
+    AppRuleComponent, // 规则编辑组件
+
     GenderPipe, // 性别转换管道
     ImageUriPipe, // 图片地址转换
 
@@ -25,6 +28,7 @@ import { ImageUriPipe } from './pipes/image-uri.pipe';
   exports: [
     FormsModule,
     NgZorroAntdModule,
+    AppRuleComponent,
     GenderPipe,
     ImageUriPipe,
     TelephoneValidatorDirective,

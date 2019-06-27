@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Yu.Core.Expressions;
 using Yu.Core.FileManage;
-using Yu.Core.Utils;
 using Yu.Data.Entities;
 using Yu.Data.Infrasturctures;
 using Yu.Model.WebAdmin.User.OutputModels;
@@ -60,18 +60,20 @@ namespace Yu.Service.WebAdmin.User
         public PagedData<UserOutline> GetUserOutlines(int pageIndex, int pageSize, string searchText)
         {
             // 生成表达式组
-            var expressions = ExpressionUtil<BaseIdentityUser>.GetExpressions(new List<(string, object, ExpressionType)>
+            var tupleList = new List<(string, object, ExpressionType)>
             {
                 ("UserName",searchText,ExpressionType.StringContain),
                 ("PhoneNumber",searchText,ExpressionType.StringContain),
                 ("Email",searchText,ExpressionType.StringContain),
-            });
+            };
 
-            // 组合表达式
-            var expression = ExpressionUtil<BaseIdentityUser>.CombinExpressions(expressions, ExpressionCombineType.Or);
+            // 表达式组
+            var group = new ExpressionGroup<BaseIdentityUser>(
+                tupleList: tupleList,
+                expressionCombineType: ExpressionCombineType.Or,
+                expressionGroupsList: null);
 
-            // 生成过滤器
-            var filter = ExpressionUtil<BaseIdentityUser>.GetLambda(expression);
+            var filter = group.GetLambda();
 
             // 分页取得用户
             var skip = pageSize * (pageIndex - 1);
