@@ -50,45 +50,83 @@ export class RuleManageComponent implements OnInit {
   ruleConditions: Condition[] = [];
 
   // 规则组
-  ruleGroup: RuleGroup;
+  ruleGroup: RuleGroup = { id: Guid.newGuid(), name: '' };
 
   constructor(private _ruleService: RuleService, private _messageService: NzMessageService) { }
 
   ngOnInit(): void {
+    this.initRuleGroups();
   }
 
   // 保存规则组
   saveRule() {
 
+    if (!this.ruleGroup.name) {
+      this._messageService.error("请输入规则组名称！");
+      return;
+    }
+
+    if (this.ruleOptions.length == 0) {
+      this._messageService.error("请输入内容！");
+      return;
+    }
+
     if (!this.isRuleValid()) {
-      this._messageService.error("请确认是否所有规则都包含有条件！");
+      this._messageService.error("请确认所有规则内容的完整！");
       return;
     }
 
     if (!this.isConditionValid()) {
-      this._messageService.error("请确认是否所有条件的完整！");
+      this._messageService.error("请确认所有条件的完整！");
       return;
     }
 
     let rs: Rule[] = [];
     let rConditions: Condition[] = [];
-    let rGroup: RuleGroup;
+    let rGroup: RuleGroup = new RuleGroup();
 
     Object.assign(rGroup, this.ruleGroup);
 
+    // 做成规则
     for (var option of this.ruleOptions) {
       rs.push({ id: option.id, upRuleId: '', ruleGroupId: this.ruleGroup.id, combineType: option.combineType });
       this.makeRule(option.childRuleOption, option.id, rs);
     }
 
+    // 做成条件
+    for (var option of this.ruleOptions) {
+      this.makeCondition(option, option.id, rConditions);
+    }
+
+    this._ruleService.addOrModifyRule(rs, rConditions, rGroup).subscribe(
+      result => {
+        this._messageService.success("操作成功");
+      }
+    );
+
   }
 
-  // 生成结果
-  private makeRule(option, id, rs) {
-    for (var option of this.ruleOptions) {
+  // 生成结果is
+  private makeRule(options, id, rs) {
+    for (var option of options) {
       rs.push({ id: option.id, upRuleId: id, ruleGroupId: this.ruleGroup.id, combineType: option.combineType });
       this.makeRule(option.childRuleOption, option.id, rs);
     }
+  }
+
+  // 生成条件
+  private makeCondition(option, id, cs) {
+    option.childCondition.forEach(condition => {
+      cs.push({
+        id: condition.id, ruleId: id, ruleGroupId: this.ruleGroup.id, dbContext: condition.dbContext,
+        table: condition.table, field: condition.field, operateType: condition.operateType, value: condition.value
+      });
+    });
+
+    for (var option of option.childRuleOption) {
+      this.makeCondition(option, option.id, cs);
+    }
+
   }
 
   // 添加规则组
@@ -99,6 +137,10 @@ export class RuleManageComponent implements OnInit {
 
   // 编辑规则组
   edit(group) {
+    this.rules = [];
+    this.ruleConditions = [];
+    this.ruleGroup = new RuleGroup();
+    this.ruleOptions = [];
     this._ruleService.getRuleDetail(group.id).subscribe(
       result => {
         this.rules = result.rules;
@@ -133,7 +175,7 @@ export class RuleManageComponent implements OnInit {
 
       var ruleOption = this.findRuleById(condition.ruleId);
 
-      ruleOption.push({
+      ruleOption.childCondition.push({
         id: Guid.newGuid(), dbContext: condition.dbContext, table: condition.table,
         field: condition.field, operateType: condition.operateType, value: condition.value
       });
@@ -141,11 +183,20 @@ export class RuleManageComponent implements OnInit {
 
   }
 
+  // 初始化规则组
+  private initRuleGroups() {
+    this._ruleService.getAllRuleGroup().subscribe(
+      result => {
+        this.ruleGroups = result;
+      }
+    )
+  }
+
   // 检查是否所有规则包含条件
   private checkRuleResult: boolean = true;
   private checkRule(options) {
     for (var option of options) {
-      if (option.childCondition.length == 0) {
+      if (option.childCondition.length == 0 || !option.combineType) {
         this.checkRuleResult = false;
       }
       this.checkRule(option.childRuleOption);

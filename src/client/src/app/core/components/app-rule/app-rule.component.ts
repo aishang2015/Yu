@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output } from '@angular/core';
 import { EntityService } from '../../services/entity.service';
 import { EnumConstant } from '../../constants/enum-constant';
 import { Guid } from '../../utils/guid';
+import { Condition } from 'selenium-webdriver';
 
 @Component({
   selector: 'app-rule',
@@ -38,6 +39,29 @@ export class AppRuleComponent implements OnInit {
         this.entityData = result;
       }
     );
+
+    this.option.forEach(o => {
+      if (o.childCondition.length > 0) {
+        o.childCondition.forEach(c => {
+          this.initSelectedData(c);
+          this.dbContextSelectedDataChange(c);
+          this.tableSelectDataChange(c);
+          this.initExistData(o.childRuleOption);
+        });
+      }
+    });
+    
+  }
+
+  initExistData(option) {
+    if (option.childCondition.length > 0) {
+      option.childCondition.forEach(c => {
+        this.initSelectedData(c);
+        this.dbContextSelectedDataChange(c);
+        this.tableSelectDataChange(c);
+        this.initExistData(option.childRuleOption);
+      });
+    }
   }
 
   // 初始化db选择数据

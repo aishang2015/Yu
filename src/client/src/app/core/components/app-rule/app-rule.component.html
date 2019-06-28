@@ -21,7 +21,7 @@
         <nz-select [(ngModel)]="condition.operateType" style="width: 100px;">
           <nz-option *ngFor="let item of operateData" [nzLabel]="item.name" [nzValue]="item.value"></nz-option>
         </nz-select>
-        <input nz-input placeholder="" style="width: 300px;" [(ngModel)]="condition.value" name="value">
+        <input nz-input placeholder="" style="width: calc(100% - 550px);" [(ngModel)]="condition.value" name="value">
       </nz-input-group>
     </div>
   </div>
@@ -36,7 +36,7 @@
 
   <div nz-row class="mt-5">
     <div nz-col nzSpan="23" nzOffset="0">
-      <nz-select style="width: 120px;">
+      <nz-select style="width: 120px;" [(ngModel)]="item.combineType">
         <nz-option *ngFor="let item of combineData" [nzValue]="item.value" [nzLabel]="item.name"></nz-option>
       </nz-select>
       <button class="ml-5" nz-button nzType="default" (click)="removeGroup(item.id)"><i nz-icon

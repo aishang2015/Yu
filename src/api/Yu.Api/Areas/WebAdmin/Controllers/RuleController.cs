@@ -1,15 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Yu.Core.Mvc;
+using Yu.Data.Entities.Right;
 using Yu.Model.WebAdmin.Rule.InputModels;
+using Yu.Model.WebAdmin.Rule.OutputModels;
 using Yu.Service.WebAdmin.Rule;
 
 namespace Yu.Api.Areas.WebAdmin.Controllers
 {
     [Route("api")]
     [Description("规则管理")]
-    public class RuleController : ControllerBase
+    public class RuleController : AnonymousController
     {
 
         private readonly IRuleService _ruleService;
@@ -45,9 +49,11 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
 
         [HttpPut("ruleDetail")]
         [Description("添加修改规则组")]
-        public async Task<IActionResult> AddOrUpdateRule([FromBody]RuleDetail ruleDetail)
+        //public async Task<IActionResult> AddOrUpdateRule([FromBody]IEnumerable<Rule> rules,
+        //    [FromBody]IEnumerable<RuleCondition> ruleConditions, [FromBody]RuleGroup ruleGroup)
+        public async Task<IActionResult> AddOrUpdateRule([FromBody]RuleResult result)
         {
-            await _ruleService.AddOrUpdateRule(ruleDetail.Rules, ruleDetail.RuleConditions, ruleDetail.RuleGroup);
+            await _ruleService.AddOrUpdateRule(result.Rules, result.RuleConditions, result.RuleGroup);
             return Ok();
         }
 

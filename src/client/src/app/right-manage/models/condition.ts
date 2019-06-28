@@ -5,6 +5,6 @@ export class Condition {
     dbContext: string; // 数据库类型
     table: string; // 实体
     field: string; // 字段
-    operateType: string; // 操作类型
+    operateType: number; // 操作类型
     value: string; // 对应值
 }

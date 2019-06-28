@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace Yu.Service.WebAdmin.Rule
         /// <param name="rules">规则</param>
         /// <param name="ruleConditions">条件</param>
         /// <param name="ruleGroup">规则组</param>
-        public async Task AddOrUpdateRule(IEnumerable<RuleEntity> rules, IEnumerable<RuleCondition> ruleConditions, RuleGroup ruleGroup)
+        public async Task AddOrUpdateRule(IEnumerable<RuleEntityResult> rules, IEnumerable<RuleConditionResult> ruleConditions, RuleGroup ruleGroup)
         {
             var group = _ruleGroupRepository.GetById(ruleGroup.Id);
 
@@ -57,22 +58,35 @@ namespace Yu.Service.WebAdmin.Rule
             // 修改每项规则的Id和Upid
             foreach (var rule in rules)
             {
-                var downRules = rules.Where(r => r.UpRuleId == rule.Id);
-                var downConditions = ruleConditions.Where(r => r.RuleId == rule.Id);
+                var oldId = rule.Id;
 
                 // 替换前端生成的ID
-                var ruleId = Guid.NewGuid();
+                var ruleId = Guid.NewGuid().ToString();
                 rule.Id = ruleId;
-                foreach (var r in downRules) { r.UpRuleId = ruleId; r.RuleGroupId = groupId; };
-                foreach (var c in downConditions) { c.RuleId = ruleId; c.RuleGroupId = groupId; };
+                rule.RuleGroupId = groupId.ToString();
+                foreach (var r in rules)
+                {
+                    if (r.UpRuleId == oldId)
+                    {
+                        r.UpRuleId = ruleId;
+                    }
+                };
+                foreach (var c in ruleConditions)
+                {
+                    if (c.RuleId == oldId)
+                    {
+                        c.RuleId = ruleId;
+                        c.RuleGroupId = groupId.ToString();
+                    }
+                };
             }
 
             // 生成新的Id
-            ruleConditions.ToList().ForEach(condition => condition.Id = Guid.NewGuid());
+            ruleConditions.ToList().ForEach(condition => condition.Id = Guid.NewGuid().ToString());
 
             // 保存全部数据
-            await _ruleRepository.InsertRangeAsync(rules);
-            await _ruleConditionRepository.InsertRangeAsync(ruleConditions);
+            await _ruleRepository.InsertRangeAsync(Mapper.Map<IEnumerable<RuleEntity>>(rules));
+            await _ruleConditionRepository.InsertRangeAsync(Mapper.Map<IEnumerable<RuleCondition>>(ruleConditions));
             if (group == null)
             {
                 await _ruleGroupRepository.InsertAsync(ruleGroup);
@@ -117,8 +131,8 @@ namespace Yu.Service.WebAdmin.Rule
             return new RuleResult
             {
                 RuleGroup = _ruleGroupRepository.GetById(ruleGroupId),
-                Rules = _ruleRepository.GetByWhereNoTracking(rule => rule.RuleGroupId == ruleGroupId),
-                RuleConditions = _ruleConditionRepository.GetByWhereNoTracking(condition => condition.RuleGroupId == ruleGroupId)
+                Rules = Mapper.Map<IEnumerable<RuleEntityResult>>(_ruleRepository.GetByWhereNoTracking(rule => rule.RuleGroupId == ruleGroupId)),
+                RuleConditions = Mapper.Map<IEnumerable<RuleConditionResult>>(_ruleConditionRepository.GetByWhereNoTracking(condition => condition.RuleGroupId == ruleGroupId))
             };
         }
 

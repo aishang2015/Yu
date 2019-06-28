@@ -19,7 +19,7 @@
   <div nz-col nzSpan="18" class="content">
 
     <div class="mt-5">
-      <input nz-input style="width: 250px;" placeholder="请输入规则组名">
+      <input nz-input style="width: 250px;" [(ngModel)]="ruleGroup.name" name="groupname" placeholder="请输入规则组名">
     </div>
 
     <app-rule [(option)]="ruleOptions"></app-rule>

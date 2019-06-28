@@ -34,6 +34,6 @@ export class RuleService extends BaseService {
   // 添加修改规则组
   addOrModifyRule(rules, ruleConditions, ruleGroup) {
     let uri = UriConstant.RuleDetailUri;
-    return this.SafeRequest(this.http.put(uri, { Rules: rules, RuleConditions: ruleConditions, RuleGroup: ruleGroup }));
+    return this.SafeRequest(this.http.put(uri, { rules: rules, ruleConditions: ruleConditions, ruleGroup: ruleGroup }));
   }
 }
