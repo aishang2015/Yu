@@ -18,10 +18,10 @@
         <nz-select [(ngModel)]="condition.field" style="width: 150px;">
           <nz-option *ngFor="let item of condition.fieldData" [nzLabel]="item" [nzValue]="item"></nz-option>
         </nz-select>
-        <nz-select style="width: 100px;">
+        <nz-select [(ngModel)]="condition.operateType" style="width: 100px;">
           <nz-option *ngFor="let item of operateData" [nzLabel]="item.name" [nzValue]="item.value"></nz-option>
         </nz-select>
-        <input nz-input placeholder="" style="width: 300px;">
+        <input nz-input placeholder="" style="width: 300px;" [(ngModel)]="condition.value" name="value">
       </nz-input-group>
     </div>
   </div>

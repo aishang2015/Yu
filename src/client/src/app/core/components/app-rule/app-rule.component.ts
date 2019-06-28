@@ -58,9 +58,8 @@ export class AppRuleComponent implements OnInit {
 
   // 添加条件
   addCondition(id) {
-    this.findGroup(this.option, id);
-    console.log(this.findedGroup);
-    this.findedGroup.childCondition.push({ id: Guid.newGuid(), dbContext: '', table: '', field: '' });
+    this.findRule(this.option, id);
+    this.findedRule.childCondition.push({ id: Guid.newGuid(), dbContext: '', table: '', field: '' });
   }
 
   // 删除条件
@@ -86,16 +85,16 @@ export class AppRuleComponent implements OnInit {
     );
   }
 
-  // 查找组
-  findedGroup;
-  findGroup(option, id) {
+  // 查找规则
+  findedRule;
+  findRule(option, id) {
     option.forEach(o => {
 
       if (o.id == id) {
-        this.findedGroup = o;
+        this.findedRule = o;
       } else {
         if (o.childRuleOption) {
-          this.findGroup(o.childRuleOption, id);
+          this.findRule(o.childRuleOption, id);
         }
       }
     });

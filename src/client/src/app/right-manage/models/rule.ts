@@ -1,5 +1,6 @@
 export class Rule {
     id: string; // id
-    upId: string; // 父规则
+    upRuleId: string; // 上级规则
+    ruleGroupId:string; //上级组织
     combineType: string; // 规则组合
 }
