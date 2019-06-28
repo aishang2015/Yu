@@ -9,14 +9,14 @@
       <nz-input-group nzCompact>
         <nz-select [(ngModel)]="condition.dbContext" style="width: 150px;"
           (ngModelChange)="dbContextSelectedDataChange(condition)" (nzOpenChange)="initSelectedData(condition)">
-          <nz-option *ngFor="let item of condition.dbContextData" [nzLabel]="item" [nzValue]="item"></nz-option>
+          <nz-option *ngFor="let item of getDbContext(condition)" [nzLabel]="item" [nzValue]="item"></nz-option>
         </nz-select>
         <nz-select [(ngModel)]="condition.table" style="width: 150px;"
           (ngModelChange)="tableSelectDataChange(condition)">
-          <nz-option *ngFor="let item of condition.tableData" [nzLabel]="item" [nzValue]="item"></nz-option>
+          <nz-option *ngFor="let item of getTableData(condition)" [nzLabel]="item" [nzValue]="item"></nz-option>
         </nz-select>
         <nz-select [(ngModel)]="condition.field" style="width: 150px;">
-          <nz-option *ngFor="let item of condition.fieldData" [nzLabel]="item" [nzValue]="item"></nz-option>
+          <nz-option *ngFor="let item of getConditionData(condition)" [nzLabel]="item" [nzValue]="item"></nz-option>
         </nz-select>
         <nz-select [(ngModel)]="condition.operateType" style="width: 100px;">
           <nz-option *ngFor="let item of operateData" [nzLabel]="item.name" [nzValue]="item.value"></nz-option>

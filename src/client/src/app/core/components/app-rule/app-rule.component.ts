@@ -39,18 +39,19 @@ export class AppRuleComponent implements OnInit {
         this.entityData = result;
       }
     );
+  }
 
-    this.option.forEach(o => {
-      if (o.childCondition.length > 0) {
-        o.childCondition.forEach(c => {
-          this.initSelectedData(c);
-          this.dbContextSelectedDataChange(c);
-          this.tableSelectDataChange(c);
-          this.initExistData(o.childRuleOption);
-        });
-      }
-    });
-    
+  getDbContext(condition) {
+    return this.unique(this.entityData.map(entity => entity.dbContext));
+  }
+
+  getTableData(condition) {
+    return this.unique(this.entityData.filter(entity => entity.dbContext == condition.dbContext).map(entity => entity.table));
+  }
+
+  getConditionData(condition) {
+    return this.unique(this.entityData.filter(entity => entity.dbContext == condition.dbContext && entity.table == condition.table)
+      .map(entity => entity.field));
   }
 
   initExistData(option) {
@@ -71,13 +72,13 @@ export class AppRuleComponent implements OnInit {
 
   // 初始化表选择数据
   dbContextSelectedDataChange(condition) {
-    condition.tableData = this.unique(this.entityData.filter(entity => entity.dbContext == condition.dbContext).map(entity => entity.table));
+    condition.table = null;
+    condition.field = null;
   }
 
   // 初始化字段选择数据
   tableSelectDataChange(condition) {
-    condition.fieldData = this.unique(this.entityData.filter(entity => entity.dbContext == condition.dbContext && entity.table == condition.table)
-      .map(entity => entity.field));
+    condition.field = null;
   }
 
   // 添加条件
