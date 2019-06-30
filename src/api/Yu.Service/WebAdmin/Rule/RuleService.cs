@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace Yu.Service.WebAdmin.Rule
         /// <param name="ruleGroup">规则组</param>
         public async Task AddOrUpdateRule(IEnumerable<RuleEntityResult> rules, IEnumerable<RuleConditionResult> ruleConditions, RuleGroup ruleGroup)
         {
-            var group = _ruleGroupRepository.GetById(ruleGroup.Id);
+            var group = _ruleGroupRepository.GetByWhereNoTracking(rg => rg.Id == ruleGroup.Id).FirstOrDefault();
 
             // 已经存在时先删除再插入
             if (group != null)
@@ -48,7 +49,6 @@ namespace Yu.Service.WebAdmin.Rule
                 // 先删除再插入
                 _ruleRepository.DeleteRange(r => r.RuleGroupId == group.Id);
                 _ruleConditionRepository.DeleteRange(r => r.RuleGroupId == group.Id);
-                _ruleGroupRepository.Update(ruleGroup);
             }
 
             // 修改规则组Id
@@ -87,12 +87,20 @@ namespace Yu.Service.WebAdmin.Rule
             // 保存全部数据
             await _ruleRepository.InsertRangeAsync(Mapper.Map<IEnumerable<RuleEntity>>(rules));
             await _ruleConditionRepository.InsertRangeAsync(Mapper.Map<IEnumerable<RuleCondition>>(ruleConditions));
+
+            // 生成表达式保存到数据库
+            
+
+            // 更新或添加规则组
             if (group == null)
             {
                 await _ruleGroupRepository.InsertAsync(ruleGroup);
             }
+            else
+            {
+                _ruleGroupRepository.Update(ruleGroup);
+            }
 
-            // todo 生成表达式保存到数据库
 
             // 提交事务
             await _unitOfWork.CommitAsync();

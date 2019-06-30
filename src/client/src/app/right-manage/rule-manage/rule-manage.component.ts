@@ -4,7 +4,7 @@ import { Guid } from 'src/app/core/utils/guid';
 import { RuleService } from 'src/app/core/services/rule.service';
 import { Rule } from '../models/rule';
 import { Condition } from '../models/condition';
-import { NzMessageService } from 'ng-zorro-antd';
+import { NzMessageService, NzModalService } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-rule-manage',
@@ -32,7 +32,7 @@ export class RuleManageComponent implements OnInit {
     //       ]
     //     }
     //   ],
-    //   combineType
+    //   combineType:'1'
     // },
     // {
     //   id: Guid.newGuid(),
@@ -52,7 +52,12 @@ export class RuleManageComponent implements OnInit {
   // 规则组
   ruleGroup: RuleGroup = { id: Guid.newGuid(), name: '' };
 
-  constructor(private _ruleService: RuleService, private _messageService: NzMessageService) { }
+  // 编辑模式
+  isEditMode = false;
+
+  constructor(private _ruleService: RuleService,
+    private _messageService: NzMessageService,
+    private _modalService: NzModalService) { }
 
   ngOnInit(): void {
     this.initRuleGroups();
@@ -98,15 +103,18 @@ export class RuleManageComponent implements OnInit {
       this.makeCondition(option, option.id, rConditions);
     }
 
+    // 发送数据到服务器
     this._ruleService.addOrModifyRule(rs, rConditions, rGroup).subscribe(
       result => {
         this._messageService.success("操作成功");
+        this.isEditMode = false;
+        this.initRuleGroups();
       }
     );
 
   }
 
-  // 生成结果is
+  // 生成规则
   private makeRule(options, id, rs) {
     for (var option of options) {
       rs.push({ id: option.id, upRuleId: id, ruleGroupId: this.ruleGroup.id, combineType: option.combineType });
@@ -131,12 +139,14 @@ export class RuleManageComponent implements OnInit {
 
   // 添加规则组
   addRuleGroup() {
+    this.isEditMode = true;
     this.ruleOptions = [];
     this.ruleGroup = { id: Guid.newGuid(), name: '' };
   }
 
   // 编辑规则组
   edit(group) {
+    this.isEditMode = true;
     this.rules = [];
     this.ruleConditions = [];
     this.ruleGroup = new RuleGroup();
@@ -153,7 +163,19 @@ export class RuleManageComponent implements OnInit {
 
   // 删除规则组
   delete(group) {
-
+    this._modalService.confirm(
+      {
+        nzContent: "是否删除当前规则组",
+        nzOnOk: () => {
+          this._ruleService.deleteRuleGroup(group.id).subscribe(
+            result => {
+              this._messageService.success("删除成功");
+              this.initRuleGroups();
+            }
+          )
+        }
+      }
+    )
   }
 
   // 初始化数据结构
@@ -218,7 +240,7 @@ export class RuleManageComponent implements OnInit {
           this.checkConditionResult = false;
         }
       }
-      this.checkRule(option.childRuleOption);
+      this.checkCondition(option.childRuleOption);
     }
   }
   private isConditionValid() {
@@ -227,8 +249,6 @@ export class RuleManageComponent implements OnInit {
     this.checkConditionResult = true;
     return result;
   }
-
-
 
   // 构造规则
   pushRule(id) {

@@ -16,16 +16,20 @@
   </div>
 
 
-  <div nz-col nzSpan="18" class="content">
+  <div *ngIf="isEditMode" nz-col nzSpan="18" class="content">
 
     <div class="mt-5">
       <input nz-input style="width: 250px;" [(ngModel)]="ruleGroup.name" name="groupname" placeholder="请输入规则组名">
     </div>
 
     <app-rule [(option)]="ruleOptions"></app-rule>
-    
+
 
     <button nz-button class="mt-5" (click)="saveRule($event)">保存规则</button>
+
+    <div>
+      
+    </div>
 
   </div>
 </div>
