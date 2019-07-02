@@ -13,19 +13,13 @@ export class AppRuleComponent implements OnInit {
 
   @Input() @Output() option;
 
-  constructor(private entityService: EntityService) { }
-
-  // 实体数据
-  entityData = [];
-
-  // 数据库下拉框数据
-  dbContextData = null;
-
-  // 表下拉框数据
-  tableData = null;
-
   // 字段下拉框数据
-  fieldData = null;
+  @Input() fieldData;
+
+  
+  @Input()  upperOption;
+
+  constructor(private entityService: EntityService) { }
 
   // 操作类型
   operateData = EnumConstant.operateTypes;
@@ -34,52 +28,25 @@ export class AppRuleComponent implements OnInit {
   combineData = EnumConstant.combineTypes;
 
   ngOnInit() {
-    this.entityService.getDropDownEntityData().subscribe(
-      result => {
-        this.entityData = result;
-      }
-    );
+    // this.entityService.getDropDownEntityData().subscribe(
+    //   result => {
+    //     this.entityData = result;
+    //   }
+    // );
   }
 
-  getDbContext(condition) {
-    return this.unique(this.entityData.map(entity => entity.dbContext));
-  }
+  // getDbContext(condition) {
+  //   return this.unique(this.entityData.map(entity => entity.dbContext));
+  // }
 
-  getTableData(condition) {
-    return this.unique(this.entityData.filter(entity => entity.dbContext == condition.dbContext).map(entity => entity.table));
-  }
+  // getTableData(condition) {
+  //   return this.unique(this.entityData.filter(entity => entity.dbContext == condition.dbContext).map(entity => entity.table));
+  // }
 
-  getConditionData(condition) {
-    return this.unique(this.entityData.filter(entity => entity.dbContext == condition.dbContext && entity.table == condition.table)
-      .map(entity => entity.field));
-  }
-
-  initExistData(option) {
-    if (option.childCondition.length > 0) {
-      option.childCondition.forEach(c => {
-        this.initSelectedData(c);
-        this.dbContextSelectedDataChange(c);
-        this.tableSelectDataChange(c);
-        this.initExistData(option.childRuleOption);
-      });
-    }
-  }
-
-  // 初始化db选择数据
-  initSelectedData(condition) {
-    condition.dbContextData = this.unique(this.entityData.map(entity => entity.dbContext));
-  }
-
-  // 初始化表选择数据
-  dbContextSelectedDataChange(condition) {
-    condition.table = null;
-    condition.field = null;
-  }
-
-  // 初始化字段选择数据
-  tableSelectDataChange(condition) {
-    condition.field = null;
-  }
+  // getFieldData(condition) {
+  //   return this.unique(this.entityData.filter(entity => entity.dbContext == condition.dbContext && entity.table == condition.table)
+  //     .map(entity => entity.field));
+  // }
 
   // 添加条件
   addCondition(id) {
@@ -94,7 +61,7 @@ export class AppRuleComponent implements OnInit {
 
   // 删除组
   removeGroup(id) {
-    this.deleteGroup(this.option, id);
+    this.deleteGroup(this.upperOption.childRuleOption, id);
   }
 
   // 添加条件
@@ -113,32 +80,25 @@ export class AppRuleComponent implements OnInit {
   // 查找规则
   findedRule;
   findRule(option, id) {
-    option.forEach(o => {
-
-      if (o.id == id) {
-        this.findedRule = o;
-      } else {
-        if (o.childRuleOption) {
-          this.findRule(o.childRuleOption, id);
-        }
+    if (option.id == id) {
+      this.findedRule = option;
+    } else {
+      for (var o of this.option.childRuleOption) {
+        this.findRule(o, id);
       }
-    });
+    }
   }
 
   // 删除条件
   deleteCondition(option, id) {
 
-    for (var o of option) {
-      const index = o.childCondition.findIndex(condition => condition.id == id);
-      console.log(index);
-      if (index == -1) {
-        if (o.childRuleOption) {
-          this.deleteCondition(o.childRuleOption, id);
-        }
-      } else {
-        o.childCondition.splice(index, 1);
-        break;
+    const index = option.childCondition.findIndex(condition => condition.id == id);
+    if (index == -1) {
+      if (option.childRuleOption) {
+        this.deleteCondition(option.childRuleOption, id);
       }
+    } else {
+      option.childCondition.splice(index, 1);
     }
 
   }
@@ -156,7 +116,6 @@ export class AppRuleComponent implements OnInit {
     } else {
       option.splice(index, 1);
     }
-
   }
 
   unique(arr) {

@@ -13,12 +13,6 @@ namespace Yu.Data.Entities.Right
         // 所属组织
         public Guid RuleGroupId { get; set; }
 
-        // 数据库类型
-        public string DbContext { get; set; }
-
-        // 表
-        public string Table { get; set; }
-
         // 字段
         public string Field { get; set; }
 

@@ -6,7 +6,7 @@
       <tbody>
         <tr *ngFor="let data of basicTable.data">
           <td>{{data.name}}</td>
-          <td style="width:70px;">
+          <td style="width:70px;" *ngIf="!isEditMode">
             <a (click)="edit(data)">编辑</a>
             <a (click)="delete(data)">删除</a>
           </td>
@@ -20,15 +20,24 @@
 
     <div class="mt-5">
       <input nz-input style="width: 250px;" [(ngModel)]="ruleGroup.name" name="groupname" placeholder="请输入规则组名">
+      <nz-input-group nzCompact style="margin-top: 5px;">
+        <nz-select [(ngModel)]="ruleGroup.dbContext" style="width: 250px;">
+          <nz-option *ngFor="let item of getDbContextData()" [nzLabel]="item" [nzValue]="item" placeholder="选择数据库"></nz-option>
+        </nz-select>
+        <nz-select [(ngModel)]="ruleGroup.entity" style="width: 250px;" (ngModelChange)="tableDataChange($event)">
+          <nz-option *ngFor="let item of getTableData()" [nzLabel]="item" [nzValue]="item" placeholder="选择表"></nz-option>
+        </nz-select>
+      </nz-input-group>
     </div>
 
-    <app-rule [(option)]="ruleOptions"></app-rule>
+    <app-rule [(option)]="ruleOptions" [fieldData]="getFieldData()"></app-rule>
 
 
     <button nz-button class="mt-5" (click)="saveRule($event)">保存规则</button>
+    <button nz-button class="mt-5 ml-5" (click)="cancel($event)">取消保存</button>
 
     <div>
-      
+
     </div>
 
   </div>

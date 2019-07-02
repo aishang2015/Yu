@@ -42,5 +42,40 @@ namespace Yu.Data.Infrasturctures
                 return entityTypeList;
             }
         }
+
+        /// <summary>
+        /// 根据数据库名称和表名查找类型
+        /// </summary>
+        /// <param name="dbContextName">Dbcontext名称</param>
+        /// <param name="entityName">实体名称</param>
+        /// <returns></returns>
+        public static Type FindEntityType(string dbContextName, string entityName)
+        {
+            // 寻找entity
+            var typeList = typeof(BaseEntity<>).GetAllChildType();
+
+            // 类型列表
+            foreach (var type in typeList)
+            {
+                // 判断实体名称是否一致
+                if (type.Name == entityName)
+                {
+                    // 判断dbcontext类型是否一致
+                    var attribute = type.GetCustomAttributes(typeof(BelongToAttribute), false).FirstOrDefault();
+                    if (attribute != null)
+                    {
+                        // 判断belongto特性是否和当前dbcontext相同
+                        if (((BelongToAttribute)attribute).DbContextType.Name == dbContextName)
+                        {
+                            return type;
+                        }
+                    }
+                }
+            }
+
+            // 没有找到
+            return null;
+        }
+
     }
 }

@@ -5,6 +5,7 @@ import { RuleService } from 'src/app/core/services/rule.service';
 import { Rule } from '../models/rule';
 import { Condition } from '../models/condition';
 import { NzMessageService, NzModalService } from 'ng-zorro-antd';
+import { EntityService } from 'src/app/core/services/entity.service';
 
 @Component({
   selector: 'app-rule-manage',
@@ -17,11 +18,10 @@ export class RuleManageComponent implements OnInit {
   ruleGroups: RuleGroup[] = [];
 
   // 规则详情
-  ruleOptions = [
-    // {
+  ruleOptions: any = {
     //   id: Guid.newGuid(),
     //   childCondition: [
-    //     { id: Guid.newGuid(), dbContext: '', table: '', field: '', operateType: '', value: '' }
+    //     { id: Guid.newGuid(), field: '', operateType: '', value: '' }
     //   ],
     //   childRuleOption: [
     //     {
@@ -33,15 +33,7 @@ export class RuleManageComponent implements OnInit {
     //     }
     //   ],
     //   combineType:'1'
-    // },
-    // {
-    //   id: Guid.newGuid(),
-    //   childCondition: [
-    //   ],
-    //   childRuleOption: [
-    //   ]
-    // },
-  ];
+  };
 
   // 规则
   rules: Rule[] = [];
@@ -50,17 +42,22 @@ export class RuleManageComponent implements OnInit {
   ruleConditions: Condition[] = [];
 
   // 规则组
-  ruleGroup: RuleGroup = { id: Guid.newGuid(), name: '' };
+  ruleGroup: RuleGroup = { id: Guid.newGuid(), name: '', dbContext: null, entity: null };
+
+  // 表选择框数据
+  entityData = [];
 
   // 编辑模式
   isEditMode = false;
 
   constructor(private _ruleService: RuleService,
     private _messageService: NzMessageService,
-    private _modalService: NzModalService) { }
+    private _modalService: NzModalService,
+    private _entityService: EntityService) { }
 
   ngOnInit(): void {
     this.initRuleGroups();
+    this.initEntityData();
   }
 
   // 保存规则组
@@ -71,7 +68,7 @@ export class RuleManageComponent implements OnInit {
       return;
     }
 
-    if (this.ruleOptions.length == 0) {
+    if (this.ruleOptions.childCondition.length == 0) {
       this._messageService.error("请输入内容！");
       return;
     }
@@ -93,15 +90,11 @@ export class RuleManageComponent implements OnInit {
     Object.assign(rGroup, this.ruleGroup);
 
     // 做成规则
-    for (var option of this.ruleOptions) {
-      rs.push({ id: option.id, upRuleId: '', ruleGroupId: this.ruleGroup.id, combineType: option.combineType });
-      this.makeRule(option.childRuleOption, option.id, rs);
-    }
+    rs.push({ id: this.ruleOptions.id, upRuleId: '', ruleGroupId: this.ruleGroup.id, combineType: this.ruleOptions.combineType });
+    this.makeRule(this.ruleOptions.childRuleOption, this.ruleOptions.id, rs);
 
     // 做成条件
-    for (var option of this.ruleOptions) {
-      this.makeCondition(option, option.id, rConditions);
-    }
+    this.makeCondition(this.ruleOptions, this.ruleOptions.id, rConditions);
 
     // 发送数据到服务器
     this._ruleService.addOrModifyRule(rs, rConditions, rGroup).subscribe(
@@ -112,6 +105,11 @@ export class RuleManageComponent implements OnInit {
       }
     );
 
+  }
+
+  // 取消
+  cancel(){
+    this.isEditMode = false;
   }
 
   // 生成规则
@@ -140,23 +138,22 @@ export class RuleManageComponent implements OnInit {
   // 添加规则组
   addRuleGroup() {
     this.isEditMode = true;
-    this.ruleOptions = [];
-    this.ruleGroup = { id: Guid.newGuid(), name: '' };
+    this.ruleOptions = { id: Guid.newGuid(), childCondition: [], childRuleOption: [], combineType: '0' };
+    this.ruleGroup = { id: Guid.newGuid(), name: '', dbContext: null, entity: null };
   }
 
   // 编辑规则组
   edit(group) {
-    this.isEditMode = true;
     this.rules = [];
     this.ruleConditions = [];
     this.ruleGroup = new RuleGroup();
-    this.ruleOptions = [];
     this._ruleService.getRuleDetail(group.id).subscribe(
       result => {
         this.rules = result.rules;
         this.ruleConditions = result.ruleConditions;
         this.ruleGroup = result.ruleGroup;
         this.initOption();
+        this.isEditMode = true;
       }
     );
   }
@@ -178,6 +175,53 @@ export class RuleManageComponent implements OnInit {
     )
   }
 
+
+  // 初始化实体数据数据库表字段
+  private initEntityData() {
+    this._entityService.getDropDownEntityData().subscribe(
+      result => {
+        this.entityData = result;
+      }
+    );
+  }
+
+  // 取得数据下拉框数据
+  getDbContextData() {
+    return this.unique(this.entityData.map(entity => entity.dbContext));
+  }
+
+  // 取得表下拉框数据
+  getTableData() {
+    return this.unique(this.entityData.filter(entity => entity.dbContext == this.ruleGroup.dbContext).map(entity => entity.table));
+  }
+
+  // 取得字段下拉框数据
+  getFieldData() {
+    return this.unique(this.entityData.filter(entity => entity.dbContext == this.ruleGroup.dbContext && entity.table == this.ruleGroup.entity)
+      .map(entity => entity.field));
+  }
+
+  // 表数据发生变化
+  tableDataChange() {
+    this.resetRuleConditionField(this.ruleOptions);
+  }
+
+  // 重置规则条件字段值
+  resetRuleConditionField(options) {
+    for (var option of options) {
+      for (var condition of option.childCondition) {
+        condition.field = null;
+      }
+      this.resetRuleConditionField(option.childRuleOption);
+    }
+  }
+
+  // 去重
+  private unique(arr) {
+    return Array.from(new Set(arr))
+  }
+
+
   // 初始化数据结构
   private initOption() {
 
@@ -186,7 +230,7 @@ export class RuleManageComponent implements OnInit {
 
       // 第一级规则
       if (!rule.upRuleId) {
-        this.ruleOptions.push({ id: rule.id, childRuleOption: [], childCondition: [], combineType: rule.combineType });
+        this.ruleOptions = { id: rule.id, childRuleOption: [], childCondition: [], combineType: rule.combineType };
         this.pushRule(rule.id);
       }
     }
@@ -198,8 +242,7 @@ export class RuleManageComponent implements OnInit {
       var ruleOption = this.findRuleById(condition.ruleId);
 
       ruleOption.childCondition.push({
-        id: Guid.newGuid(), dbContext: condition.dbContext, table: condition.table,
-        field: condition.field, operateType: condition.operateType, value: condition.value
+        id: Guid.newGuid(), field: condition.field, operateType: condition.operateType, value: condition.value
       });
     }
 
@@ -217,11 +260,13 @@ export class RuleManageComponent implements OnInit {
   // 检查是否所有规则包含条件
   private checkRuleResult: boolean = true;
   private checkRule(options) {
-    for (var option of options) {
-      if (option.childCondition.length == 0 || !option.combineType) {
-        this.checkRuleResult = false;
+    if (options.childCondition.length == 0 || !options.combineType) {
+      this.checkRuleResult = false;
+    }
+    if (options.childRuleOption) {
+      for (var ruleOption of options.childRuleOption) {
+        this.checkRule(ruleOption);
       }
-      this.checkRule(option.childRuleOption);
     }
   }
   private isRuleValid() {
@@ -234,13 +279,17 @@ export class RuleManageComponent implements OnInit {
   // 检查条件的内容是否完整
   private checkConditionResult: boolean = true;
   private checkCondition(options) {
-    for (var option of options) {
-      for (var condition of option.childCondition) {
-        if (!condition.dbContext || !condition.table || !condition.field || !condition.operateType || !condition.value) {
-          this.checkConditionResult = false;
-        }
+
+    for (var condition of options.childCondition) {
+      if (!condition.field || !condition.operateType || !condition.value) {
+        this.checkConditionResult = false;
       }
-      this.checkCondition(option.childRuleOption);
+    }
+
+    if (options.childRuleOption) {
+      options.childRuleOption.forEach(o => {
+        this.checkCondition(o);
+      });
     }
   }
   private isConditionValid() {
@@ -263,16 +312,15 @@ export class RuleManageComponent implements OnInit {
   // 查找规则
   private findedRule;
   private findRule(option, id) {
-    option.forEach(o => {
-
-      if (o.id == id) {
-        this.findedRule = o;
-      } else {
-        if (o.childRuleOption) {
-          this.findRule(o.childRuleOption, id);
-        }
+    if (option.id == id) {
+      this.findedRule = option;
+    } else {
+      if (option.childRuleOption) {
+        option.childRuleOption.forEach(o => {
+          this.findRule(o, id);
+        });
       }
-    });
+    }
   }
 
   // 根据id查找规则对应的节点

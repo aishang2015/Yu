@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
+using Serialize.Linq.Serializers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Yu.Core.Expressions;
 using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
@@ -89,7 +90,19 @@ namespace Yu.Service.WebAdmin.Rule
             await _ruleConditionRepository.InsertRangeAsync(Mapper.Map<IEnumerable<RuleCondition>>(ruleConditions));
 
             // 生成表达式保存到数据库
-            
+            // 获取实体类型
+            var topRule = rules.Where(rule => string.IsNullOrEmpty(rule.UpRuleId)).FirstOrDefault();
+            var entityType = EntityTypeFinder.FindEntityType(ruleGroup.DbContext, ruleGroup.Entity);
+            var expressionGroup = new ExpressionGroup(entityType);
+            MakeExpressionGroup(topRule, rules, ruleConditions, entityType, ref expressionGroup);
+
+            // 生成过滤表达式
+            var lambda = expressionGroup.GetLambda();
+
+            // 表达式序列化
+            var serializer = new ExpressionSerializer(new JsonSerializer());
+            var value = serializer.SerializeText(lambda);
+            ruleGroup.Lambda = value;
 
             // 更新或添加规则组
             if (group == null)
@@ -142,6 +155,39 @@ namespace Yu.Service.WebAdmin.Rule
                 Rules = Mapper.Map<IEnumerable<RuleEntityResult>>(_ruleRepository.GetByWhereNoTracking(rule => rule.RuleGroupId == ruleGroupId)),
                 RuleConditions = Mapper.Map<IEnumerable<RuleConditionResult>>(_ruleConditionRepository.GetByWhereNoTracking(condition => condition.RuleGroupId == ruleGroupId))
             };
+        }
+
+        private void MakeExpressionGroup(RuleEntityResult upRule, IEnumerable<RuleEntityResult> rules,
+            IEnumerable<RuleConditionResult> ruleConditions, Type entityType,
+            ref ExpressionGroup expressionGroup)
+        {
+            // 查找子规则
+            var childRules = from rule in rules
+                             where rule.UpRuleId == upRule.Id
+                             select rule;
+
+            // 做成子规则
+            foreach (var rule in childRules)
+            {
+                var eg = new ExpressionGroup(entityType) { };
+                MakeExpressionGroup(rule, rules, ruleConditions, entityType, ref eg);
+                expressionGroup.ExpressionGroupsList.Add(eg);
+            }
+
+            // 规则类型
+            expressionGroup.ExpressionCombineType = (ExpressionCombineType)int.Parse(upRule.CombineType);
+
+            // 规则下的条件
+            var conditions = from condition in ruleConditions
+                             where condition.RuleId == upRule.Id
+                             select condition;
+
+            // 添加条件
+            foreach (var condition in conditions)
+            {
+                expressionGroup.TupleList.Add((condition.Field, condition.Value, (ExpressionType)int.Parse(condition.OperateType)));
+            }           
+
         }
 
     }
