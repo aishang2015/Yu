@@ -41,6 +41,9 @@ export class UriConstant {
     // 实体数据地址
     static readonly EntitiesUri = UriConstant.BaseApiUri + 'entities';
 
+    // 实体数据地址
+    static readonly EntityUri = UriConstant.BaseApiUri + 'entity';
+
     // 规则组
     static readonly RuleGroupUri = UriConstant.BaseApiUri + 'ruleGroup';
 

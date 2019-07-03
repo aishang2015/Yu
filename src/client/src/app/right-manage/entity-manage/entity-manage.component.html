@@ -1,0 +1,125 @@
+<!--警告栏-->
+<nz-alert nzCloseable nzType="warning" [nzMessage]="'操作实体可能会导致发生系统错误，请认真确认后再进行操作！'"></nz-alert>
+
+<!--搜索栏-->
+<div nz-row class="mt-10">
+  <div class="searchInput">
+    <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+      <input type="text" nz-input placeholder="数据库/实体/字段" name="searchText" [(ngModel)]="searchText"
+        autocomplete="off" />
+    </nz-input-group>
+    <ng-template #suffixIconButton>
+      <button nz-button nzType="default" nzSearch (click)="searchData()"><i nz-icon type="search"></i></button>
+    </ng-template>
+  </div>
+</div>
+
+<!--操作-->
+<div nz-row class="mt-10">
+  <nz-button-group>
+    <button nz-button (click)="addEntity()"><i nz-icon nzType="plus"></i> 添加记录</button>
+  </nz-button-group>
+</div>
+
+<!--信息展示-->
+<div nz-row class="mt-10">
+  <nz-table #headerTable [nzData]="listOfData" [nzFrontPagination]="false" nzHideOnSinglePage="true"
+    [nzBordered]="true">
+    <thead>
+      <tr>
+        <th nzAlign="center" nzWidth="75px">序号</th>
+        <th nzAlign="center" nzWidth="180px">数据库上下文</th>
+        <th nzAlign="center" nzWidth="180px">实体名</th>
+        <th nzAlign="center" nzWidth="180px">实体描述</th>
+        <th nzAlign="center" nzWidth="180px">字段名</th>
+        <th nzAlign="center" nzWidth="180px">字段描述</th>
+        <th nzAlign="center">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of listOfData;let i = index">
+        <td nzAlign="center" nzWidth="75px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td nzAlign="center" nzWidth="180px">{{ data.dbContext }}</td>
+        <td nzAlign="center" nzWidth="180px">{{ data.table }}</td>
+        <td nzAlign="center" nzWidth="180px">{{ data.tableDescribe }}</td>
+        <td nzAlign="center" nzWidth="180px">{{ data.field }}</td>
+        <td nzAlign="center" nzWidth="180px">{{ data.fieldDescribe }}</td>
+        <td nzAlign="center">
+          <a (click)="deleteEntity(data)">删除</a> &nbsp;
+          <a (click)="editEntity(data)">修改</a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>
+<div nz-row class="mt-10">
+  <nz-pagination [(nzPageIndex)]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" [nzShowTotal]="totalTemplate"
+    nzShowSizeChanger [nzPageSizeOptions]="[10,20,30,40,50]" (nzPageSizeChange)="pageSizeChange($event)"
+    (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
+  <ng-template #totalTemplate let-total> 共计 {{ total }} 数据 </ng-template>
+</div>
+
+<!--模板内容-->
+<ng-template #editTpl>
+  <form nz-form #form="ngForm" (ngSubmit)="submit(form)">
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">数据库上下文</nz-form-label>
+      <nz-form-control [nzSpan]="12"
+        [ngClass]="{'has-error': dbContext.invalid && (dbContext.dirty || dbContext.touched || isSubmit)}">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="dbContext"
+          [(ngModel)]="editedEntity.dbContext" #dbContext="ngModel" required />
+        <nz-form-explain
+          *ngIf="dbContext.invalid && (dbContext.dirty || dbContext.touched || isSubmit) && dbContext.errors.required">
+          请输入数据库上下文</nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">实体名</nz-form-label>
+      <nz-form-control [nzSpan]="12"
+        [ngClass]="{'has-error': table.invalid && (table.dirty || table.touched || isSubmit)}">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="table" [(ngModel)]="editedEntity.table"
+          #table="ngModel" required />
+        <nz-form-explain *ngIf="table.invalid && (table.dirty || table.touched || isSubmit) && table.errors.required">
+          请输入表名</nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">实体描述</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="tableDescribe"
+          [(ngModel)]="editedEntity.tableDescribe" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">字段名</nz-form-label>
+      <nz-form-control [nzSpan]="12"
+        [ngClass]="{'has-error': field.invalid && (field.dirty || field.touched || isSubmit)}">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="field" [(ngModel)]="editedEntity.field"
+          #field="ngModel" required />
+        <nz-form-explain *ngIf="field.invalid && (field.dirty || field.touched || isSubmit) && field.errors.required">
+          请输入字段名</nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">字段描述</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="fieldDescribe"
+          [(ngModel)]="editedEntity.fieldDescribe" />
+      </nz-form-control>
+    </nz-form-item>
+
+
+    <nz-form-item>
+      <nz-form-control [nzSpan]="12" [nzOffset]="5">
+        <button class="mr-5" nz-button type="submit">提交</button>
+        <button class="mr-5" nz-button type="button" (click)="cancel(form)">取消</button>
+      </nz-form-control>
+    </nz-form-item>
+
+  </form>
+</ng-template>

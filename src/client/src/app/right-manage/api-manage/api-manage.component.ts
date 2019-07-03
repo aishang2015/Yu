@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from 'src/app/core/services/api.service';
+import { ApiDetail } from '../models/api-detail';
+import { NzModalRef, NzModalService, NzMessageService } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-api-manage',
@@ -8,8 +10,10 @@ import { ApiService } from 'src/app/core/services/api.service';
 })
 export class ApiManageComponent implements OnInit {
 
+  // 搜素文字串
   searchText: string = '';
 
+  // 数据
   listOfData = [];
 
   // 分页数据
@@ -17,7 +21,19 @@ export class ApiManageComponent implements OnInit {
   pageSize: number = 20;
   total: number = 0;
 
-  constructor(private _apiService: ApiService) { }
+  // 编辑中的api
+  editedApi: ApiDetail = new ApiDetail();
+
+  // 模态对话框
+  nzModal: NzModalRef;
+
+  // 模态对话框模板
+  @ViewChild('editTpl')
+  editTpl;
+
+  constructor(private _apiService: ApiService,
+    private _modalService: NzModalService,
+    private _messageService: NzMessageService) { }
 
   ngOnInit() {
     this.initData();
@@ -48,6 +64,29 @@ export class ApiManageComponent implements OnInit {
 
   pageIndexChange() {
     this.initData();
+  }
+
+  // 添加API
+  addApi() {
+    this.editedApi = new ApiDetail();
+    this.nzModal = this._modalService.create(
+      {
+        nzTitle: null,
+        nzContent: this.editTpl,
+        nzFooter: null,
+        nzClosable: false,
+        nzMaskClosable: false
+      }
+    )
+  }
+
+  // 提交修改
+  submit(form) {
+  }
+
+  // 取消修改
+  cancel(form) {
+    this.nzModal.close();
   }
 
 }

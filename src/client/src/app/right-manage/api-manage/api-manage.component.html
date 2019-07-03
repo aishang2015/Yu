@@ -1,3 +1,4 @@
+<!--搜索栏-->
 <div nz-row>
   <div class="searchInput">
     <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
@@ -9,6 +10,14 @@
   </div>
 </div>
 
+<!--操作栏-->
+<div nz-row class="mt-10">
+  <nz-button-group>
+    <button nz-button (click)="addApi()"><i nz-icon nzType="plus"></i> 添加Api</button>
+  </nz-button-group>
+</div>
+
+
 <!--信息展示-->
 <div nz-row class="mt-10">
   <nz-table #headerTable [nzData]="listOfData" [nzFrontPagination]="false" nzHideOnSinglePage="true"
@@ -19,7 +28,7 @@
         <th nzAlign="center" nzWidth="300px">名称</th>
         <th nzAlign="center" nzWidth="150px">控制器</th>
         <th nzAlign="center" nzWidth="150px">类型</th>
-        <th nzAlign="center" >地址</th>
+        <th nzAlign="center">地址</th>
       </tr>
     </thead>
     <tbody>
@@ -27,8 +36,10 @@
         <td nzAlign="center" nzWidth="75px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
         <td nzAlign="center" nzWidth="300px">{{ data.name }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.controller }}</td>
-        <td nzAlign="center" nzWidth="150px"><nz-tag [nzColor]="'green'">{{ data.type }}</nz-tag></td>
-        <td nzAlign="center" >{{ data.address }}</td>
+        <td nzAlign="center" nzWidth="150px">
+          <nz-tag [nzColor]="'green'">{{ data.type }}</nz-tag>
+        </td>
+        <td nzAlign="center">{{ data.address }}</td>
       </tr>
     </tbody>
   </nz-table>
@@ -39,3 +50,64 @@
     (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
   <ng-template #totalTemplate let-total> 共计 {{ total }} 数据 </ng-template>
 </div>
+
+
+<!--模板内容-->
+<ng-template #editTpl>
+  <form nz-form #form="ngForm" (ngSubmit)="submit(form)">
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">名称</nz-form-label>
+      <nz-form-control [nzSpan]="12"
+        [ngClass]="{'has-error': name.invalid && (name.dirty || name.touched || isSubmit)}">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="name" [(ngModel)]="editedApi.name"
+          #name="ngModel" required />
+        <nz-form-explain *ngIf="name.invalid && (name.dirty || name.touched || isSubmit) && name.errors.required">
+          请输入名称</nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">控制器</nz-form-label>
+      <nz-form-control [nzSpan]="12"
+        [ngClass]="{'has-error': controller.invalid && (controller.dirty || controller.touched || isSubmit)}">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="controller"
+          [(ngModel)]="editedApi.controller" #controller="ngModel" required />
+        <nz-form-explain
+          *ngIf="controller.invalid && (controller.dirty || controller.touched || isSubmit) && controller.errors.required">
+          请输入控制器</nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">访问类型</nz-form-label>
+      <nz-form-control [nzSpan]="12"
+        [ngClass]="{'has-error': type.invalid && (type.dirty || type.touched || isSubmit)}">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="type" [(ngModel)]="editedApi.type"
+          #type="ngModel" required />
+        <nz-form-explain *ngIf="type.invalid && (type.dirty || type.touched || isSubmit) && type.errors.required">
+          请输入访问类型</nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">地址</nz-form-label>
+      <nz-form-control [nzSpan]="12"
+        [ngClass]="{'has-error': address.invalid && (address.dirty || address.touched || isSubmit)}">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="address" [(ngModel)]="editedApi.address"
+          #address="ngModel" required />
+        <nz-form-explain
+          *ngIf="address.invalid && (address.dirty || address.touched || isSubmit) && address.errors.required">
+          请输入地址</nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control [nzSpan]="12" [nzOffset]="5">
+        <button class="mr-5" nz-button type="submit">提交</button>
+        <button class="mr-5" nz-button type="button" (click)="cancel(form)">取消</button>
+      </nz-form-control>
+    </nz-form-item>
+
+  </form>
+</ng-template>

@@ -8,6 +8,7 @@ import { MenuManageComponent } from './menu-manage/menu-manage.component';
 import { GroupManageComponent } from './group-manage/group-manage.component';
 import { ApiManageComponent } from './api-manage/api-manage.component';
 import { RuleManageComponent } from './rule-manage/rule-manage.component';
+import { EntityManageComponent } from './entity-manage/entity-manage.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { RuleManageComponent } from './rule-manage/rule-manage.component';
     MenuManageComponent,
     GroupManageComponent,
     ApiManageComponent,
-    RuleManageComponent
+    RuleManageComponent,
+    EntityManageComponent
   ],
   imports: [
     CommonModule,
@@ -27,7 +29,8 @@ import { RuleManageComponent } from './rule-manage/rule-manage.component';
       { path: 'menu', component: MenuManageComponent },
       { path: 'group', component: GroupManageComponent },
       { path: 'api', component: ApiManageComponent },
-      { path: 'rule', component: RuleManageComponent }
+      { path: 'rule', component: RuleManageComponent },
+      { path: 'entity', component: EntityManageComponent },
     ])
   ]
 })
