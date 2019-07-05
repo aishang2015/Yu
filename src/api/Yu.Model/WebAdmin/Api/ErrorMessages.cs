@@ -8,6 +8,7 @@
         public static readonly string WebAdmin_Api_E003 = "页码不正确！(E003)";
         public static readonly string WebAdmin_Api_E004 = "每页条数不正确！(E004)";
         public static readonly string WebAdmin_Api_E005 = "查询关键字长度不能超过20！(E005)";
+        public static readonly string WebAdmin_Api_E006 = "ID不能为空！(E006)";
     }
 }
 

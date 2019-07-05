@@ -6,6 +6,8 @@ import { NzTreeComponent, NzTreeNodeOptions, NzModalService, NzMessageService } 
 import { element } from '@angular/core/src/render3';
 import { ElementService } from 'src/app/core/services/element.service';
 import { resource } from 'selenium-webdriver/http';
+import { ApiService } from 'src/app/core/services/api.service';
+import { ApiDetail } from '../models/api-detail';
 
 @Component({
   selector: 'app-menu-manage',
@@ -28,6 +30,9 @@ export class MenuManageComponent implements OnInit {
   // 全部元素
   elements: Element[] = [];
 
+  // 全部api
+  apis: ApiDetail[] = [];
+
   // 编辑中的元素
   editedElement: Element = new Element();
 
@@ -43,8 +48,10 @@ export class MenuManageComponent implements OnInit {
   // 是否提交
   isSubmit: boolean = false;
 
-  constructor(private _modalService: NzModalService, private _elementService: ElementService,
-    private _messageService: NzMessageService) { }
+  constructor(private _modalService: NzModalService,
+    private _elementService: ElementService,
+    private _messageService: NzMessageService,
+    private _apiService: ApiService) { }
 
   ngOnInit() {
     this.initData();
@@ -119,6 +126,11 @@ export class MenuManageComponent implements OnInit {
     }
   }
 
+  // 组合选项显示
+  combineApiLabel(name, address, type) {
+    return `${name}([${type}]${address})`;
+  }
+
   // 取消编辑表单
   cancelEdit(form) {
     form.reset();
@@ -151,9 +163,13 @@ export class MenuManageComponent implements OnInit {
       result => {
         this.elements = result;
         this.makeNodes();
-        this._messageService.success("数据初始化完毕。");
       }
-    )
+    );
+    this._apiService.getAllApi().subscribe(
+      result => {
+        this.apis = result;
+      }
+    );
   }
 
   // 构建树

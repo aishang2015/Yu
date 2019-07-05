@@ -14,7 +14,7 @@ namespace Yu.Model.WebAdmin.Element
             AllowNullCollections = true;
 
             // 映射 如果id为空则创建新id
-            CreateMap<ElementDetail, Data.Entities.Front.Element>()
+            CreateMap<ElementDetail, Data.Entities.Right.Element>()
                 .ForMember(e => e.Id,
                 ex => ex.MapFrom(ed => string.IsNullOrEmpty(ed.Id) ? Guid.NewGuid() : Guid.Parse(ed.Id)))
                 .ForMember(e => e.ElementType,

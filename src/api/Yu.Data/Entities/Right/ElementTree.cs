@@ -1,7 +1,7 @@
 ﻿using System;
 using Yu.Data.Infrasturctures;
 
-namespace Yu.Data.Entities.Front
+namespace Yu.Data.Entities.Right
 {
     [BelongTo(typeof(BaseIdentityDbContext))]
     public class ElementTree : BaseEntity<Guid>

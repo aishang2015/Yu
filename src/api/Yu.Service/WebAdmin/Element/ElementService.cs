@@ -7,8 +7,8 @@ using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Element.InputModels;
 using Yu.Model.WebAdmin.Element.OutputModels;
-using Ele = Yu.Data.Entities.Front.Element;
-using EleTree = Yu.Data.Entities.Front.ElementTree;
+using Ele = Yu.Data.Entities.Right.Element;
+using EleTree = Yu.Data.Entities.Right.ElementTree;
 
 namespace Yu.Service.WebAdmin.Element
 {

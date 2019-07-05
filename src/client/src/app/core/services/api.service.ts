@@ -15,9 +15,33 @@ export class ApiService extends BaseService {
   constructor(private injector: Injector,
     private http: HttpClient) { super(injector); }
 
-  // 取得API
+  // 取得api
   getApis(pageIndex, pageSize, searchText) {
     const uri = UriConstant.ApiUri + `?pageIndex=${pageIndex}&pageSize=${pageSize}&searchText=${searchText}`;
     return this.SafeRequestGeneric(this.http.get(uri));
+  }
+
+  // 添加api
+  addApi(api) {
+    const uri = UriConstant.ApiUri;
+    return this.SafeRequest(this.http.post(uri, api));
+  }
+
+  // 更新api
+  updateApi(api) {
+    const uri = UriConstant.ApiUri;
+    return this.SafeRequest(this.http.put(uri, api));
+  }
+
+  // 删除api
+  deleteApi(id) {
+    const uri = UriConstant.ApiUri + `?apiId=${id}`;
+    return this.SafeRequest(this.http.delete(uri));
+  }
+
+  // 取得全部api
+  getAllApi(){
+    const uri = UriConstant.AllApiUri;
+    return this.SafeRequest(this.http.get(uri));
   }
 }

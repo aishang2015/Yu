@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Yu.Data.Entities.Enums;
-using Yu.Data.Entities.Front;
+using Yu.Data.Entities.Right;
 
 namespace Yu.Data.Configurations.Front
 {

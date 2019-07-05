@@ -27,6 +27,9 @@ export class ApiManageComponent implements OnInit {
   // 模态对话框
   nzModal: NzModalRef;
 
+  // 是否提交
+  isSubmit = false;
+
   // 模态对话框模板
   @ViewChild('editTpl')
   editTpl;
@@ -62,6 +65,7 @@ export class ApiManageComponent implements OnInit {
     this.initData();
   }
 
+  // 页码发生变化
   pageIndexChange() {
     this.initData();
   }
@@ -80,8 +84,55 @@ export class ApiManageComponent implements OnInit {
     )
   }
 
+  // 编辑Api
+  editApi(api) {
+    Object.assign(this.editedApi, api);
+    this.nzModal = this._modalService.create(
+      {
+        nzTitle: null,
+        nzContent: this.editTpl,
+        nzFooter: null,
+        nzClosable: false,
+        nzMaskClosable: false
+      }
+    );
+  }
+
+  // 删除Api
+  deleteApi(api) {
+    this._modalService.confirm(
+      {
+        nzTitle: '是否删除此Api数据？',
+        nzContent: '删除该数据可能会导致系统错误，请确认后再进行删除',
+        nzOnOk: () => {
+          this._apiService.deleteApi(api.id).subscribe(result => {
+            this._messageService.success("删除成功");
+            this.initData();
+          })
+        }
+      }
+    )
+  }
+
   // 提交修改
   submit(form) {
+    this.isSubmit = true;
+    if (form.valid) {
+      this.isSubmit = false;
+      if (this.editedApi.id) {
+        this._apiService.updateApi(this.editedApi).subscribe(result => {
+          this._messageService.success("更新成功");
+          this.initData();
+          this.nzModal.close();
+        })
+      } else {
+        this._apiService.addApi(this.editedApi).subscribe(result => {
+          this._messageService.success("创建成功");
+          this.initData();
+          this.nzModal.close();
+        });
+      }
+    }
   }
 
   // 取消修改

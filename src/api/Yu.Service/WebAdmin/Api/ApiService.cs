@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Yu.Core.Expressions;
 using Yu.Data.Entities;
+using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 using ApiEntity = Yu.Data.Entities.Right.Api;
 
@@ -12,10 +14,33 @@ namespace Yu.Service.WebAdmin.Api
         // API仓储类
         private IRepository<ApiEntity, Guid> _apiRepository;
 
-        // 构造函数
-        public ApiService(IRepository<ApiEntity, Guid> apiRepository)
+        // 工作单元
+        private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
+
+        public ApiService(IRepository<ApiEntity, Guid> apiRepository, IUnitOfWork<BaseIdentityDbContext> unitOfWork)
         {
             _apiRepository = apiRepository;
+            _unitOfWork = unitOfWork;
+        }
+
+        /// <summary>
+        /// 添加api数据
+        /// </summary>
+        /// <param name="api">api数据</param>
+        public async Task AddApi(ApiEntity api)
+        {
+            await _apiRepository.InsertAsync(api);
+            await _unitOfWork.CommitAsync();
+        }
+
+        /// <summary>
+        /// 删除api数据
+        /// </summary>
+        /// <param name="apiId">api的id</param>
+        public async Task DeleteApi(Guid apiId)
+        {
+            _apiRepository.DeleteRange(api => api.Id == apiId);
+            await _unitOfWork.CommitAsync();
         }
 
         /// <summary>
@@ -33,10 +58,28 @@ namespace Yu.Service.WebAdmin.Api
             };
 
             // 查询过滤
-            var query = _apiRepository.GetByWhere(group.GetLambda());
+            var query = _apiRepository.GetByWhereNoTracking(group.GetLambda());
 
             // 生成结果
             return _apiRepository.GetByPage(query, pageIndex, pageSize);
+        }
+
+        /// <summary>
+        /// 更新api数据
+        /// </summary>
+        /// <param name="api">api数据</param>
+        public async Task UpdateApi(ApiEntity api)
+        {
+            _apiRepository.Update(api);
+            await _unitOfWork.CommitAsync();
+        }
+
+        /// <summary>
+        /// 全部api
+        /// </summary>
+        public IEnumerable<ApiEntity> GetAllApi()
+        {
+            return _apiRepository.GetAllNoTracking();
         }
     }
 }

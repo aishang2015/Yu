@@ -29,6 +29,7 @@
         <th nzAlign="center" nzWidth="150px">控制器</th>
         <th nzAlign="center" nzWidth="150px">类型</th>
         <th nzAlign="center">地址</th>
+        <th nzAlign="center" nzWidth="150px">操作</th>
       </tr>
     </thead>
     <tbody>
@@ -40,6 +41,10 @@
           <nz-tag [nzColor]="'green'">{{ data.type }}</nz-tag>
         </td>
         <td nzAlign="center">{{ data.address }}</td>
+        <td nzAlign="center" nzWidth="150px">
+          <a (click)="editApi(data)">修改</a>&nbsp;
+          <a (click)="deleteApi(data)">删除</a>
+        </td>
       </tr>
     </tbody>
   </nz-table>
