@@ -3,10 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Element.InputModels;
 using Yu.Model.WebAdmin.Element.OutputModels;
+using ApiEntity = Yu.Data.Entities.Right.Api;
 using Ele = Yu.Data.Entities.Right.Element;
 using EleTree = Yu.Data.Entities.Right.ElementTree;
 
@@ -20,14 +22,20 @@ namespace Yu.Service.WebAdmin.Element
         // 元素树的仓储
         private readonly IRepository<EleTree, Guid> _elementTreeRepository;
 
+        // 元素与API关联数据的仓储
+        private readonly IRepository<ElementApi, Guid> _elementApiRepository;
+
         // 工作单元
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
-        public ElementService(IRepository<Ele, Guid> elementRepository,
-            IRepository<EleTree, Guid> elementTreeRepository, IUnitOfWork<BaseIdentityDbContext> unitOfWork)
+        public ElementService(IRepository<Ele, Guid> elementRepository, 
+            IRepository<EleTree, Guid> elementTreeRepository, 
+            IRepository<ElementApi, Guid> elementApiRepository, 
+            IUnitOfWork<BaseIdentityDbContext> unitOfWork)
         {
             _elementRepository = elementRepository;
             _elementTreeRepository = elementTreeRepository;
+            _elementApiRepository = elementApiRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -81,6 +89,16 @@ namespace Yu.Service.WebAdmin.Element
                 Length = 0
             });
 
+            // 添加api关联
+            foreach (var api in elementDetail.Apis)
+            {
+                await _elementApiRepository.InsertAsync(new ElementApi
+                {
+                    ElementId = ele.Id,
+                    ApiId = Guid.Parse(api)
+                });
+            }
+
             // 工作单元提交
             await _unitOfWork.CommitAsync();
         }
@@ -94,6 +112,7 @@ namespace Yu.Service.WebAdmin.Element
             var eleIds = _elementTreeRepository.GetByWhere(et => et.Ancestor == elementId).Select(et => et.Descendant);
             _elementRepository.DeleteRange(e => eleIds.Contains(e.Id));
             _elementTreeRepository.DeleteRange(et => eleIds.Contains(et.Ancestor) || eleIds.Contains(et.Descendant));
+            _elementApiRepository.DeleteRange(ea => eleIds.Contains(ea.ElementId));
 
             // 工作单元提交
             await _unitOfWork.CommitAsync();
@@ -110,6 +129,8 @@ namespace Yu.Service.WebAdmin.Element
             {
                 var elementTree = _elementTreeRepository.GetByWhere(et => et.Descendant == element.Id && et.Length == 1)
                     .FirstOrDefault();
+                var apis = _elementApiRepository.GetByWhereNoTracking(ea => ea.ElementId == element.Id)
+                    .Select(ea => ea.ApiId.ToString().ToLower()).ToArray();
                 result.Add(new ElementResult
                 {
                     Id = element.Id.ToString(),
@@ -118,6 +139,7 @@ namespace Yu.Service.WebAdmin.Element
                     Identification = element.Identification,
                     Name = element.Name,
                     Route = element.Route,
+                    Apis = apis
                 });
             }
             return result;
@@ -130,6 +152,17 @@ namespace Yu.Service.WebAdmin.Element
         public async Task UpdateElement(ElementDetail elementDetail)
         {
             _elementRepository.Update(Mapper.Map<Ele>(elementDetail));
+
+            // 更新api关联
+            _elementApiRepository.DeleteRange(ea => Guid.Parse(elementDetail.Id) == ea.ElementId);
+            foreach (var api in elementDetail.Apis)
+            {
+                await _elementApiRepository.InsertAsync(new ElementApi
+                {
+                    ElementId = Guid.Parse(elementDetail.Id),
+                    ApiId = Guid.Parse(api)
+                });
+            }
             await _unitOfWork.CommitAsync();
         }
     }

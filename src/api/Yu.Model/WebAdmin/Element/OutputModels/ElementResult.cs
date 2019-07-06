@@ -23,5 +23,8 @@ namespace Yu.Model.WebAdmin.Element.OutputModels
 
         // 路由
         public string Route { get; set; }
+
+        // 关联的api
+        public string[] Apis { get; set; }
     }
 }

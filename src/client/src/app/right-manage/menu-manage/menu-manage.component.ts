@@ -63,7 +63,7 @@ export class MenuManageComponent implements OnInit {
     // 只有选择菜单的情况下可以创建子元素
     if (this.editedElement.elementType != 2 && this.editedElement.elementType != 3) {
       this.isEditMode = true;
-      this.editedElement = { id: '', upId: this.editedElement.id, name: '', elementType: 1, identification: '', route: '' }
+      this.editedElement = { id: '', upId: this.editedElement.id, name: '', elementType: 1, identification: '', route: '', apis: [] }
     }
   }
 
@@ -92,7 +92,9 @@ export class MenuManageComponent implements OnInit {
 
   // 编辑菜单
   editMenu() {
-    this.isEditMode = true;
+    if(this.editedElement.id){
+      this.isEditMode = true;
+    }
   }
 
   // 提交表单
@@ -159,15 +161,15 @@ export class MenuManageComponent implements OnInit {
 
   // 初始化数据
   private initData() {
+    this._apiService.getAllApi().subscribe(
+      result => {
+        this.apis = result;
+      }
+    );
     this._elementService.getAllElement().subscribe(
       result => {
         this.elements = result;
         this.makeNodes();
-      }
-    );
-    this._apiService.getAllApi().subscribe(
-      result => {
-        this.apis = result;
       }
     );
   }
