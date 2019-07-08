@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Yu.Data.Entities.Enums;
 using Yu.Data.Entities.Right;
 
-namespace Yu.Data.Configurations.Front
+namespace Yu.Data.Configurations.Right
 {
     public class ElementConfiguration : IEntityTypeConfiguration<Element>
     {

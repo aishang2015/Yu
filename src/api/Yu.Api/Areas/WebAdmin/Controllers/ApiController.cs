@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
-using Yu.Model.WebAdmin.Api.InputModels;
+using Yu.Model.Common.InputModels;
 using Yu.Service.WebAdmin.Api;
 
 namespace Yu.Api.Areas.WebAdmin.Controllers
@@ -32,7 +32,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         /// <returns>API数据</returns>
         [HttpGet("api")]
         [Description("取得API数据")]
-        public IActionResult GetApis([FromQuery] ApiQuery query)
+        public IActionResult GetApis([FromQuery] PagedQuery query)
         {
             var result = _apiService.GetApis(query.PageIndex, query.PageSize, query.SearchText);
             return Ok(result);
@@ -68,9 +68,9 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         /// <param name="query">apiId</param>
         [HttpDelete("api")]
         [Description("删除api数据")]
-        public async Task<IActionResult> DeleteApi([FromQuery]ApiDeleteQuery query)
+        public async Task<IActionResult> DeleteApi([FromQuery]IdQuery query)
         {
-            await _apiService.DeleteApi(query.ApiId);
+            await _apiService.DeleteApi(query.Id);
             return Ok();
         }
 

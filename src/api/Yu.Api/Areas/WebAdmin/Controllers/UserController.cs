@@ -5,7 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
-using Yu.Model.WebAdmin.User.InputModels;
+using Yu.Model.Common.InputModels;
 using Yu.Model.WebAdmin.User.OutputModels;
 using Yu.Service.WebAdmin.User;
 
@@ -33,7 +33,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         /// <returns></returns>
         [HttpGet("userOutline")]
         [Description("取得用户概要情报")]
-        public IActionResult GetUserOutlines([FromQuery]UserOutlineQuery query)
+        public IActionResult GetUserOutlines([FromQuery]PagedQuery query)
         {
             // 取得数据            
             var result = _userService.GetUserOutlines(query.PageIndex, query.PageSize, query.SearchText);
@@ -47,9 +47,9 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         /// <returns></returns>
         [HttpGet("userDetail")]
         [Description("取得用户数据")]
-        public async Task<IActionResult> GetUserDetail([FromQuery]UserDetailQuery query)
+        public async Task<IActionResult> GetUserDetail([FromQuery]IdQuery query)
         {
-            var user = await _userService.GetUserDetail(query.UserId);
+            var user = await _userService.GetUserDetail(query.Id);
             return Ok(user);
         }
 
@@ -73,9 +73,9 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         /// <returns></returns>
         [HttpDelete("userDetail")]
         [Description("删除用户数据")]
-        public async Task<IActionResult> DeleteUser([FromQuery]UserDetailQuery query)
+        public async Task<IActionResult> DeleteUser([FromQuery]IdQuery query)
         {
-            await _userService.DeleteUser(query.UserId);
+            await _userService.DeleteUser(query.Id);
             return Ok();
         }
 

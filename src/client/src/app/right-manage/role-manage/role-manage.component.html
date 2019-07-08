@@ -1,3 +1,107 @@
-<p>
-  role-manage works!
-</p>
+<!--搜索栏-->
+<div nz-row>
+  <div style="width: 250px;">
+    <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+      <input type="text" nz-input placeholder="角色名称等" name="searchText" [(ngModel)]="searchText" autocomplete="off" />
+    </nz-input-group>
+    <ng-template #suffixIconButton>
+      <button nz-button nzType="default" nzSearch (click)="searchData()"><i nz-icon type="search"></i></button>
+    </ng-template>
+  </div>
+</div>
+
+<!--操作栏-->
+<div nz-row class="mt-10">
+  <nz-button-group>
+    <button nz-button (click)="addRole()"><i nz-icon nzType="plus"></i> 添加角色</button>
+  </nz-button-group>
+</div>
+
+<!--数据展示-->
+<div nz-row class="mt-10">
+  <nz-table #headerTable [nzData]="listOfData" [nzFrontPagination]="false" nzHideOnSinglePage="true"
+    [nzBordered]="true">
+    <thead>
+      <tr>
+        <th nzAlign="center" nzWidth="75px">序号</th>
+        <th nzAlign="center" nzWidth="300px">名称</th>
+        <th nzAlign="center">描述</th>
+        <th nzAlign="center" nzWidth="150px">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of listOfData;let i = index">
+        <td nzAlign="center" nzWidth="75px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td nzAlign="center" nzWidth="300px">{{ data.name }}</td>
+        <td nzAlign="center">{{ data.describe }}</td>
+        <td nzAlign="center" nzWidth="150px">
+          <a (click)="editApi(data)">修改</a>&nbsp;
+          <a (click)="deleteApi(data)">删除</a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>
+<div nz-row class="mt-10">
+  <nz-pagination [(nzPageIndex)]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" [nzShowTotal]="totalTemplate"
+    nzShowSizeChanger [nzPageSizeOptions]="[10,20,30,40,50]" (nzPageSizeChange)="pageSizeChange($event)"
+    (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
+  <ng-template #totalTemplate let-total> 共计 {{ total }} 数据 </ng-template>
+</div>
+
+<!--模板内容-->
+<ng-template #editTpl>
+  <form nz-form #form="ngForm" (ngSubmit)="submit(form)">
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">名称</nz-form-label>
+      <nz-form-control [nzSpan]="12"
+        [ngClass]="{'has-error': name.invalid && (name.dirty || name.touched || isSubmit)}">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="name" [(ngModel)]="editedRole.name"
+          #name="ngModel" required />
+        <nz-form-explain *ngIf="name.invalid && (name.dirty || name.touched || isSubmit) && name.errors.required">
+          请输入名称</nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">描述</nz-form-label>
+      <nz-form-control [nzSpan]="12"
+        [ngClass]="{'has-error': describe.invalid && (describe.dirty || describe.touched || isSubmit)}">
+        <input class="w350 cb" nz-input autocomplete="off" type="text" name="describe" [(ngModel)]="editedRole.describe"
+          #describe="ngModel" required />
+        <nz-form-explain
+          *ngIf="describe.invalid && (describe.dirty || describe.touched || isSubmit) && describe.errors.required">
+          请输入简单描述</nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">页面权限</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <nz-tree-select class="w350" [nzNodes]="elementsNodes" name="elements" nzCheckable
+          nzPlaceHolder="请选择页面权限" [(ngModel)]="editedRole.elements">
+        </nz-tree-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">数据权限</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <nz-select class="w350" [(ngModel)]="editedRole.dataRules" name="dataRules" nzMode="multiple"
+          nzPlaceHolder="请选择数据规则权限">
+          <nz-option *ngFor="let rule of dataRules" [nzLabel]="rule.name" [nzValue]="rule.value"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+
+    <nz-form-item>
+      <nz-form-control [nzSpan]="12" [nzOffset]="5">
+        <button class="mr-5" nz-button type="submit">提交</button>
+        <button class="mr-5" nz-button type="button" (click)="cancel(form)">取消</button>
+      </nz-form-control>
+    </nz-form-item>
+
+  </form>
+</ng-template>

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
+using Yu.Model.Common.InputModels;
 using Yu.Model.WebAdmin.Group.InputModels;
 using Yu.Service.WebAdmin.Group;
 
@@ -34,9 +35,9 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         /// </summary>
         [HttpDelete("group")]
         [Description("删除组织")]
-        public async Task<IActionResult> DeleteGroup([FromQuery]GroupQuery groupQuery)
+        public async Task<IActionResult> DeleteGroup([FromQuery]IdQuery idQuery)
         {
-            await _groupService.DeleteGroup(groupQuery.GroupId);
+            await _groupService.DeleteGroup(idQuery.Id);
             return Ok();
         }
 

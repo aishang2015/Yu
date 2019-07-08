@@ -35,7 +35,7 @@ export class ApiService extends BaseService {
 
   // 删除api
   deleteApi(id) {
-    const uri = UriConstant.ApiUri + `?apiId=${id}`;
+    const uri = UriConstant.ApiUri + `?id=${id}`;
     return this.SafeRequest(this.http.delete(uri));
   }
 

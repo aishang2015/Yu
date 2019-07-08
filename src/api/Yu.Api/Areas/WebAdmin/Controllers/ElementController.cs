@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
+using Yu.Model.Common.InputModels;
 using Yu.Model.WebAdmin.Element;
 using Yu.Model.WebAdmin.Element.InputModels;
 using Yu.Service.WebAdmin.Element;
@@ -59,9 +60,9 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         /// </summary>
         [Description("删除元素")]
         [HttpDelete("element")]
-        public async Task<IActionResult> DeleteElement([FromQuery]ElementQuery elementQuery)
+        public async Task<IActionResult> DeleteElement([FromQuery]IdQuery elementQuery)
         {
-            await _elementService.DeleteElement(elementQuery.ElementId);
+            await _elementService.DeleteElement(elementQuery.Id);
             return Ok();
         }
 

@@ -21,13 +21,13 @@ export class RuleService extends BaseService {
 
   // 查看规则组内容
   getRuleDetail(id) {
-    let uri = UriConstant.RuleDetailUri + `?ruleGroupId=${id}`;
+    let uri = UriConstant.RuleDetailUri + `?id=${id}`;
     return this.SafeRequest(this.http.get(uri));
   }
 
   // 删除规则组
   deleteRuleGroup(id) {
-    let uri = UriConstant.RuleGroupUri + `?ruleGroupId=${id}`;
+    let uri = UriConstant.RuleGroupUri + `?id=${id}`;
     return this.SafeRequest(this.http.delete(uri));
   }
 

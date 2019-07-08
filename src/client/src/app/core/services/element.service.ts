@@ -26,7 +26,7 @@ export class ElementService extends BaseService {
 
   // 删除元素
   deleteElement(elementId) {
-    let uri = UriConstant.ElementUri + `?elementId=${elementId}`;
+    let uri = UriConstant.ElementUri + `?id=${elementId}`;
     return this.SafeRequest(this.http.delete(uri));
   }
 

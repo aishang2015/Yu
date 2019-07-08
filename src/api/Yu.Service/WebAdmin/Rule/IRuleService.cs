@@ -15,7 +15,7 @@ namespace Yu.Service.WebAdmin.Rule
         /// <param name="rules">规则</param>
         /// <param name="ruleConditions">条件</param>
         /// <param name="ruleGroup">规则组</param>
-        Task AddOrUpdateRule(IEnumerable<RuleEntityResult> rules, IEnumerable<RuleConditionResult> ruleConditions, RuleGroup ruleGroup);
+        Task<bool> AddOrUpdateRule(IEnumerable<RuleEntityResult> rules, IEnumerable<RuleConditionResult> ruleConditions, RuleGroup ruleGroup);
 
         /// <summary>
         /// 删除规则组

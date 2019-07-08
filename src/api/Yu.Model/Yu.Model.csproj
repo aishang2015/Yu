@@ -13,5 +13,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Yu.Data\Yu.Data.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="WebAdmin\Role\InputModels\" />
+  </ItemGroup>
 
 </Project>

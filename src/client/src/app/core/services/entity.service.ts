@@ -39,7 +39,7 @@ export class EntityService extends BaseService {
 
   // 删除entity
   deleteEntity(id){
-    let uri = UriConstant.EntityUri + `?entityId=${id}`;
+    let uri = UriConstant.EntityUri + `?id=${id}`;
     return this.SafeRequest(this.http.delete(uri));
   }
 

@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
-using Yu.Data.Entities.Right;
-using Yu.Model.WebAdmin.Rule.InputModels;
+using Yu.Model.WebAdmin.Rule;
 using Yu.Model.WebAdmin.Rule.OutputModels;
 using Yu.Service.WebAdmin.Rule;
 
@@ -53,7 +51,12 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         //    [FromBody]IEnumerable<RuleCondition> ruleConditions, [FromBody]RuleGroup ruleGroup)
         public async Task<IActionResult> AddOrUpdateRule([FromBody]RuleResult result)
         {
-            await _ruleService.AddOrUpdateRule(result.Rules, result.RuleConditions, result.RuleGroup);
+            var taskResult = await _ruleService.AddOrUpdateRule(result.Rules, result.RuleConditions, result.RuleGroup);
+            if (!taskResult)
+            {
+                ModelState.AddModelError("field", ErrorMessages.WebAdmin_Rule_E001);
+                return BadRequest(ModelState);
+            }
             return Ok();
         }
 

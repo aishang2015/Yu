@@ -1,6 +1,6 @@
-﻿namespace Yu.Model.WebAdmin.User.InputModels
+﻿namespace Yu.Model.Common.InputModels
 {
-    public class UserOutlineQuery
+    public class PagedQuery
     {
         // 页码
         public int PageIndex { get; set; }

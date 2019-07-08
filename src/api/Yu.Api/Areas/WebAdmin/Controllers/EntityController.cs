@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
 using Yu.Data.Entities.Right;
-using Yu.Model.WebAdmin.Entity.InputModels;
+using Yu.Model.Common.InputModels;
 using Yu.Service.WebAdmin.Entity;
 
 namespace Yu.Api.Areas.WebAdmin.Controllers
@@ -29,7 +29,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
 
         [Description("取得实体数据")]
         [HttpGet("entity")]
-        public IActionResult GetEntity([FromQuery]EntityGetQuery query)
+        public IActionResult GetEntity([FromQuery]PagedQuery query)
         {
             var result = _entityService.GetEntities(query.PageIndex, query.PageSize, query.SearchText);
             return Ok(result);
@@ -55,9 +55,9 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
 
         [Description("删除实体数据")]
         [HttpDelete("entity")]
-        public async Task<IActionResult> DeleteEntity([FromQuery]EntityDeleteQuery query)
+        public async Task<IActionResult> DeleteEntity([FromQuery]IdQuery query)
         {
-            await _entityService.DeleteEntity(query.EntityId);
+            await _entityService.DeleteEntity(query.Id);
             return Ok();
         }
     }

@@ -30,7 +30,7 @@ export class GroupService extends BaseService {
 
   // 删除组织信息
   deleteGroup(groupId) {
-    let uri = UriConstant.GroupUri + `?groupId=${groupId}`;
+    let uri = UriConstant.GroupUri + `?id=${groupId}`;
     return this.SafeRequest(this.httpClient.delete(uri));
   }
 }

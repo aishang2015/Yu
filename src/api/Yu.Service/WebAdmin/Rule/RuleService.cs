@@ -3,12 +3,14 @@ using Serialize.Linq.Serializers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Yu.Core.Expressions;
 using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Rule.OutputModels;
+using ExpressionType = Yu.Core.Expressions.ExpressionType;
 using RuleEntity = Yu.Data.Entities.Right.Rule;
 
 namespace Yu.Service.WebAdmin.Rule
@@ -40,7 +42,7 @@ namespace Yu.Service.WebAdmin.Rule
         /// <param name="rules">规则</param>
         /// <param name="ruleConditions">条件</param>
         /// <param name="ruleGroup">规则组</param>
-        public async Task AddOrUpdateRule(IEnumerable<RuleEntityResult> rules, IEnumerable<RuleConditionResult> ruleConditions, RuleGroup ruleGroup)
+        public async Task<bool> AddOrUpdateRule(IEnumerable<RuleEntityResult> rules, IEnumerable<RuleConditionResult> ruleConditions, RuleGroup ruleGroup)
         {
             var group = _ruleGroupRepository.GetByWhereNoTracking(rg => rg.Id == ruleGroup.Id).FirstOrDefault();
 
@@ -97,7 +99,15 @@ namespace Yu.Service.WebAdmin.Rule
             MakeExpressionGroup(topRule, rules, ruleConditions, entityType, ref expressionGroup);
 
             // 生成过滤表达式
-            var lambda = expressionGroup.GetLambda();
+            Expression lambda;
+            try
+            {
+                lambda = expressionGroup.GetLambda();
+            }
+            catch
+            {
+                return false;
+            }
 
             // 表达式序列化
             var serializer = new ExpressionSerializer(new JsonSerializer());
@@ -117,6 +127,8 @@ namespace Yu.Service.WebAdmin.Rule
 
             // 提交事务
             await _unitOfWork.CommitAsync();
+
+            return true;
         }
 
         /// <summary>
@@ -186,7 +198,7 @@ namespace Yu.Service.WebAdmin.Rule
             foreach (var condition in conditions)
             {
                 expressionGroup.TupleList.Add((condition.Field, condition.Value, (ExpressionType)int.Parse(condition.OperateType)));
-            }           
+            }
 
         }
 

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
-using System.Text;
 
 namespace Yu.Core.Utils
 {
@@ -68,6 +67,34 @@ namespace Yu.Core.Utils
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// 简单类型转换
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static object ConvertToType(object o, Type t)
+        {
+            if (t == typeof(string))
+            {
+                return o.ToString();
+            }
+            else if (t.IsEnum)
+            {
+                return Enum.Parse(t, o.ToString());
+            }
+            else
+            {
+                var method = t.GetMethod("Parse", new Type[] { typeof(string) });
+                if (method != null)
+                {
+                    var result = method.Invoke(null, new object[] { o.ToString() });
+                    return result;
+                }
+            }
+            return o;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Yu.Core.Utils;
 
 namespace Yu.Core.Expressions
 {
@@ -140,11 +141,15 @@ namespace Yu.Core.Expressions
                 // 值为空时不生成表达式
                 if (tuple.Item2 != null && !string.IsNullOrEmpty(tuple.Item2.ToString()))
                 {
+                    // 获取属性的类型
+                    var propertyType = _entityType.GetProperty(tuple.Item1).PropertyType;
+
                     // 左侧表达式
                     var left = Expression.Property(_parameterExpression, tuple.Item1);
 
                     // 右侧表达式
-                    var right = Expression.Constant(tuple.Item2);
+                    var value = ReflectionUtil.ConvertToType(tuple.Item2, propertyType);
+                    var right = Expression.Constant(value);
 
                     switch (tuple.Item3)
                     {
@@ -169,7 +174,6 @@ namespace Yu.Core.Expressions
                         // 包含(List<T>的bool Contains(T t)方法)
                         case ExpressionType.ListContain:
 
-                            var propertyType = _entityType.GetProperty(tuple.Item1).PropertyType;
                             var genericListType = typeof(List<>).MakeGenericType(propertyType);
                             var listContainExpression = Expression.Call(right, genericListType.GetMethod("Contains", new Type[] { propertyType }), left);
                             expressionList.Add(listContainExpression);

@@ -7,5 +7,6 @@ namespace Yu.Data.Infrasturctures
 {
     public class BaseIdentityRole : IdentityRole<Guid>
     {
+        public string Describe { get; set; }
     }
 }

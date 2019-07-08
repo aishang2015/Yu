@@ -21,7 +21,7 @@ export class UserService extends BaseService {
 
   // 取得用户详细数据
   getUserDetail(userId) {
-    let uri = `${UriConstant.UserDetailUri}?userId=${userId}`;
+    let uri = `${UriConstant.UserDetailUri}?id=${userId}`;
     return this.SafeRequest(this.http.get<UserDetail>(uri));
   }
 
@@ -33,7 +33,7 @@ export class UserService extends BaseService {
 
   // 删除用户数据
   deleteUser(userId) {
-    let uri = `${UriConstant.UserDetailUri}?userId=${userId}`;
+    let uri = `${UriConstant.UserDetailUri}?id=${userId}`;
     return this.SafeRequest(this.http.delete(uri));
   }
 }

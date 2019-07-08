@@ -12,7 +12,5 @@ namespace Yu.Model.WebAdmin.Element
 
         public static readonly string WebAdmin_Element_E004 = "元素标识和[{0}]元素重复！";
 
-        public static readonly string WebAdmin_Element_E005 = "用户ID不能为空！";
-
     }
 }
