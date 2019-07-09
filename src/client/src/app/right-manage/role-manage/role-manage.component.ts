@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Role } from '../models/role';
-import { NzModalRef, NzModalService, NzTreeNodeOptions } from 'ng-zorro-antd';
+import { NzModalRef, NzModalService, NzTreeNodeOptions, NzMessageService } from 'ng-zorro-antd';
 import { ApiService } from 'src/app/core/services/api.service';
 import { ElementService } from 'src/app/core/services/element.service';
 import { RuleService } from 'src/app/core/services/rule.service';
+import { RoleService } from 'src/app/core/services/role.service';
 
 @Component({
   selector: 'app-role-manage',
@@ -44,15 +45,19 @@ export class RoleManageComponent implements OnInit {
 
   constructor(private _modalService: NzModalService,
     private _elementService: ElementService,
-    private _dataRuleService: RuleService) { }
+    private _dataRuleService: RuleService,
+    private _roleService: RoleService,
+    private _messageService: NzMessageService) { }
 
   ngOnInit() {
+    this.initRoles();
     this.initElementsNodes();
     this.initDataRules();
   }
 
   // 搜索数据
   searchData() {
+    this.initRoles();
   }
 
   // 添加角色
@@ -62,6 +67,35 @@ export class RoleManageComponent implements OnInit {
       nzTitle: null,
       nzContent: this.editTpl,
       nzFooter: null,
+      nzClosable: false,
+      nzMaskClosable: false
+    });
+  }
+
+  // 编辑角色
+  editApi(data) {
+    this._roleService.getRoleDetail(data.id).subscribe(result => {
+      Object.assign(this.editedRole, result);
+      this.nzModal = this._modalService.create({
+        nzTitle: null,
+        nzContent: this.editTpl,
+        nzFooter: null,
+        nzClosable: false,
+        nzMaskClosable: false
+      });
+    });
+  }
+
+  // 删除角色
+  deleteApi(data) {
+    this._modalService.confirm({
+      nzTitle: '是否删除该角色？',
+      nzOnOk: () => {
+        this._roleService.deleteRole(data.id).subscribe(result => {
+          this._messageService.success("删除成功");
+          this.initRoles();
+        });
+      }
     });
   }
 
@@ -73,6 +107,7 @@ export class RoleManageComponent implements OnInit {
 
   // 页码发生变化
   pageIndexChange() {
+    this.initRoles();
   }
 
   // 提交表单
@@ -80,6 +115,23 @@ export class RoleManageComponent implements OnInit {
     this.isSubmit = true;
     if (form.valid) {
 
+      // 更新的情况
+      if (this.editedRole.id) {
+        this._roleService.updateRoleDetail(this.editedRole).subscribe(result => {
+          this.nzModal.close();
+          this._messageService.success("更新成功");
+          this.initRoles();
+        });
+      } else {
+
+        // 添加的情况
+        this._roleService.addRoleDetail(this.editedRole).subscribe(result => {
+          this.nzModal.close();
+          this._messageService.success("添加成功");
+          this.initRoles();
+        });
+
+      }
     }
   }
 
@@ -88,6 +140,13 @@ export class RoleManageComponent implements OnInit {
     this.nzModal.close();
   }
 
+  // 初始化角色数据
+  private initRoles() {
+    this._roleService.getRoleOutlines(this.pageIndex, this.pageSize, this.searchText).subscribe(result => {
+      this.total = result.total;
+      this.listOfData = result.data;
+    });
+  }
 
   // 初始化页面元素数据
   private initElementsNodes() {

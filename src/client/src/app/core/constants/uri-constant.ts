@@ -52,4 +52,10 @@ export class UriConstant {
 
     // 规则组内容
     static readonly RuleDetailUri = UriConstant.BaseApiUri + 'ruleDetail';
+
+    // 角色概要数据地址
+    static readonly RoleOutlineUri = UriConstant.BaseApiUri + 'roleOutline';
+
+    // 角色详细数据地址
+    static readonly RoleUri = UriConstant.BaseApiUri + 'role';
 }
