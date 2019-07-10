@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Linq.Expressions;
+using Yu.Core.Expressions;
 using Yu.Data.Entities.Right;
 
 namespace Yu.Data.Configurations.Right

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yu.Model.Common
+namespace Yu.Model.Message
 {
-    public class ErrorMessages
+    public partial class ErrorMessages
     {
         public static readonly string WebAdmin_Common_E001 = "页码不能为空！(E001)";
         public static readonly string WebAdmin_Common_E002 = "每页条数不能为空！(E002)";

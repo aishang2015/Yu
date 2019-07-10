@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Yu.Model.Account.InputModels;
+using Yu.Model.Message;
 
 namespace Yu.Model.Account.Validators
 {

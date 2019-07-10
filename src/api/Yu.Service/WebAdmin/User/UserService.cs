@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,13 +19,16 @@ namespace Yu.Service.WebAdmin.User
     {
         private UserManager<BaseIdentityUser> _userManager;
 
+        private RoleManager<BaseIdentityRole> _roleManager;
+
         private IFileStore _fileStore;
 
         private string _serverFileRootPath;
 
-        public UserService(UserManager<BaseIdentityUser> userManager, IFileStore fileStore, Microsoft.Extensions.Configuration.IConfiguration configuration)
+        public UserService(UserManager<BaseIdentityUser> userManager, RoleManager<BaseIdentityRole> roleManager, IFileStore fileStore, IConfiguration configuration)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _fileStore = fileStore;
             _serverFileRootPath = configuration["AvatarFileOption:ServerFileStorePath"];
         }
@@ -48,7 +52,10 @@ namespace Yu.Service.WebAdmin.User
         public async Task<UserDetail> GetUserDetail(Guid userId)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            return Mapper.Map<UserDetail>(user);
+            var result = Mapper.Map<UserDetail>(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            result.Roles = roles.ToArray();
+            return result;
         }
 
         /// <summary>
@@ -79,11 +86,20 @@ namespace Yu.Service.WebAdmin.User
             var skip = pageSize * (pageIndex - 1);
             var users = _userManager.Users.Where(filter).Skip(skip).Take(pageSize);
 
+            // 用户数据
+            var data = new List<UserOutline>();
+            foreach(var user in users)
+            {
+                var userOutline = Mapper.Map<UserOutline>(user);
+                userOutline.Roles = _userManager.GetRolesAsync(user).Result.ToArray();
+                data.Add(userOutline);
+            }
+
             // 生成结果
             return new PagedData<UserOutline>
             {
                 Total = _userManager.Users.Where(filter).Count(),
-                Data = Mapper.Map<List<UserOutline>>(users)
+                Data = data
             };
         }
 
@@ -117,6 +133,13 @@ namespace Yu.Service.WebAdmin.User
         {
             var user = await _userManager.FindByIdAsync(userDetail.Id.ToString());
             Mapper.Map(userDetail, user);
+            
+            // 先删除再添加
+            var roles =await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, roles);
+            await _userManager.AddToRolesAsync(user, userDetail.Roles);
+
+            // 保存用户
             await _userManager.UpdateAsync(user);
         }
     }

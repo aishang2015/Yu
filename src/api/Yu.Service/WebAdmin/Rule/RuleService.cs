@@ -111,6 +111,7 @@ namespace Yu.Service.WebAdmin.Rule
 
             // 表达式序列化
             var serializer = new ExpressionSerializer(new JsonSerializer());
+            serializer.AddKnownType(typeof(ExpressionType));
             var value = serializer.SerializeText(lambda);
             ruleGroup.Lambda = value;
 

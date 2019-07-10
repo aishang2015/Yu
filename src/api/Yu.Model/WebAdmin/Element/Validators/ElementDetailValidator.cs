@@ -1,8 +1,6 @@
 ﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Yu.Data.Entities.Enums;
+using Yu.Model.Message;
 using Yu.Model.WebAdmin.Element.InputModels;
 
 namespace Yu.Model.WebAdmin.Element.Validators

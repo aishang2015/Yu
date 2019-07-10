@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
-using Yu.Model.WebAdmin.Rule;
+using Yu.Model.Common.InputModels;
+using Yu.Model.Message;
 using Yu.Model.WebAdmin.Rule.OutputModels;
 using Yu.Service.WebAdmin.Rule;
 
@@ -31,17 +31,17 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
 
         [HttpGet("ruleDetail")]
         [Description("查看规则组内容")]
-        public IActionResult GetGroupDetail([FromQuery]Guid ruleGroupId)
+        public IActionResult GetGroupDetail([FromQuery]IdQuery query)
         {
-            var detail = _ruleService.GetRuleResult(ruleGroupId);
+            var detail = _ruleService.GetRuleResult(query.Id);
             return Ok(detail);
         }
 
         [HttpDelete("ruleGroup")]
         [Description("删除规则组")]
-        public async Task<IActionResult> DeleteRuleGroup([FromQuery]Guid ruleGroupId)
+        public async Task<IActionResult> DeleteRuleGroup([FromQuery]IdQuery query)
         {
-            await _ruleService.DeleteRuleGroup(ruleGroupId);
+            await _ruleService.DeleteRuleGroup(query.Id);
             return Ok();
         }
 

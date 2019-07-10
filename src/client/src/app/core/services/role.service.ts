@@ -41,4 +41,10 @@ export class RoleService extends BaseService {
     return this.SafeRequest(this.http.delete(uri));
   }
 
+  // 取得全部角色名称
+  getRoleNames() {
+    let uri = UriConstant.RoleNameUri;
+    return this.SafeRequest(this.http.get(uri));
+  }
+
 }

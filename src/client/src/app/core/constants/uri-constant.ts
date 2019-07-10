@@ -58,4 +58,7 @@ export class UriConstant {
 
     // 角色详细数据地址
     static readonly RoleUri = UriConstant.BaseApiUri + 'role';
+
+    // 全部角色名称
+    static readonly RoleNameUri = UriConstant.BaseApiUri + 'roleNames';
 }

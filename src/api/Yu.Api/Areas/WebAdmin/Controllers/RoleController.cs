@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
 using Yu.Model.Common.InputModels;
+using Yu.Model.Message;
 using Yu.Model.WebAdmin.Role.InputOuputModels;
 using Yu.Service.WebAdmin.Role;
 
@@ -17,6 +18,14 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         public RoleController(IRoleService roleService)
         {
             _roleService = roleService;
+        }
+
+        [HttpGet("roleNames")]
+        [Description("取得全部角色名称")]
+        public IActionResult GetAllRoleName()
+        {
+            var data = _roleService.GetAllRoleNames();
+            return Ok(data);
         }
 
         [HttpGet("roleOutline")]
@@ -47,8 +56,16 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("创建角色")]
         public async Task<IActionResult> AddRole([FromBody]RoleDetail role)
         {
-            await _roleService.AddRole(role);
-            return Ok();
+            var result = await _roleService.AddRole(role);
+            if (result)
+            {
+                return Ok();
+            }
+            else
+            {
+                ModelState.AddModelError("RoleName", ErrorMessages.WebAdmin_Role_E001);
+                return BadRequest(ModelState);
+            }
         }
 
         [HttpPut("role")]

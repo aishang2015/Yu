@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Yu.Core.Constants;
 using Yu.Core.Jwt;
 using Yu.Core.Mvc;
-using Yu.Model.Account;
 using Yu.Model.Account.InputModels;
 using Yu.Model.Account.OutputModels;
+using Yu.Model.Message;
 using Yu.Service.Account;
 
 namespace Yu.Api.Controllers

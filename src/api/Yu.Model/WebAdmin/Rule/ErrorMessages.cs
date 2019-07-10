@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yu.Model.WebAdmin.Rule
+namespace Yu.Model.Message
 {
     public partial class ErrorMessages
     {

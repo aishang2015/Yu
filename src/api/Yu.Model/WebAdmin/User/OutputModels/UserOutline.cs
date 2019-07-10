@@ -35,5 +35,10 @@ namespace Yu.Model.WebAdmin.User.OutputModels
         /// 微信编号
         /// </summary>
         public string OpenId { get; set; }
+
+        /// <summary>
+        /// 用户角色
+        /// </summary>
+        public string[] Roles { get; set; }
     }
 }

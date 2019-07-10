@@ -7,4 +7,5 @@ export class UserDetail {
     nickName: string; // 昵称
     avatar: string; // 头像
     gender: string; // 性别
+    roles: string[]; // 角色
 }

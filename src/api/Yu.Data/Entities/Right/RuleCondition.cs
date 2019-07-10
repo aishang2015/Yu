@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq.Expressions;
+using Yu.Core.Expressions;
 using Yu.Data.Infrasturctures;
 
 namespace Yu.Data.Entities.Right

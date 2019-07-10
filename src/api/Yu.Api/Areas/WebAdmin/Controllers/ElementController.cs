@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
 using Yu.Model.Common.InputModels;
+using Yu.Model.Message;
 using Yu.Model.WebAdmin.Element;
 using Yu.Model.WebAdmin.Element.InputModels;
 using Yu.Service.WebAdmin.Element;

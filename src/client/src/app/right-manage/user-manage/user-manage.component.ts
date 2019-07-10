@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { NzMessageService, NzModalService, NzModalRef, UploadFile } from 'ng-zorro-antd';
 import { UserDetail } from '../models/user-detail';
 import { Observable, Observer } from 'rxjs';
 import { CommonConstant } from 'src/app/core/constants/common-constant';
 import { UriConstant } from 'src/app/core/constants/uri-constant';
+import { RoleService } from 'src/app/core/services/role.service';
 
 @Component({
   selector: 'app-user-manage',
@@ -37,6 +38,9 @@ export class UserManageComponent implements OnInit {
     { name: "女性", value: 2 }
   ];
 
+  // 角色数据
+  roles = [];
+
   // 编辑模态框
   editModal: NzModalRef;
 
@@ -49,26 +53,26 @@ export class UserManageComponent implements OnInit {
   // 上传按钮状态
   loading: boolean = false;
 
-  constructor(private userService: UserService,
-    private messageService: NzMessageService,
-    private modalService: NzModalService) { }
+  // 编辑模板
+  @ViewChild('editContentTpl')
+  editContentTpl;
+
+  // 设置头像
+  @ViewChild('avatarEdit')
+  avatarEditTpl;
+
+  // 浏览内容模板
+  @ViewChild('viewContentTpl')
+  viewContentTpl;
+
+  constructor(private _userService: UserService,
+    private _messageService: NzMessageService,
+    private _modalService: NzModalService,
+    private _roleService: RoleService) { }
 
   ngOnInit() {
     this.getUserInfo();
-  }
-
-  // 初始化用户数据
-  getUserInfo() {
-    this.userService.getUserOutlines(this.pageIndex, this.pageSize, this.searchText)
-      .subscribe(
-        (result: any) => {
-
-          // 设置数据总数
-          this.total = result.total;
-          this.listOfData = result.data;
-          this.messageService.success("数据取得完毕。");
-        }
-      )
+    this.getAllRoleName();
   }
 
   // 页码发生变化
@@ -89,17 +93,18 @@ export class UserManageComponent implements OnInit {
   }
 
   // 查看用户详细数据
-  viewUserDetail(userOutline, tplContent) {
+  viewUserDetail(userOutline) {
 
     // 取得当前用户数据
-    this.userService.getUserDetail(userOutline.id)
+    this._userService.getUserDetail(userOutline.id)
       .subscribe(
         userDetail => {
           this.userDetail = userDetail;
-          this.modalService.create({
-            nzContent: tplContent, // 模板
+          this.editModal = this._modalService.create({
+            nzContent: this.viewContentTpl, // 模板
             nzFooter: null,
-            nzClosable: false
+            nzClosable: false,
+            nzMaskClosable: false,
           });
         }
       );
@@ -107,15 +112,15 @@ export class UserManageComponent implements OnInit {
 
 
   // 编辑用户数据
-  editUser(userOutline, tplContent) {
+  editUser(userOutline) {
 
     // 取得当前用户数据
-    this.userService.getUserDetail(userOutline.id)
+    this._userService.getUserDetail(userOutline.id)
       .subscribe(
         userDetail => {
           this.editUserDetail = userDetail;
-          this.editModal = this.modalService.create({
-            nzContent: tplContent, // 模板
+          this.editModal = this._modalService.create({
+            nzContent: this.editContentTpl, // 模板
             nzFooter: null,
             nzClosable: false,
             nzMaskClosable: false
@@ -134,10 +139,10 @@ export class UserManageComponent implements OnInit {
 
     // 数据合法
     if (form.valid) {
-      this.userService.updateUserDetail(this.editUserDetail)
+      this._userService.updateUserDetail(this.editUserDetail)
         .subscribe(
           result => {
-            this.messageService.success("修改成功！");
+            this._messageService.success("修改成功！");
             this.editModal.destroy();
             this.getUserInfo();
           }
@@ -147,13 +152,13 @@ export class UserManageComponent implements OnInit {
 
   // 删除用户
   deleteUser(userOutline) {
-    this.modalService.confirm({
+    this._modalService.confirm({
       nzTitle: '是否要删除该用户？',
       nzOnOk: _ => {
-        this.userService.deleteUser(userOutline.id)
+        this._userService.deleteUser(userOutline.id)
           .subscribe(
             result => {
-              this.messageService.success("删除成功！");
+              this._messageService.success("删除成功！");
               this.getUserInfo();
             }
           )
@@ -162,10 +167,10 @@ export class UserManageComponent implements OnInit {
   }
 
   // 编辑用户头像
-  editAvatar(userOutline, tplContent) {
+  editAvatar(userOutline) {
     this.uploadUrl = UriConstant.UserAvatarUri + `?userId=${userOutline.id}`
-    this.editModal = this.modalService.create({
-      nzContent: tplContent, // 模板
+    this.editModal = this._modalService.create({
+      nzContent: this.avatarEditTpl, // 模板
       nzFooter: null,
       nzClosable: false,
       nzMaskClosable: false,
@@ -179,25 +184,30 @@ export class UserManageComponent implements OnInit {
     this.editModal.destroy();
   }
 
+  // 关闭详细模态框
+  closeDetail() {
+    this.editModal.close();
+  }
+
   // 图片上传校验
   beforeUpload = (file: File) => {
     return new Observable((observer: Observer<boolean>) => {
       const isJPG = file.type === 'image/jpeg';
       if (!isJPG) {
-        this.messageService.error('你只能上传JPG格式的文件!');
+        this._messageService.error('你只能上传JPG格式的文件!');
         observer.complete();
         return;
       }
       const isLt2M = file.size / 1024 / 1024 < 2;
       if (!isLt2M) {
-        this.messageService.error('图像必须小于2MB!');
+        this._messageService.error('图像必须小于2MB!');
         observer.complete();
         return;
       }
       // check height
       this.checkImageDimension(file).then(dimensionRes => {
         if (!dimensionRes) {
-          this.messageService.error('图像必须高宽一致!');
+          this._messageService.error('图像必须高宽一致!');
           observer.complete();
           return;
         }
@@ -243,12 +253,31 @@ export class UserManageComponent implements OnInit {
         });
         break;
       case 'error':
-        this.messageService.error('网络错误!');
+        this._messageService.error('网络错误!');
         this.loading = false;
         break;
     }
   }
 
+  // 初始化用户数据
+  private getUserInfo() {
+    this._userService.getUserOutlines(this.pageIndex, this.pageSize, this.searchText)
+      .subscribe(
+        (result: any) => {
+
+          // 设置数据总数
+          this.total = result.total;
+          this.listOfData = result.data;
+        }
+      )
+  }
+
+  // 初始化
+  private getAllRoleName() {
+    this._roleService.getRoleNames().subscribe(result => {
+      this.roles = result;
+    })
+  }
 
 
 }

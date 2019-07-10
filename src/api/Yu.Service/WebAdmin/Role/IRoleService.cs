@@ -9,6 +9,11 @@ namespace Yu.Service.WebAdmin.Role
     public interface IRoleService
     {
         /// <summary>
+        /// 取得全部角色名
+        /// </summary>
+        string[] GetAllRoleNames();
+
+        /// <summary>
         /// 取得角色概要
         /// </summary>
         /// <param name="pageIndex">页码</param>

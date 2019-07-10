@@ -28,5 +28,8 @@ namespace Yu.Model.WebAdmin.User.OutputModels
 
         // 性别
         public Gender Gender { get; set; }
+
+        // 用户角色
+        public string[] Roles { get; set; }
     }
 }

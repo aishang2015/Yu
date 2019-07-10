@@ -74,6 +74,14 @@ namespace Yu.Service.WebAdmin.Role
         }
 
         /// <summary>
+        /// 取得全部角色名
+        /// </summary>
+        public string[] GetAllRoleNames()
+        {
+            return _roleManager.Roles.Select(r => r.Name).ToArray();
+        }
+
+        /// <summary>
         /// 取得角色概要
         /// </summary>
         /// <param name="pageIndex">页码</param>
