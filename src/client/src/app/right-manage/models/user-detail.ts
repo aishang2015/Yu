@@ -8,4 +8,6 @@ export class UserDetail {
     avatar: string; // 头像
     gender: string; // 性别
     roles: string[]; // 角色
+    groupId: string;// 组织ID
+    groupName: string;// 组织名称
 }

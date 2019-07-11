@@ -6,8 +6,11 @@ namespace Yu.Data.Infrasturctures
 {
     public partial class BaseIdentityUser : IdentityUser<Guid>
     {
-        // username，email，phonenumber，openid等为认证用字段
+        #region 认证字段
+
         public string OpenId { get; set; }
+
+        #endregion
 
 
         #region 用户信息字段
@@ -20,6 +23,16 @@ namespace Yu.Data.Infrasturctures
 
         // 性别
         public Gender Gender { get; set; }
+
+        #endregion
+
+        #region 权限管理冗余字段
+
+        public string Roles { get; set; }
+
+        public string GroupName { get; set; }
+
+        public Guid GroupId { get; set; }
 
         #endregion
     }

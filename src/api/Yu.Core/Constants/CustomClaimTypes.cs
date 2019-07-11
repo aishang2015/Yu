@@ -9,6 +9,8 @@
         public const string Element = "ele";
 
         public const string Rule = "rul";
+
+        public const string Group = "grp";
     }
 }
  

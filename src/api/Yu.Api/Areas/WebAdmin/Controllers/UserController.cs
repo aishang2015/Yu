@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
 using Yu.Model.Common.InputModels;
+using Yu.Model.Message;
 using Yu.Model.WebAdmin.User.OutputModels;
 using Yu.Service.WebAdmin.User;
 
@@ -53,6 +54,22 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
             return Ok(user);
         }
 
+        [HttpPost("userDetail")]
+        [Description("添加新用户")]
+        public async Task<IActionResult> AddNewUser([FromBody]UserDetail userDetail)
+        {
+            var result = await _userService.AddUser(userDetail);
+            if (result)
+            {
+                return Ok();
+            }
+            else
+            {
+                ModelState.AddModelError("User", ErrorMessages.WebAdmin_User_E002);
+                return BadRequest(ModelState);
+            }
+        }
+
         /// <summary>
         /// 更新用户数据
         /// </summary>
@@ -62,8 +79,16 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("更新用户数据")]
         public async Task<IActionResult> UpdateUserDetail([FromBody]UserDetail query)
         {
-            await _userService.UpdateUserDetail(query);
-            return Ok();
+            var result = await _userService.UpdateUserDetail(query);
+            if (result)
+            {
+                return Ok();
+            }
+            else
+            {
+                ModelState.AddModelError("User", ErrorMessages.WebAdmin_User_E001);
+                return BadRequest(ModelState);
+            }
         }
 
         /// <summary>

@@ -27,7 +27,12 @@ namespace Yu.Service.WebAdmin.User
         /// 更新用户信息
         /// </summary>
         /// <param name="userDetail">用户信息</param>
-        Task UpdateUserDetail(UserDetail userDetail);
+        Task<bool> UpdateUserDetail(UserDetail userDetail);
+
+        /// <summary>
+        /// 添加用户
+        /// </summary>
+        Task<bool> AddUser(UserDetail userDetail);
 
         /// <summary>
         /// 更新用户头像

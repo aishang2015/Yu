@@ -31,5 +31,11 @@ namespace Yu.Model.WebAdmin.User.OutputModels
 
         // 用户角色
         public string[] Roles { get; set; }
+
+        // 组织Id
+        public string GroupId { get; set; }
+
+        // 组织名称
+        public string GroupName { get; set; }
     }
 }

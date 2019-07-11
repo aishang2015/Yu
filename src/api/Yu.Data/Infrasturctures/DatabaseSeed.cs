@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Yu.Core.Constants;
 using Yu.Core.Mvc;
 using Yu.Data.Entities.Right;
 
@@ -144,7 +145,7 @@ namespace Yu.Data.Infrasturctures
                     NormalizedUserName = $"ADMIN{i}",
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
-                user.PasswordHash = new PasswordHasher<BaseIdentityUser>().HashPassword(user, "P@ssword1");
+                user.PasswordHash = new PasswordHasher<BaseIdentityUser>().HashPassword(user, CommonConstants.Password);
                 dbContext.Set<BaseIdentityUser>().Add(user);
                 dbContext.SaveChanges();
             }

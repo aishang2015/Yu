@@ -6,12 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Yu.Core.Constants;
 using Yu.Core.Expressions;
 using Yu.Core.FileManage;
 using Yu.Data.Entities;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.User.OutputModels;
+using GroupEntity = Yu.Data.Entities.Right.Group;
 
 namespace Yu.Service.WebAdmin.User
 {
@@ -21,16 +25,61 @@ namespace Yu.Service.WebAdmin.User
 
         private RoleManager<BaseIdentityRole> _roleManager;
 
+        private IRepository<GroupEntity, Guid> _groupRepository;
+
         private IFileStore _fileStore;
 
         private string _serverFileRootPath;
 
-        public UserService(UserManager<BaseIdentityUser> userManager, RoleManager<BaseIdentityRole> roleManager, IFileStore fileStore, IConfiguration configuration)
+        public UserService(UserManager<BaseIdentityUser> userManager,
+            RoleManager<BaseIdentityRole> roleManager,
+            IRepository<GroupEntity, Guid> groupRepository,
+            IFileStore fileStore, IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _groupRepository = groupRepository;
             _fileStore = fileStore;
             _serverFileRootPath = configuration["AvatarFileOption:ServerFileStorePath"];
+        }
+
+        /// <summary>
+        /// 添加用户
+        /// </summary>
+        public async Task<bool> AddUser(UserDetail userDetail)
+        {
+            // 查找组织名称
+            if (!string.IsNullOrEmpty(userDetail.GroupId))
+            {
+                var group = _groupRepository.GetById(Guid.Parse(userDetail.GroupId));
+                if (group == null)
+                {
+                    return false;
+                }
+                userDetail.GroupName = group.GroupName;
+            }
+
+            var user = Mapper.Map<BaseIdentityUser>(userDetail);
+            var result = await _userManager.CreateAsync(user, CommonConstants.Password);
+
+            if (!result.Succeeded)
+            {
+                return false;
+            }
+
+            // 组织数据
+            if (!string.IsNullOrEmpty(userDetail.GroupId))
+            {
+                await _userManager.AddClaimAsync(user, new Claim(CustomClaimTypes.Group, userDetail.GroupId.ToString()));
+            }
+
+            // 角色数据
+            if (userDetail.Roles != null && userDetail.Roles.Length > 0)
+            {
+                await _userManager.AddToRolesAsync(user, userDetail.Roles);
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -72,6 +121,8 @@ namespace Yu.Service.WebAdmin.User
                 ("UserName",searchText,ExpressionType.StringContain),
                 ("PhoneNumber",searchText,ExpressionType.StringContain),
                 ("Email",searchText,ExpressionType.StringContain),
+                ("Roles",searchText,ExpressionType.StringContain),
+                ("GroupName",searchText,ExpressionType.StringContain),
             };
 
             // 表达式组
@@ -86,20 +137,11 @@ namespace Yu.Service.WebAdmin.User
             var skip = pageSize * (pageIndex - 1);
             var users = _userManager.Users.Where(filter).Skip(skip).Take(pageSize);
 
-            // 用户数据
-            var data = new List<UserOutline>();
-            foreach(var user in users)
-            {
-                var userOutline = Mapper.Map<UserOutline>(user);
-                userOutline.Roles = _userManager.GetRolesAsync(user).Result.ToArray();
-                data.Add(userOutline);
-            }
-
             // 生成结果
             return new PagedData<UserOutline>
             {
                 Total = _userManager.Users.Where(filter).Count(),
-                Data = data
+                Data = Mapper.Map<List<UserOutline>>(users)
             };
         }
 
@@ -129,18 +171,42 @@ namespace Yu.Service.WebAdmin.User
         /// 更新用户信息
         /// </summary>
         /// <param name="userDetail">用户信息</param>
-        public async Task UpdateUserDetail(UserDetail userDetail)
+        public async Task<bool> UpdateUserDetail(UserDetail userDetail)
         {
             var user = await _userManager.FindByIdAsync(userDetail.Id.ToString());
             Mapper.Map(userDetail, user);
-            
-            // 先删除再添加
-            var roles =await _userManager.GetRolesAsync(user);
-            await _userManager.RemoveFromRolesAsync(user, roles);
-            await _userManager.AddToRolesAsync(user, userDetail.Roles);
 
-            // 保存用户
+            // 更新组织信息
+            var claims = await _userManager.GetClaimsAsync(user);
+            await _userManager.RemoveClaimsAsync(user, claims.Where(c => c.Type == CustomClaimTypes.Group));
+
+            // 用户组织数据
+            if (!string.IsNullOrEmpty(userDetail.GroupId))
+            {
+                await _userManager.AddClaimAsync(user, new Claim(CustomClaimTypes.Group, userDetail.GroupId.ToString()));
+                var group = _groupRepository.GetById(Guid.Parse(userDetail.GroupId));
+                if (group == null)
+                {
+                    return false;
+                }
+                user.GroupName = group.GroupName;
+                user.GroupId = group.Id;
+            }
+
+            // 先删除再添加角色
+            var roles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, roles);
+            if (userDetail.Roles.Length > 0)
+            {
+                await _userManager.AddToRolesAsync(user, userDetail.Roles);
+            }
+
+            user.Roles = string.Join(',', userDetail.Roles);
+
+            // 保存用户信息
             await _userManager.UpdateAsync(user);
+
+            return true;
         }
     }
 }

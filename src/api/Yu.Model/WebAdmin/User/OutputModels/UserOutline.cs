@@ -22,23 +22,13 @@ namespace Yu.Model.WebAdmin.User.OutputModels
         public string UserName { get; set; }
 
         /// <summary>
-        /// 手机号	
-        /// </summary>
-        public string TelePhone { get; set; }
-
-        /// <summary>
-        /// 邮箱
-        /// </summary>
-        public string Email { get; set; }
-
-        /// <summary>
-        /// 微信编号
-        /// </summary>
-        public string OpenId { get; set; }
-
-        /// <summary>
         /// 用户角色
         /// </summary>
         public string[] Roles { get; set; }
+
+        /// <summary>
+        /// 组织名称
+        /// </summary>
+        public string GroupName { get; set; }
     }
 }

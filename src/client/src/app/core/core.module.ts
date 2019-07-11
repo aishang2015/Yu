@@ -8,6 +8,7 @@ import { DebounceClickDirective } from './directives/debounce-click.directive';
 import { ThrottleClickDirective } from './directives/throttle-click.directive';
 import { ImageUriPipe } from './pipes/image-uri.pipe';
 import { AppRuleComponent } from './components/app-rule/app-rule.component';
+import { UserNameValidatorDirective } from './validators/username-validator.directive';
 
 @NgModule({
   imports: [
@@ -22,6 +23,8 @@ import { AppRuleComponent } from './components/app-rule/app-rule.component';
     ImageUriPipe, // 图片地址转换
 
     TelephoneValidatorDirective, // 电话号码验证器
+    UserNameValidatorDirective, // 用户名验证器
+
     DebounceClickDirective,  // 去抖点击 
     ThrottleClickDirective // 节流点击
   ],
@@ -32,6 +35,7 @@ import { AppRuleComponent } from './components/app-rule/app-rule.component';
     GenderPipe,
     ImageUriPipe,
     TelephoneValidatorDirective,
+    UserNameValidatorDirective,
     DebounceClickDirective,
     ThrottleClickDirective
   ]

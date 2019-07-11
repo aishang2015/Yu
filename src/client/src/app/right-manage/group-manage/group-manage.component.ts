@@ -129,7 +129,6 @@ export class GroupManageComponent implements OnInit {
     this._groupService.getGroups().subscribe(
       result => {
         this.groups = result;
-        this._messageService.success("数据初始化完毕。");
         this.makeNodes();
       }
     )

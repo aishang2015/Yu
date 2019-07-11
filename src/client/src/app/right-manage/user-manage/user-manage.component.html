@@ -1,14 +1,22 @@
+<!--搜索栏-->
 <div nz-row>
   <div class="searchInput">
     <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
-      <input type="text" nz-input placeholder="用户名/手机号/邮箱/昵称等" name="searchText" [(ngModel)]="searchText"
-        autocomplete="off" />
+      <input type="text" nz-input placeholder="用户相关信息等" name="searchText" [(ngModel)]="searchText" autocomplete="off" />
     </nz-input-group>
     <ng-template #suffixIconButton>
       <button nz-button nzType="default" nzSearch (click)="searchData()"><i nz-icon type="search"></i></button>
     </ng-template>
   </div>
 </div>
+
+<!--操作栏-->
+<div nz-row class="mt-10">
+  <nz-button-group>
+    <button nz-button (click)="addUser()"><i nz-icon nzType="plus"></i>添加用户</button>
+  </nz-button-group>
+</div>
+
 
 <!--信息展示-->
 <div nz-row class="mt-10">
@@ -20,9 +28,7 @@
         <th nzAlign="center" nzWidth="75px">头像</th>
         <th nzAlign="center" nzWidth="150px">用户名</th>
         <th nzAlign="center" nzWidth="150px">用户角色</th>
-        <th nzAlign="center" nzWidth="150px">手机号</th>
-        <th nzAlign="center" nzWidth="150px">邮箱</th>
-        <th nzAlign="center" nzWidth="150px">OpenId</th>
+        <th nzAlign="center" nzWidth="150px">所属组织</th>
         <th nzAlign="center">操作</th>
       </tr>
     </thead>
@@ -34,9 +40,7 @@
         </td>
         <td nzAlign="center" nzWidth="150px">{{ data.userName }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.roles }}</td>
-        <td nzAlign="center" nzWidth="150px">{{ data.telephone }}</td>
-        <td nzAlign="center" nzWidth="150px">{{ data.email }}</td>
-        <td nzAlign="center" nzWidth="150px">{{ data.openId }}</td>
+        <td nzAlign="center" nzWidth="150px">{{ data.groupName }}</td>
         <td nzAlign="center">
           <a (appThrottleClick)="viewUserDetail(data)">查看</a>&nbsp;&nbsp;
           <a (appThrottleClick)="editAvatar(data)">头像</a>&nbsp;&nbsp;
@@ -84,6 +88,12 @@
     <nz-tag [nzColor]="'green'" *ngFor="let role of userDetail.roles">{{ role }}</nz-tag>
   </div>
 
+  <nz-divider nzText="组织信息"></nz-divider>
+  <div nz-row class="mt-5">
+    <div class="propDescribe">所属组织:</div>
+    <div class="propValue">{{ userDetail.groupName }}</div>
+  </div>
+
   <nz-divider nzText="基本信息"></nz-divider>
   <div nz-row class="mt-5">
     <div class="propDescribe">昵称:</div>
@@ -107,9 +117,16 @@
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">用户名</nz-form-label>
-      <nz-form-control [nzSpan]="12">
+      <nz-form-control [nzSpan]="12"
+        [ngClass]="{'has-error': userName.invalid && (userName.dirty || userName.touched || isSubmit)}">
         <input nz-input autocomplete="off" type="text" name="userName" #userName="ngModel"
-          [(ngModel)]="editUserDetail.userName" />
+          [(ngModel)]="editUserDetail.userName" required appUserName />
+        <nz-form-explain
+          *ngIf="userName.invalid && (userName.dirty || userName.touched|| isSubmit) && userName.errors.required">
+          请输入用户名</nz-form-explain>
+        <nz-form-explain
+          *ngIf="userName.invalid && (userName.dirty || userName.touched|| isSubmit) && userName.errors.userName">
+          用户名只能包含数字和字母</nz-form-explain>
       </nz-form-control>
     </nz-form-item>
 
@@ -122,7 +139,8 @@
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">联系电话</nz-form-label>
-      <nz-form-control [nzSpan]="12">
+      <nz-form-control [nzSpan]="12"
+        [ngClass]="{'has-error': phoneNumber.invalid && (phoneNumber.dirty || phoneNumber.touched || isSubmit)}">
         <input nz-input autocomplete="off" type="text" name="phoneNumber" [(ngModel)]="editUserDetail.phoneNumber"
           #phoneNumber="ngModel" appTelephone />
         <nz-form-explain
@@ -146,6 +164,15 @@
         nzPlaceHolder="请选择角色">
         <nz-option *ngFor="let option of roles" [nzLabel]="option" [nzValue]="option"></nz-option>
       </nz-select>
+    </nz-form-control>
+
+    <nz-divider nzText="组织信息"></nz-divider>
+
+    <nz-form-label [nzSpan]="5">组织名称</nz-form-label>
+    <nz-form-control [nzSpan]="12">
+      <nz-tree-select [nzNodes]="groupNodes" nzShowSearch name="groupId" nzPlaceHolder="请选择所属组织"
+        [(ngModel)]="editUserDetail.groupId">
+      </nz-tree-select>
     </nz-form-control>
 
     <nz-divider nzText="基本信息"></nz-divider>

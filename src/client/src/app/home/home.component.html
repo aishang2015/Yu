@@ -1,17 +1,17 @@
 <nz-layout style="height:100vh;">
     <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzWidth]="width" [nzReverseArrow]="isReverseArrow">
-        <div class="logo" [routerLink]="[ '/dashboard']" (click)="setBreadCrumb('仪表盘','')">Yu.Web</div>
+        <div class="logo"><a style="color:white" [routerLink]="[ '/dashboard']" (click)="setDashboardBreadCrumb()">Yu</a></div>
         <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
-            <li nz-submenu>
+            <li nz-submenu [(nzOpen)]="openMap.right">
                 <span title><i nz-icon nzType="idcard" nzTheme="outline"></i><span class="nav-text">权限管理</span></span>
                 <ul>
-                    <li nz-menu-item [routerLink]="[ '/right/user' ]" (click)="setBreadCrumb('权限管理','用户管理')"><i nz-icon nzType="user" nzTheme="outline"></i>用户管理</li>
-                    <li nz-menu-item [routerLink]="[ '/right/role' ]" (click)="setBreadCrumb('权限管理','角色管理')"><i nz-icon nzType="audit" nzTheme="outline"></i>角色管理</li>
-                    <li nz-menu-item [routerLink]="[ '/right/group' ]" (click)="setBreadCrumb('权限管理','组织管理')"><i nz-icon nzType="team" nzTheme="outline"></i>组织管理</li>
-                    <li nz-menu-item [routerLink]="[ '/right/menu' ]" (click)="setBreadCrumb('权限管理','页面元素管理')"><i nz-icon nzType="ordered-list" nzTheme="outline"></i>页面元素管理</li>
-                    <li nz-menu-item [routerLink]="[ '/right/api' ]" (click)="setBreadCrumb('权限管理','API数据管理')"><i nz-icon nzType="api" nzTheme="outline"></i>API数据管理</li>
-                    <li nz-menu-item [routerLink]="[ '/right/rule' ]" (click)="setBreadCrumb('权限管理','规则管理')"><i nz-icon nzType="filter" nzTheme="outline"></i>规则管理</li>
-                    <li nz-menu-item [routerLink]="[ '/right/entity' ]" (click)="setBreadCrumb('权限管理','实体数据管理')"><i nz-icon nzType="profile" nzTheme="outline"></i>实体数据管理</li>
+                    <li nz-menu-item [(nzSelected)]="selectMap.rightuser" [routerLink]="[ '/right/user' ]" (click)="setBreadCrumb('权限管理','用户管理')"><i nz-icon nzType="user" nzTheme="outline"></i>用户管理</li>
+                    <li nz-menu-item [(nzSelected)]="selectMap.rightrole" [routerLink]="[ '/right/role' ]" (click)="setBreadCrumb('权限管理','角色管理')"><i nz-icon nzType="audit" nzTheme="outline"></i>角色管理</li>
+                    <li nz-menu-item [(nzSelected)]="selectMap.rightgroup" [routerLink]="[ '/right/group' ]" (click)="setBreadCrumb('权限管理','组织管理')"><i nz-icon nzType="team" nzTheme="outline"></i>组织管理</li>
+                    <li nz-menu-item [(nzSelected)]="selectMap.rightmenu" [routerLink]="[ '/right/menu' ]" (click)="setBreadCrumb('权限管理','页面元素管理')"><i nz-icon nzType="ordered-list" nzTheme="outline"></i>页面元素管理</li>
+                    <li nz-menu-item [(nzSelected)]="selectMap.rightapi" [routerLink]="[ '/right/api' ]" (click)="setBreadCrumb('权限管理','API数据管理')"><i nz-icon nzType="api" nzTheme="outline"></i>API数据管理</li>
+                    <li nz-menu-item [(nzSelected)]="selectMap.rightrule" [routerLink]="[ '/right/rule' ]" (click)="setBreadCrumb('权限管理','规则管理')"><i nz-icon nzType="filter" nzTheme="outline"></i>规则管理</li>
+                    <li nz-menu-item [(nzSelected)]="selectMap.rightentity" [routerLink]="[ '/right/entity' ]" (click)="setBreadCrumb('权限管理','实体数据管理')"><i nz-icon nzType="profile" nzTheme="outline"></i>实体数据管理</li>
                 </ul>
             </li>
         </ul>

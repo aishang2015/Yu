@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
-import { NzMessageService, NzModalService, NzModalRef, UploadFile } from 'ng-zorro-antd';
+import { NzMessageService, NzModalService, NzModalRef, UploadFile, NzTreeNodeOptions } from 'ng-zorro-antd';
 import { UserDetail } from '../models/user-detail';
 import { Observable, Observer } from 'rxjs';
 import { CommonConstant } from 'src/app/core/constants/common-constant';
 import { UriConstant } from 'src/app/core/constants/uri-constant';
 import { RoleService } from 'src/app/core/services/role.service';
+import { GroupService } from 'src/app/core/services/group.service';
 
 @Component({
   selector: 'app-user-manage',
@@ -41,6 +42,9 @@ export class UserManageComponent implements OnInit {
   // 角色数据
   roles = [];
 
+  // 组织数据
+  groupNodes = [];
+
   // 编辑模态框
   editModal: NzModalRef;
 
@@ -52,6 +56,9 @@ export class UserManageComponent implements OnInit {
 
   // 上传按钮状态
   loading: boolean = false;
+
+  // 提交
+  isSubmit: boolean = false;
 
   // 编辑模板
   @ViewChild('editContentTpl')
@@ -68,11 +75,13 @@ export class UserManageComponent implements OnInit {
   constructor(private _userService: UserService,
     private _messageService: NzMessageService,
     private _modalService: NzModalService,
-    private _roleService: RoleService) { }
+    private _roleService: RoleService,
+    private _groupService: GroupService) { }
 
   ngOnInit() {
     this.getUserInfo();
-    this.getAllRoleName();
+    this.initAllRoleName();
+    this.initAllGroup();
   }
 
   // 页码发生变化
@@ -110,6 +119,17 @@ export class UserManageComponent implements OnInit {
       );
   }
 
+  // 添加用户
+  addUser() {
+    this.editUserDetail = new UserDetail();
+    this.editModal = this._modalService.create({
+      nzContent: this.editContentTpl, // 模板
+      nzFooter: null,
+      nzClosable: false,
+      nzMaskClosable: false
+    });
+  }
+
 
   // 编辑用户数据
   editUser(userOutline) {
@@ -137,16 +157,34 @@ export class UserManageComponent implements OnInit {
   // 提交用户数据
   editSubmit(form) {
 
+    this.isSubmit = true;
+
     // 数据合法
     if (form.valid) {
-      this._userService.updateUserDetail(this.editUserDetail)
-        .subscribe(
-          result => {
-            this._messageService.success("修改成功！");
-            this.editModal.destroy();
-            this.getUserInfo();
-          }
-        )
+
+      this.isSubmit = false;
+
+      // 修改的情况
+      if (this.editUserDetail.id) {
+
+        this._userService.updateUserDetail(this.editUserDetail)
+          .subscribe(
+            result => {
+              this._messageService.success("修改成功！");
+              this.editModal.destroy();
+              this.getUserInfo();
+            }
+          );
+
+      } else {
+        this._userService.addUser(this.editUserDetail).subscribe(result => {
+          this._messageService.success("添加成功！");
+          this.editModal.destroy();
+          this.getUserInfo();
+        });
+      }
+
+
     }
   }
 
@@ -273,11 +311,92 @@ export class UserManageComponent implements OnInit {
   }
 
   // 初始化
-  private getAllRoleName() {
+  private initAllRoleName() {
     this._roleService.getRoleNames().subscribe(result => {
       this.roles = result;
     })
   }
+
+  // 初始化组织树
+  private initAllGroup() {
+    this._groupService.getGroups().subscribe(
+      result => {
+        this.makeNodes(result);
+      }
+    )
+  }
+
+  // 代码参考group-manage.component.ts ⬇
+  // 构建树
+  private makeNodes(groups) {
+
+    this.groupNodes = [];
+
+    // 第一级节点
+    groups.forEach(group => {
+      if (!group.upId) {
+        this.groupNodes.push(
+          { title: group.groupName, key: group.id, icon: 'cluster' }
+        );
+      }
+    });
+
+
+    // 循环查找下级节点
+    let loopKeys: string[] = this.groupNodes.map(n => n.key);
+    while (loopKeys.length > 0) {
+
+      let newLoopKeys: string[] = [];
+
+      loopKeys.forEach(key => {
+
+        // 查找以当前节点为父节点的节点
+        const childs = groups.filter(element => element.upId == key);
+
+        // 查找treenodeoption
+        this.GetTreeNodeOptionByKey(this.groupNodes, key);
+
+        // 设置子节点
+        this.findTreeNode.children = [];
+
+        // 查找到的节点推入节点的子节点
+        childs.forEach(element => {
+          this.findTreeNode.children.push(
+            { title: element.groupName, key: element.id, icon: 'cluster' }
+          );
+          newLoopKeys.push(element.id);
+        });
+
+      });
+
+      // 查找下一轮的子节点
+      loopKeys = [];
+      Object.assign(loopKeys, newLoopKeys);
+    }
+  }
+
+  // 递归查找TreeNodeOption
+  private findTreeNode: NzTreeNodeOptions;
+  private GetTreeNodeOptionByKey(nodes: NzTreeNodeOptions[], key: string, ) {
+    if (nodes.find(n => n.key == key)) {
+      this.findTreeNode = nodes.find(n => n.key == key);
+    } else {
+      nodes.forEach(n => {
+        if (n.children) {
+          if (n.children.length != 0) {
+            this.GetTreeNodeOptionByKey(n.children, key);
+          }
+        }
+      });
+    }
+  }
+
+  // 合并
+  private getNzTreeNodeOption(id): NzTreeNodeOptions {
+    this.GetTreeNodeOptionByKey(this.groupNodes, id);
+    return this.findTreeNode;
+  }
+  // 代码参考group-manage.component.ts ⬆
 
 
 }
