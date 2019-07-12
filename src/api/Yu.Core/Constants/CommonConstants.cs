@@ -8,5 +8,9 @@
         public const string CaptchaCode = "CaptchaCode";
 
         public const string CaptchaCodeId = "CaptchaCodeId";
+
+        public const string RoleMemoryCacheKey = "RoleCache:";
+
+        public const string SystemManagerRole = "系统管理员";
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using System;
+using Yu.Core.Utils;
 using Yu.Model.WebAdmin.Group.InputModels;
 
 namespace Yu.Model.WebAdmin.Group
@@ -10,7 +11,7 @@ namespace Yu.Model.WebAdmin.Group
         {
             AllowNullCollections = true;
             CreateMap<GroupDetail, Data.Entities.Right.Group>()
-                .ForMember(g => g.Id, ex => ex.MapFrom(gd => string.IsNullOrEmpty(gd.Id) ? Guid.NewGuid() : Guid.Parse(gd.Id)));
+                .ForMember(g => g.Id, ex => ex.MapFrom(gd => string.IsNullOrEmpty(gd.Id) ? GuidUtil.NewSquentialGuid() : Guid.Parse(gd.Id)));
         }
     }
 }

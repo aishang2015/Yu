@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Yu.Data.Entities;
 using Yu.Model.WebAdmin.Role.InputOuputModels;
@@ -44,5 +45,12 @@ namespace Yu.Service.WebAdmin.Role
         /// </summary>
         /// <param name="role">角色</param>
         Task UpdateRole(RoleDetail role);
+
+
+        /// <summary>
+        /// 取得角色拥有的所有权限
+        /// </summary>
+        /// <param name="roleName">角色名称</param>
+        Task<List<ValueTuple<string, string>>> GetRolePermission(string roleName);
     }
 }

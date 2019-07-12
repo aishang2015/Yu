@@ -37,10 +37,10 @@ namespace Yu.Data.Infrasturctures
                     // 初始化实体数据表
                     InitEntityData(dbContext);
 
-                    // 初始化成员
-                    InitMember(dbContext);
-
-                    // 初始化角色
+                    // 初始化成员和角色
+                    var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<BaseIdentityUser>>();
+                    var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<BaseIdentityRole>>();
+                    InitMember(userManager, roleManager);
 
                     // 自定义初始方法
                     dataSeed?.Invoke(dbContext);
@@ -135,20 +135,39 @@ namespace Yu.Data.Infrasturctures
         }
 
         // 初始化成员
-        private static void InitMember<TDbContext>(TDbContext dbContext) where TDbContext : DbContext
+        private static void InitMember(UserManager<BaseIdentityUser> userManager, RoleManager<BaseIdentityRole> roleManager)
         {
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    var user = new BaseIdentityUser
+            //    {
+            //        UserName = $"admin{i}",
+            //        NormalizedUserName = $"ADMIN{i}",
+            //        SecurityStamp = Guid.NewGuid().ToString()
+            //    };
+            //    user.PasswordHash = new PasswordHasher<BaseIdentityUser>().HashPassword(user, CommonConstants.Password);
+            //    dbContext.Set<BaseIdentityUser>().Add(user);
+            //}
+            //dbContext.SaveChanges();     
+
+            roleManager.CreateAsync(new BaseIdentityRole
+            {
+                Name = "系统管理员",
+                Describe = "拥有系统的全部操作权限",
+            }).Wait();
             for (int i = 0; i < 10; i++)
             {
                 var user = new BaseIdentityUser
                 {
                     UserName = $"admin{i}",
                     NormalizedUserName = $"ADMIN{i}",
-                    SecurityStamp = Guid.NewGuid().ToString()
+                    Roles = "系统管理员"
                 };
-                user.PasswordHash = new PasswordHasher<BaseIdentityUser>().HashPassword(user, CommonConstants.Password);
-                dbContext.Set<BaseIdentityUser>().Add(user);
-                dbContext.SaveChanges();
+                userManager.CreateAsync(user, CommonConstants.Password).Wait();
+                userManager.AddToRoleAsync(user, "系统管理员").Wait();
             }
+
+
         }
 
         // 更新API数据

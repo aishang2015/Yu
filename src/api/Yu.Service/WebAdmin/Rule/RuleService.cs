@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Yu.Core.Expressions;
+using Yu.Core.Utils;
 using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
@@ -55,7 +56,7 @@ namespace Yu.Service.WebAdmin.Rule
             }
 
             // 修改规则组Id
-            var groupId = group != null ? group.Id : Guid.NewGuid();
+            var groupId = group != null ? group.Id : GuidUtil.NewSquentialGuid();
             ruleGroup.Id = groupId;
 
             // 修改每项规则的Id和Upid
@@ -64,7 +65,7 @@ namespace Yu.Service.WebAdmin.Rule
                 var oldId = rule.Id;
 
                 // 替换前端生成的ID
-                var ruleId = Guid.NewGuid().ToString();
+                var ruleId = GuidUtil.NewSquentialGuid().ToString();
                 rule.Id = ruleId;
                 rule.RuleGroupId = groupId.ToString();
                 foreach (var r in rules)
@@ -85,7 +86,7 @@ namespace Yu.Service.WebAdmin.Rule
             }
 
             // 生成新的Id
-            ruleConditions.ToList().ForEach(condition => condition.Id = Guid.NewGuid().ToString());
+            ruleConditions.ToList().ForEach(condition => condition.Id = GuidUtil.NewSquentialGuid().ToString());
 
             // 保存全部数据
             await _ruleRepository.InsertRangeAsync(Mapper.Map<IEnumerable<RuleEntity>>(rules));

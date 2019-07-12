@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,20 +9,47 @@ using System.Threading.Tasks;
 using Yu.Core.Constants;
 using Yu.Core.Expressions;
 using Yu.Data.Entities;
+using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Role.InputOuputModels;
 using Yu.Model.WebAdmin.Role.OutputModels;
+using ApiEntity = Yu.Data.Entities.Right.Api;
+using ElementEntity = Yu.Data.Entities.Right.Element;
 
 namespace Yu.Service.WebAdmin.Role
 {
     public class RoleService : IRoleService
     {
-        private RoleManager<BaseIdentityRole> _roleManager;
+        private readonly RoleManager<BaseIdentityRole> _roleManager;
 
-        public RoleService(RoleManager<BaseIdentityRole> roleManager)
+        private readonly IRepository<ElementEntity, Guid> _elementRepository;
+
+        private readonly IRepository<ElementApi, Guid> _elementApiRepository;
+
+        private readonly IRepository<ApiEntity, Guid> _apiRepository;
+
+        private readonly IRepository<RuleGroup, Guid> _ruleGroupRespository;
+
+        private readonly IMemoryCache _memoryCache;
+
+        public RoleService(
+            RoleManager<BaseIdentityRole> roleManager,
+            IRepository<ElementEntity, Guid> elementRepository,
+            IRepository<ElementApi, Guid> elementApiRepository,
+            IRepository<ApiEntity, Guid> apiRepository,
+            IRepository<RuleGroup, Guid> ruleGroupRespository,
+            IMemoryCache memoryCache)
         {
             _roleManager = roleManager;
+            _elementRepository = elementRepository;
+            _elementApiRepository = elementApiRepository;
+            _apiRepository = apiRepository;
+            _ruleGroupRespository = ruleGroupRespository;
+            _memoryCache = memoryCache;
         }
+
+
 
         /// <summary>
         /// 添加角色
@@ -40,15 +68,21 @@ namespace Yu.Service.WebAdmin.Role
             if (result.Succeeded)
             {
                 // 保存关联页面元素
-                foreach (var element in role.Elements)
+                if (role.Elements != null)
                 {
-                    await _roleManager.AddClaimAsync(identityRole, new Claim(CustomClaimTypes.Element, element));
+                    foreach (var element in role.Elements)
+                    {
+                        await _roleManager.AddClaimAsync(identityRole, new Claim(CustomClaimTypes.Element, element));
+                    }
                 }
 
                 // 保存关联数据规则
-                foreach (var rule in role.DataRules)
+                if (role.DataRules != null)
                 {
-                    await _roleManager.AddClaimAsync(identityRole, new Claim(CustomClaimTypes.Rule, rule));
+                    foreach (var rule in role.DataRules)
+                    {
+                        await _roleManager.AddClaimAsync(identityRole, new Claim(CustomClaimTypes.Rule, rule));
+                    }
                 }
                 return true;
             }
@@ -145,6 +179,10 @@ namespace Yu.Service.WebAdmin.Role
             // 更新声明
             await UpdateRoleClaim(identityRole, role.Elements, CustomClaimTypes.Element);
             await UpdateRoleClaim(identityRole, role.DataRules, CustomClaimTypes.Rule);
+
+            // 更新缓存
+            _memoryCache.Remove(CommonConstants.RoleMemoryCacheKey + identityRole.Name);
+            await GetRolePermission(identityRole.Name);
         }
 
         /// <summary>
@@ -176,6 +214,95 @@ namespace Yu.Service.WebAdmin.Role
             foreach (var value in addClaimValues)
             {
                 await _roleManager.AddClaimAsync(identityRole, new Claim(claimType, value));
+            }
+        }
+
+
+        /// <summary>
+        /// 取得角色拥有的所有权限
+        /// </summary>
+        /// <param name="roleName">角色名称</param>
+        public async Task<List<(string, string)>> GetRolePermission(string roleName)
+        {
+            if (!CommonConstants.SystemManagerRole.Equals(roleName))
+            {
+                // 判断是否在缓存中
+                return await _memoryCache.GetOrCreateAsync(
+                    CommonConstants.RoleMemoryCacheKey + roleName,
+                    async entity =>
+                    {
+
+                        var result = new List<(string, string)>();
+
+                        // 获取所有claim
+                        var role = await _roleManager.FindByNameAsync(roleName);
+                        var claims = await _roleManager.GetClaimsAsync(role);
+
+                        // 关联的元素
+                        var elementIds = claims.Where(c => c.Type == CustomClaimTypes.Element).Select(c => c.Value);
+                        var elements = _elementRepository.GetByWhereNoTracking(e => elementIds.Contains(e.Id.ToString()));
+
+                        // 角色拥有的识别
+                        result.Add((PermissionTypes.Identities, string.Join(',', elements?.Select(e => e.Identification))));
+
+                        // 角色拥有路由
+                        result.Add((PermissionTypes.Routes, string.Join(',', elements.Select(e => e.Route))));
+
+                        // 获取所有关联的Api
+                        var apiIds = new List<Guid>();
+                        elementIds.ToList().ForEach(id =>
+                        {
+                            var apiids = _elementApiRepository.GetByWhereNoTracking(ea => ea.ElementId == Guid.Parse(id)).Select(ea => ea.ApiId);
+                            apiIds.AddRange(apiids);
+                        });
+                        var apis = _apiRepository.GetByWhereNoTracking(a => apiIds.Contains(a.Id)).Select(a => a.Address + '|' + a.Type);
+
+                        // 角色可访问的API
+                        result.Add((PermissionTypes.Apis, string.Join(',', apis)));
+
+                        // 关联的数据规则
+                        var ruleIds = claims.Where(c => c.Type == CustomClaimTypes.Rule).Select(c => c.Value);
+                        var ruleGroups = _ruleGroupRespository.GetByWhereNoTracking(rg => ruleIds.Contains(rg.Id.ToString()))
+                            .Select(a => a.DbContext + '|' + a.Entity + '|' + a.Lambda);
+
+                        // 角色的数据访问规则
+                        result.Add((PermissionTypes.DataRules, string.Join(',', ruleGroups)));
+
+                        // 设置缓存
+                        _memoryCache.Set(CommonConstants.RoleMemoryCacheKey + roleName, result);
+
+                        return result;
+                    }
+                );
+            }
+            else
+            {
+                // 系统管理员的情况
+                return _memoryCache.GetOrCreate(
+                    CommonConstants.RoleMemoryCacheKey + roleName,
+                    entity =>
+                    {
+                        // 结果
+                        var result = new List<(string, string)>();
+
+                        // 关联的元素
+                        var elements = _elementRepository.GetAllNoTracking();
+
+                        // 角色拥有的识别
+                        result.Add((PermissionTypes.Identities, string.Join(',', elements?.Select(e => e.Identification))));
+
+                        // 角色拥有路由
+                        result.Add((PermissionTypes.Routes, string.Join(',', elements.Select(e => e.Route))));
+
+                        // 角色的数据访问规则
+                        result.Add((PermissionTypes.DataRules, string.Empty));
+
+                        // 设置缓存
+                        _memoryCache.Set(CommonConstants.RoleMemoryCacheKey + roleName, result);
+
+                        return result;
+                    });
+
             }
         }
     }
