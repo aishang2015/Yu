@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Constants;
+using Yu.Core.Extensions;
 using Yu.Core.Jwt;
 using Yu.Core.Mvc;
 using Yu.Model.Account.InputModels;
@@ -100,6 +102,27 @@ namespace Yu.Api.Controllers
             }
             return Ok(new { token = newtoken });
         }
+
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        [HttpPost]
+        [Description("修改密码")]
+        [Authorize]
+        public async Task<IActionResult> ChangePwd([FromBody]ChangePwdModel model)
+        {
+            var userName = User.GetUserName();
+            var result = await _accountService.ChangePassword(userName, model.OldPassword, model.NewPassword);
+            if (!result)
+            {
+                ModelState.AddModelError("Password", ErrorMessages.Account_E008);
+                return BadRequest(ModelState);
+            }
+            return Ok();
+        }
+
+
+
 
     }
 }

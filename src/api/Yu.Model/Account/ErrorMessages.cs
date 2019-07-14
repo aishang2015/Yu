@@ -15,5 +15,7 @@ namespace Yu.Model.Message
         public static readonly string Account_E006 = "用户名或密码不正确!";
 
         public static readonly string Account_E007 = "Token刷新失败!";
+
+        public static readonly string Account_E008 = "密码修改失败!";
     }
 }

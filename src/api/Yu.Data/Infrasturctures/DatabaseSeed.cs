@@ -42,6 +42,9 @@ namespace Yu.Data.Infrasturctures
                     var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<BaseIdentityRole>>();
                     InitMember(userManager, roleManager);
 
+                    // 初始化其他数据
+                    InitOtherData(dbContext);                   
+
                     // 自定义初始方法
                     dataSeed?.Invoke(dbContext);
                 }
@@ -167,6 +170,38 @@ namespace Yu.Data.Infrasturctures
                 userManager.AddToRoleAsync(user, "系统管理员").Wait();
             }
 
+            
+
+
+        }
+
+        // 初始化其他数据
+        private static void InitOtherData<TDbContext>(TDbContext dbContext) where TDbContext : DbContext
+        {
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', N'权限管理', 1, N'rightmanage', N'')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'ad592b36-dd5b-447b-fa6d-08d7072f517b', N'用户管理', 1, N'usermanage', N'')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'7bfaa83d-8611-4fcd-fa6e-08d7072f517b', N'角色管理', 1, N'rolemanage', N'')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'62663b74-a5d0-43ed-fa70-08d7072f517b', N'组织管理', 1, N'groupmanage', N'')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'5b859edf-eac7-46a7-fa71-08d7072f517b', N'页面元素管理', 1, N'elementmanage', N'')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'b08a4c30-d492-4537-fa72-08d7072f517b', N'api数据管理', 1, N'apimanage', N'')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'e68887e2-1f67-4ee3-fa73-08d7072f517b', N'规则管理', 1, N'rulemanage', N'')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'515f8064-e91c-41e2-fa74-08d7072f517b', N'实体数据管理', 1, N'entitymanage', N'')");
+
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'05e877a1-d897-4a68-6d14-08d7072f517f', N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', 0)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'b66e1bef-da5d-4ad1-6d15-08d7072f517f', N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', N'ad592b36-dd5b-447b-fa6d-08d7072f517b', 1)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'2b83f45d-0b18-44fb-6d16-08d7072f517f', N'ad592b36-dd5b-447b-fa6d-08d7072f517b', N'ad592b36-dd5b-447b-fa6d-08d7072f517b', 0)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'cdbaf940-e8ae-4fe9-6d17-08d7072f517f', N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', N'7bfaa83d-8611-4fcd-fa6e-08d7072f517b', 1)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'80f5ef02-0277-4d95-6d18-08d7072f517f', N'7bfaa83d-8611-4fcd-fa6e-08d7072f517b', N'7bfaa83d-8611-4fcd-fa6e-08d7072f517b', 0)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'd059c25b-ba9f-4ac0-6d1c-08d7072f517f', N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', N'62663b74-a5d0-43ed-fa70-08d7072f517b', 1)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'29fdbb81-ed7d-4f22-6d1d-08d7072f517f', N'62663b74-a5d0-43ed-fa70-08d7072f517b', N'62663b74-a5d0-43ed-fa70-08d7072f517b', 0)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'39d441b8-9a2b-47dd-6d1e-08d7072f517f', N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', N'5b859edf-eac7-46a7-fa71-08d7072f517b', 1)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'c8ae766b-e077-4e7b-6d1f-08d7072f517f', N'5b859edf-eac7-46a7-fa71-08d7072f517b', N'5b859edf-eac7-46a7-fa71-08d7072f517b', 0)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'f6a9a41f-59d9-4b07-6d20-08d7072f517f', N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', N'b08a4c30-d492-4537-fa72-08d7072f517b', 1)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'4274a4dd-9660-4906-6d21-08d7072f517f', N'b08a4c30-d492-4537-fa72-08d7072f517b', N'b08a4c30-d492-4537-fa72-08d7072f517b', 0)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'f37856a6-6221-4630-6d22-08d7072f517f', N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', N'e68887e2-1f67-4ee3-fa73-08d7072f517b', 1)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'41c5a517-75a4-4834-6d23-08d7072f517f', N'e68887e2-1f67-4ee3-fa73-08d7072f517b', N'e68887e2-1f67-4ee3-fa73-08d7072f517b', 0)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'69253c30-9f02-4fc9-6d24-08d7072f517f', N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', N'515f8064-e91c-41e2-fa74-08d7072f517b', 1)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'487f5dd0-65a0-4365-6d25-08d7072f517f', N'515f8064-e91c-41e2-fa74-08d7072f517b', N'515f8064-e91c-41e2-fa74-08d7072f517b', 0)");
 
         }
 
