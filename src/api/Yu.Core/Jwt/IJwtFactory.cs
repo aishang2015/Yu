@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 namespace Yu.Core.Jwt
 {
@@ -11,12 +10,12 @@ namespace Yu.Core.Jwt
     public interface IJwtFactory
     {
         // 生成jwttoken
-        string GenerateJwtToken(List<ValueTuple<string,string>> tuples);
+        string GenerateJwtToken(List<ValueTuple<string, string>> tuples);
+
+        // 生成jwttoken
+        string GenerateJwtToken(ClaimsPrincipal claimsPrincipal);
 
         // 解析jwttoken
-        ClaimsPrincipal DecodeJwtToken(string token);
-
-        // 刷新jwttoken
-        string RefreshJwtToken(string oldToken);
+        ClaimsPrincipal CanRefresh(string token);
     }
 }

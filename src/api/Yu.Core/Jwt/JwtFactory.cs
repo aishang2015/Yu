@@ -19,18 +19,41 @@ namespace Yu.Core.Jwt
         }
 
         // 解析jwttoken
-        public ClaimsPrincipal DecodeJwtToken(string token)
+        public ClaimsPrincipal CanRefresh(string token)
         {
-            return new JwtSecurityTokenHandler().ValidateToken(token, new TokenValidationParameters
+            ClaimsPrincipal claimsPrincipal;
+
+            // 解析旧token
+            try
             {
-                ValidIssuer = _jwtOption.Issuer,
-                ValidateIssuer = true,
-                ValidAudience = _jwtOption.Audience,
-                ValidateAudience = true,
-                IssuerSigningKey = _jwtOption.SecurityKey,
-                ValidateIssuerSigningKey = true,
-                ValidateLifetime = false,
-            }, out SecurityToken securityToken);
+                claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidIssuer = _jwtOption.Issuer,
+                    ValidateIssuer = true,
+                    ValidAudience = _jwtOption.Audience,
+                    ValidateAudience = true,
+                    IssuerSigningKey = _jwtOption.SecurityKey,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = false,
+                }, out SecurityToken securityToken);
+            }
+            catch
+            {
+                // token无法解析
+                return null;
+            }
+
+            // 取得旧token过期时间
+            var oldExpires = claimsPrincipal.GetClaimValue(CustomClaimTypes.Expires);
+            var expireDateTime = Utils.DateTimeUtil.GetDateTime(oldExpires);
+
+            // 当超过刷新间或者token仍在有效期内的情况下不刷新token
+            if (expireDateTime.AddMinutes(_jwtOption.RefreshEffectiveTime) < DateTime.Now || expireDateTime > DateTime.Now)
+            {
+                return null;
+            }
+
+            return claimsPrincipal;
         }
 
         // 生成jwttoken
@@ -51,33 +74,9 @@ namespace Yu.Core.Jwt
             return token;
         }
 
-        // 刷新jwttoken
-        public string RefreshJwtToken(string oldToken)
+        // 生成jwttoken
+        public string GenerateJwtToken(ClaimsPrincipal claimsPrincipal)
         {
-            ClaimsPrincipal claimsPrincipal;
-
-            // 解析旧token
-            try
-            {
-                claimsPrincipal = DecodeJwtToken(oldToken);
-            }
-            catch
-            {
-                // token无法解析
-                return null;
-            }
-
-            // 取得旧token过期时间
-            var oldExpires = claimsPrincipal.GetClaimValue(CustomClaimTypes.Expires);
-            var expireDateTime = Utils.DateTimeUtil.GetDateTime(oldExpires);
-
-            // 当超过刷新间或者token仍在有效期内的情况下不刷新token
-            if (expireDateTime.AddMinutes(_jwtOption.RefreshEffectiveTime) < DateTime.Now || expireDateTime > DateTime.Now)
-            {
-                return null;
-            }
-
-            // 生成新的token
             var jwtSecurityToken = new JwtSecurityToken(
                 issuer: _jwtOption.Issuer,
                 audience: _jwtOption.Audience,

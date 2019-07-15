@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Yu.Core.Constants;
 using Yu.Core.Extensions;
@@ -12,6 +13,7 @@ using Yu.Model.Account.InputModels;
 using Yu.Model.Account.OutputModels;
 using Yu.Model.Message;
 using Yu.Service.Account;
+using Yu.Service.WebAdmin.Role;
 
 namespace Yu.Api.Controllers
 {
@@ -22,12 +24,15 @@ namespace Yu.Api.Controllers
 
         private readonly IAccountService _accountService;
 
+        private readonly IRoleService _roleService;
+
         private readonly IMemoryCache _memoryCache;
 
-        public AccountController(IJwtFactory jwtFactory, IAccountService accountService, IMemoryCache memoryCache)
+        public AccountController(IJwtFactory jwtFactory, IAccountService accountService, IRoleService roleService, IMemoryCache memoryCache)
         {
             _jwtFactory = jwtFactory;
             _accountService = accountService;
+            _roleService = roleService;
             _memoryCache = memoryCache;
         }
 
@@ -69,17 +74,36 @@ namespace Yu.Api.Controllers
                 return BadRequest(ModelState);
             }
 
+            // 取得用户的角色
+            var roles = await _accountService.FindUserRole(user);
+
+            // 取得用户的组织
+            var group = await _accountService.FindUserGroup(user);
+
             // 生成JwtToken
             var token = _jwtFactory.GenerateJwtToken(new List<(string, string)>{
-                (CustomClaimTypes.UserName,user.UserName)
+                (CustomClaimTypes.UserName,user.UserName),
+                (CustomClaimTypes.Role,roles),
+                (CustomClaimTypes.Group,group==null?string.Empty:group.Id.ToString()),
             });
+
+            // 根据用户的角色获取用户页面侧的权限内容
+            List<string> identites = new List<string> { }, routes = new List<string> { };
+            foreach (var role in roles.Split(','))
+            {
+                var permissions = await _roleService.GetRolePermission(role);
+                identites.AddRange(permissions.Where(p => p.Item1 == PermissionTypes.Identities).Select(p => p.Item2));
+                routes.AddRange(permissions.Where(p => p.Item1 == PermissionTypes.Routes).Select(p => p.Item2));
+            }
 
             // 返回结果
             return Ok(new LoginResult
             {
                 Token = token,
                 UserName = user.UserName,
-                AvatarUrl = user.Avatar ?? string.Empty
+                AvatarUrl = user.Avatar ?? string.Empty,
+                Identifycations = identites.ToArray(),
+                Routes = routes.ToArray()
             });
         }
 
@@ -89,18 +113,55 @@ namespace Yu.Api.Controllers
         /// <returns>新token</returns>
         [HttpPost]
         [Description("刷新token")]
-        public IActionResult RefreshToken()
+        public async Task<IActionResult> RefreshToken()
         {
             var oldToken = Request.Headers["Authorization"].ToString();
-            var newtoken = _jwtFactory.RefreshJwtToken(oldToken?.Replace("Bearer ", string.Empty));
+            //var newtoken = _jwtFactory.RefreshJwtToken(oldToken?.Replace("Bearer ", string.Empty));
+
+            var claimPrincipal = _jwtFactory.CanRefresh(oldToken?.Replace("Bearer ", string.Empty));
 
             // token刷新失败
-            if (string.IsNullOrEmpty(newtoken))
+            if (claimPrincipal == null)
             {
                 ModelState.AddModelError("Token", ErrorMessages.Account_E007);
                 return BadRequest(ModelState);
             }
-            return Ok(new { token = newtoken });
+
+            // 根据token保存的用户名取得用户,更新用户数据
+            var userName = claimPrincipal.GetUserName();
+            var user = await _accountService.FindUser(userName);
+
+            // 取得用户的角色
+            var roles = await _accountService.FindUserRole(user);
+
+            // 取得用户的组织
+            var group = await _accountService.FindUserGroup(user);
+
+            // 生成JwtToken
+            var newtoken = _jwtFactory.GenerateJwtToken(new List<(string, string)>{
+                (CustomClaimTypes.UserName,userName),
+                (CustomClaimTypes.Role,roles),
+                (CustomClaimTypes.Group,group==null?string.Empty:group.Id.ToString()),
+            });
+
+            // 根据用户的角色获取用户页面侧的权限内容
+            List<string> identites = new List<string> { }, routes = new List<string> { };
+            foreach (var role in roles.Split(','))
+            {
+                var permissions = await _roleService.GetRolePermission(role);
+                identites.AddRange(permissions.Where(p => p.Item1 == PermissionTypes.Identities).Select(p => p.Item2));
+                routes.AddRange(permissions.Where(p => p.Item1 == PermissionTypes.Routes).Select(p => p.Item2));
+            }
+
+            // 返回结果
+            return Ok(new LoginResult
+            {
+                Token = newtoken,
+                UserName = user.UserName,
+                AvatarUrl = user.Avatar ?? string.Empty,
+                Identifycations = identites.ToArray(),
+                Routes = routes.ToArray()
+            });
         }
 
         /// <summary>

@@ -9,6 +9,7 @@ import { ThrottleClickDirective } from './directives/throttle-click.directive';
 import { ImageUriPipe } from './pipes/image-uri.pipe';
 import { AppRuleComponent } from './components/app-rule/app-rule.component';
 import { UserNameValidatorDirective } from './validators/username-validator.directive';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   imports: [
@@ -37,7 +38,7 @@ import { UserNameValidatorDirective } from './validators/username-validator.dire
     TelephoneValidatorDirective,
     UserNameValidatorDirective,
     DebounceClickDirective,
-    ThrottleClickDirective
+    ThrottleClickDirective,
   ]
 })
 export class CoreModule { }

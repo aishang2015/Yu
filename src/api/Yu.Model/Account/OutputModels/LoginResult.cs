@@ -14,5 +14,11 @@ namespace Yu.Model.Account.OutputModels
 
         // 头像地址
         public string AvatarUrl { get; set; }
+
+        // 菜单识别集合
+        public string[] Identifycations { get; set; }
+
+        // 路由识别集合
+        public string[] Routes { get; set; }
     }
 }

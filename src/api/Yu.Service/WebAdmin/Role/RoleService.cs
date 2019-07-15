@@ -25,6 +25,8 @@ namespace Yu.Service.WebAdmin.Role
 
         private readonly IRepository<ElementEntity, Guid> _elementRepository;
 
+        private readonly IRepository<ElementTree, Guid> _elementTreeRepository;
+
         private readonly IRepository<ElementApi, Guid> _elementApiRepository;
 
         private readonly IRepository<ApiEntity, Guid> _apiRepository;
@@ -33,9 +35,9 @@ namespace Yu.Service.WebAdmin.Role
 
         private readonly IMemoryCache _memoryCache;
 
-        public RoleService(
-            RoleManager<BaseIdentityRole> roleManager,
+        public RoleService(RoleManager<BaseIdentityRole> roleManager,
             IRepository<ElementEntity, Guid> elementRepository,
+            IRepository<ElementTree, Guid> elementTreeRepository,
             IRepository<ElementApi, Guid> elementApiRepository,
             IRepository<ApiEntity, Guid> apiRepository,
             IRepository<RuleGroup, Guid> ruleGroupRespository,
@@ -43,13 +45,12 @@ namespace Yu.Service.WebAdmin.Role
         {
             _roleManager = roleManager;
             _elementRepository = elementRepository;
+            _elementTreeRepository = elementTreeRepository;
             _elementApiRepository = elementApiRepository;
             _apiRepository = apiRepository;
             _ruleGroupRespository = ruleGroupRespository;
             _memoryCache = memoryCache;
         }
-
-
 
         /// <summary>
         /// 添加角色
@@ -70,7 +71,19 @@ namespace Yu.Service.WebAdmin.Role
                 // 保存关联页面元素
                 if (role.Elements != null)
                 {
+                    var elements = new List<string>();
                     foreach (var element in role.Elements)
+                    {
+                        // 找到所有的父元素
+                        var ancestorElements = _elementTreeRepository.GetByWhereNoTracking(e => e.Descendant == Guid.Parse(element));
+                        elements.AddRange(ancestorElements.Select(e => e.Ancestor.ToString()));
+
+                        // 找到所有的子元素
+                        var descendantElemnts = _elementTreeRepository.GetByWhereNoTracking(e => e.Ancestor == Guid.Parse(element));
+                        elements.AddRange(descendantElemnts.Select(e => e.Descendant.ToString()));
+                    }
+                    elements = elements.Distinct().ToList();
+                    foreach (var element in elements)
                     {
                         await _roleManager.AddClaimAsync(identityRole, new Claim(CustomClaimTypes.Element, element));
                     }
@@ -176,8 +189,19 @@ namespace Yu.Service.WebAdmin.Role
             identityRole.Describe = role.Describe;
             await _roleManager.UpdateAsync(identityRole);
 
+            // 找到关联元素
+            var elements = new List<string>();
+            foreach (var element in role.Elements)
+            {
+                var ancestorElements = _elementTreeRepository.GetByWhereNoTracking(e => e.Descendant == Guid.Parse(element));
+                elements.AddRange(ancestorElements.Select(e => e.Ancestor.ToString()));
+                var descendantElemnts = _elementTreeRepository.GetByWhereNoTracking(e => e.Ancestor == Guid.Parse(element));
+                elements.AddRange(descendantElemnts.Select(e => e.Descendant.ToString()));
+            }
+            elements = elements.Distinct().ToList();
+
             // 更新声明
-            await UpdateRoleClaim(identityRole, role.Elements, CustomClaimTypes.Element);
+            await UpdateRoleClaim(identityRole, elements.ToArray(), CustomClaimTypes.Element);
             await UpdateRoleClaim(identityRole, role.DataRules, CustomClaimTypes.Rule);
 
             // 更新缓存

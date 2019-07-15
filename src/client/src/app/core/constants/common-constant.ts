@@ -12,4 +12,10 @@ export class CommonConstant{
     
     // 头像地址
     static readonly LocalStorage_AvatarUrl = 'yu_avatarurl';
+    
+    // 页面元素标识
+    static readonly LocalStorage_Identifycation = 'yu_identifycation';
+
+    // 可访问的路由
+    static readonly LocalStorage_Routes = 'yu_routes'
 }

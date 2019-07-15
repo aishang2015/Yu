@@ -61,8 +61,8 @@ export class HomeComponent implements OnInit {
   }
 
   setDashboardBreadCrumb() {
-    this.setBreadCrumb('仪表盘','');
-    
+    this.setBreadCrumb('仪表盘', '');
+
     for (const key in this.openMap) {
       this.openMap[key] = false;
     };
@@ -71,5 +71,13 @@ export class HomeComponent implements OnInit {
       this.selectMap[key] = false;
     };
   }
+
+  // 是否有操作权限
+  canOperate(identifycation) {
+    var identifycations = this._localStorageService.getIdentifycations();
+    return identifycations.findIndex(i => i == identifycation) > -1;
+  }
+
+  
 
 }

@@ -102,6 +102,13 @@ namespace Yu.Service.WebAdmin.User
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
             var result = Mapper.Map<UserDetail>(user);
+
+            // 组织
+            var claims = await _userManager.GetClaimsAsync(user);
+            var groupid = claims.Where(c => c.Type == CustomClaimTypes.Group).Select(c => c.Value).FirstOrDefault();
+            result.GroupId = groupid;
+
+            // 角色
             var roles = await _userManager.GetRolesAsync(user);
             result.Roles = roles.ToArray();
             return result;
@@ -191,6 +198,10 @@ namespace Yu.Service.WebAdmin.User
                 }
                 user.GroupName = group.GroupName;
                 user.GroupId = group.Id;
+            }
+            else
+            {
+                user.GroupName = string.Empty;
             }
 
             // 先删除再添加角色

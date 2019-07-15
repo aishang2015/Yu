@@ -121,6 +121,7 @@ export class RoleManageComponent implements OnInit {
           this.nzModal.close();
           this._messageService.success("更新成功");
           this.initRoles();
+          form.reset();
         });
       } else {
 
@@ -129,6 +130,7 @@ export class RoleManageComponent implements OnInit {
           this.nzModal.close();
           this._messageService.success("添加成功");
           this.initRoles();
+          form.reset();
         });
 
       }
@@ -138,6 +140,7 @@ export class RoleManageComponent implements OnInit {
   // 取消提交表单
   cancel(form) {
     this.nzModal.close();
+    form.reset();
   }
 
   // 初始化角色数据

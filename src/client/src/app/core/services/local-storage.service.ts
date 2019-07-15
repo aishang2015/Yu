@@ -30,12 +30,34 @@ export class LocalStorageService {
   }
   getAvatarUrl(): string { return localStorage.getItem(CommonConstant.LocalStorage_AvatarUrl); }
 
+  // 可操作的页面元素识别
+  setIdentifycations(identifycations: string[]) {
+    localStorage.setItem(CommonConstant.LocalStorage_Identifycation, identifycations.join(','));
+  }
+  getIdentifycations(): string[] {
+    if (localStorage.getItem(CommonConstant.LocalStorage_Identifycation))
+      return localStorage.getItem(CommonConstant.LocalStorage_Identifycation).split(',');
+    return [];
+  }
+
+  // 可访问的路由
+  setRoutes(routes: string[]) {
+    localStorage.setItem(CommonConstant.LocalStorage_Routes, routes.join(','));
+  }
+  getRoutes(): string[] {
+    if (localStorage.getItem(CommonConstant.LocalStorage_Routes))
+      return localStorage.getItem(CommonConstant.LocalStorage_Routes).split(',');
+    return [];
+  }
+
   // 清除存储
-  clear(){
+  clear() {
     localStorage.removeItem(CommonConstant.LocalStorage_AuthToken);
     localStorage.removeItem(CommonConstant.LocalStorage_Expires);
     localStorage.removeItem(CommonConstant.LocalStorage_UserName);
     localStorage.removeItem(CommonConstant.LocalStorage_AvatarUrl);
+    localStorage.removeItem(CommonConstant.LocalStorage_Identifycation);
+    localStorage.removeItem(CommonConstant.LocalStorage_Routes);
   }
 
 }

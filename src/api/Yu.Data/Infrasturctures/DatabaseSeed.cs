@@ -179,13 +179,13 @@ namespace Yu.Data.Infrasturctures
         private static void InitOtherData<TDbContext>(TDbContext dbContext) where TDbContext : DbContext
         {
             dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', N'权限管理', 1, N'rightmanage', N'')");
-            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'ad592b36-dd5b-447b-fa6d-08d7072f517b', N'用户管理', 1, N'usermanage', N'')");
-            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'7bfaa83d-8611-4fcd-fa6e-08d7072f517b', N'角色管理', 1, N'rolemanage', N'')");
-            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'62663b74-a5d0-43ed-fa70-08d7072f517b', N'组织管理', 1, N'groupmanage', N'')");
-            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'5b859edf-eac7-46a7-fa71-08d7072f517b', N'页面元素管理', 1, N'elementmanage', N'')");
-            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'b08a4c30-d492-4537-fa72-08d7072f517b', N'api数据管理', 1, N'apimanage', N'')");
-            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'e68887e2-1f67-4ee3-fa73-08d7072f517b', N'规则管理', 1, N'rulemanage', N'')");
-            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'515f8064-e91c-41e2-fa74-08d7072f517b', N'实体数据管理', 1, N'entitymanage', N'')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'ad592b36-dd5b-447b-fa6d-08d7072f517b', N'用户管理', 1, N'usermanage', N'/right/user')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'7bfaa83d-8611-4fcd-fa6e-08d7072f517b', N'角色管理', 1, N'rolemanage', N'/right/role')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'62663b74-a5d0-43ed-fa70-08d7072f517b', N'组织管理', 1, N'groupmanage', N'/right/group')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'5b859edf-eac7-46a7-fa71-08d7072f517b', N'页面元素管理', 1, N'elementmanage', N'/right/menu')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'b08a4c30-d492-4537-fa72-08d7072f517b', N'api数据管理', 1, N'apimanage', N'/right/api')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'e68887e2-1f67-4ee3-fa73-08d7072f517b', N'规则管理', 1, N'rulemanage', N'/right/rule')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[Element] ([Id], [Name], [ElementType], [Identification], [Route]) VALUES (N'515f8064-e91c-41e2-fa74-08d7072f517b', N'实体数据管理', 1, N'entitymanage', N'/right/entity')");
 
             dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'05e877a1-d897-4a68-6d14-08d7072f517f', N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', 0)");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO [dbo].[ElementTree] ([Id], [Ancestor], [Descendant], [Length]) VALUES (N'b66e1bef-da5d-4ad1-6d15-08d7072f517f', N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b', N'ad592b36-dd5b-447b-fa6d-08d7072f517b', 1)");

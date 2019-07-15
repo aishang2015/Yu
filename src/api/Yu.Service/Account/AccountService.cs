@@ -1,6 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Yu.Core.Constants;
+using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Repositories;
 
 namespace Yu.Service.Account
 {
@@ -10,11 +15,18 @@ namespace Yu.Service.Account
 
         private readonly RoleManager<BaseIdentityRole> _roleManager;
 
-        public AccountService(UserManager<BaseIdentityUser> userManager, RoleManager<BaseIdentityRole> roleManager)
+        private readonly IRepository<Group, Guid> _groupRepository;
+
+        public AccountService(UserManager<BaseIdentityUser> userManager,
+            RoleManager<BaseIdentityRole> roleManager,
+            IRepository<Group, Guid> groupRepository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _groupRepository = groupRepository;
         }
+
+
 
         // 根据旧密码修改新密码
         public async Task<bool> ChangePassword(string userName, string oldPassword, string newPassword)
@@ -51,6 +63,53 @@ namespace Yu.Service.Account
         }
 
         /// <summary>
+        /// 查找用户
+        /// </summary>
+        /// <param name="userName">用户名</param>
+        /// <returns></returns>
+        public Task<BaseIdentityUser> FindUser(string userName)
+        {
+            // 查找用户
+            var user = _userManager.FindByNameAsync(userName);
+
+            // 用户存在
+            if (user != null)
+            {
+                return user;
+
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 取得用户所在组织
+        /// </summary>
+        /// <param name="userId">用户id</param>
+        /// <returns>组织id</returns>
+        public async Task<Group> FindUserGroup(BaseIdentityUser user)
+        {
+            var userclaims = await _userManager.GetClaimsAsync(user);
+            var groupClaim = userclaims.Where(c => c.Type == CustomClaimTypes.Group).FirstOrDefault();
+            if (groupClaim != null)
+            {
+                var group = _groupRepository.GetById(Guid.Parse(groupClaim.Value));
+                return group;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 查找用户的角色
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public async Task<string> FindUserRole(BaseIdentityUser user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            return string.Join(',', roles);
+        }
+
+        /// <summary>
         /// 账号绑定手机，发送验证码
         /// </summary>
         /// <param name="userName">用户名</param>
@@ -65,8 +124,8 @@ namespace Yu.Service.Account
             }
 
             var verfiyCode = _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
-            
-            // todo 短信运营商SDK发送信息
+
+            // todo 通过短信运营商SDK发送信息
 
             return true;
         }

@@ -50,12 +50,14 @@ export class LoginComponent implements OnInit {
             const jwtTokenHelper = new JwtHelperService();
             let decodeToken = jwtTokenHelper.decodeToken(result['token']);
 
-            // 保存过期时间
+            // 保存JwtToken过期时间
             this.localStorageService.setExpires(decodeToken['exp']);
 
             // 保存头像和用户名
             this.localStorageService.setUserName(result['userName']);
             this.localStorageService.setAvatarUrl(result['avatarUrl']);
+            this.localStorageService.setIdentifycations(result['identifycations']);
+            this.localStorageService.setRoutes(result['routes']);
           },
           error => {
             this.refresh(); // 刷新验证码
