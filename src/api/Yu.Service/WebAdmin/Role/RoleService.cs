@@ -87,6 +87,10 @@ namespace Yu.Service.WebAdmin.Role
                     {
                         await _roleManager.AddClaimAsync(identityRole, new Claim(CustomClaimTypes.Element, element));
                     }
+                    foreach (var element in role.Elements)
+                    {
+                        await _roleManager.AddClaimAsync(identityRole, new Claim(CustomClaimTypes.DisPlayElement, element));
+                    }
                 }
 
                 // 保存关联数据规则
@@ -172,7 +176,7 @@ namespace Yu.Service.WebAdmin.Role
             var role = await _roleManager.FindByIdAsync(id.ToString());
             var roleDetail = Mapper.Map<RoleDetail>(role);
             var claims = await _roleManager.GetClaimsAsync(role);
-            roleDetail.Elements = claims.Where(c => c.Type == CustomClaimTypes.Element).Select(c => c.Value).ToArray();
+            roleDetail.Elements = claims.Where(c => c.Type == CustomClaimTypes.DisPlayElement).Select(c => c.Value).ToArray();
             roleDetail.DataRules = claims.Where(c => c.Type == CustomClaimTypes.Rule).Select(c => c.Value).ToArray();
             return roleDetail;
         }
@@ -202,6 +206,7 @@ namespace Yu.Service.WebAdmin.Role
 
             // 更新声明
             await UpdateRoleClaim(identityRole, elements.ToArray(), CustomClaimTypes.Element);
+            await UpdateRoleClaim(identityRole, role.Elements.ToArray(), CustomClaimTypes.DisPlayElement);
             await UpdateRoleClaim(identityRole, role.DataRules, CustomClaimTypes.Rule);
 
             // 更新缓存

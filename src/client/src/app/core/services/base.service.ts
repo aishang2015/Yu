@@ -41,6 +41,13 @@ export abstract class BaseService {
 
           // 保存过期时间
           this._localStorageService.setExpires(decodeToken['exp']);
+
+          // 保存头像，用户名，元素，路由
+          this._localStorageService.setUserName(result['userName']);
+          this._localStorageService.setAvatarUrl(result['avatarUrl']);
+          this._localStorageService.setIdentifycations(result['identifycations']);
+          this._localStorageService.setRoutes(result['routes']);
+          
           return result;
         }),
         mergeMap(_ => {

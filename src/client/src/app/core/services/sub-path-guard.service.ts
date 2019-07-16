@@ -18,9 +18,11 @@ export class SubPathGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
     // 检查是否有路由权限
-    if (this._localStorageService.getToken() == null) {
+    var routes = this._localStorageService.getRoutes();
+    if (routes.findIndex(r => r == state.url) < 0) {
+      this.router.navigate(['/dashboard']);
+      return false;
     }
-
     return true;
   }
 

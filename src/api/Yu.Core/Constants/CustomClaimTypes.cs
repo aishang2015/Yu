@@ -11,6 +11,9 @@
         // 元素
         public const string Element = "ele";
 
+        // 元素
+        public const string DisPlayElement = "del";
+
         // 数据规则
         public const string Rule = "rul";
         

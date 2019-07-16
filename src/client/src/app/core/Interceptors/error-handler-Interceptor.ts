@@ -18,7 +18,9 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
             tap(event => { }, error => {
                 let msg = '';
                 if (error.status == HttpCodeConstant.Code401) {
-                    msg = '没有操作权限！请注销后再次登录或联系管理员。';
+                    msg = '您没有操作权限！请联系管理员。';
+                } else if (error.status == HttpCodeConstant.Code403) {
+                    msg = '您没有该操作的权限！请联系管理员。';
                 } else if (error.status == HttpCodeConstant.Code404) {
                     msg = '没有找到资源！';
                 } else if (error.status == HttpCodeConstant.Code500) {

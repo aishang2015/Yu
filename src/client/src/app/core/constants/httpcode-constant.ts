@@ -11,6 +11,9 @@ export class HttpCodeConstant {
     // 没有授权
     static readonly Code401  : number = 401;
 
+    // 没有授权
+    static readonly Code403  : number = 403;
+
     // 不存在
     static readonly Code404  : number = 404;
 

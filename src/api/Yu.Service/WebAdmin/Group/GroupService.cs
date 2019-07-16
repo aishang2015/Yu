@@ -101,6 +101,16 @@ namespace Yu.Service.WebAdmin.Group
         }
 
         /// <summary>
+        /// 获取后代子树Id
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Guid> GetDescendantGroup(Guid groupId)
+        {
+            var groupTrees = _groupTreeRepository.GetByWhereNoTracking(gt => gt.Ancestor == groupId);
+            return groupTrees.Select(g => g.Descendant);
+        }
+
+        /// <summary>
         /// 更新组织
         /// </summary>
         public async Task UpdateGroup(GroupDetail groupDetail)

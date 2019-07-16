@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
             // 保存JwtToken过期时间
             this.localStorageService.setExpires(decodeToken['exp']);
 
-            // 保存头像和用户名
+            // 保存头像，用户名，元素，路由
             this.localStorageService.setUserName(result['userName']);
             this.localStorageService.setAvatarUrl(result['avatarUrl']);
             this.localStorageService.setIdentifycations(result['identifycations']);

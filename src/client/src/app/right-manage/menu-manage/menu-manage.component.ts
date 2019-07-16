@@ -107,6 +107,7 @@ export class MenuManageComponent implements OnInit {
       if (this.editedElement.id) {
         this._elementService.updateElement(this.editedElement).subscribe(
           result => {
+            this.nodes = [];
             this._messageService.success("修改成功!");
             this.initData();
 
@@ -117,6 +118,7 @@ export class MenuManageComponent implements OnInit {
       } else {
         this._elementService.addElement(this.editedElement).subscribe(
           result => {
+            this.nodes = [];
             this._messageService.success("添加成功!");
             this.initData();
 
