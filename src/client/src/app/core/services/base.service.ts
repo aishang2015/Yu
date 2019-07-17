@@ -47,7 +47,7 @@ export abstract class BaseService {
           this._localStorageService.setAvatarUrl(result['avatarUrl']);
           this._localStorageService.setIdentifycations(result['identifycations']);
           this._localStorageService.setRoutes(result['routes']);
-          
+
           return result;
         }),
         mergeMap(_ => {
@@ -83,5 +83,28 @@ export abstract class BaseService {
     }
   }
 
+  // 刷新token
+  // 某些情况下，例如编辑完菜单后通过刷新token来获取新的权限
+  public RefreshToken() {
+    this._httpClient.post(UriConstant.RefreshTokenUri, null).toPromise().then(
+      result => {
+
+        // 保存token
+        this._localStorageService.setToken(result['token']);
+
+        // 解析jwt
+        const jwtTokenHelper = new JwtHelperService();
+        let decodeToken = jwtTokenHelper.decodeToken(result['token']);
+
+        // 保存过期时间
+        this._localStorageService.setExpires(decodeToken['exp']);
+
+        // 保存头像，用户名，元素，路由
+        this._localStorageService.setUserName(result['userName']);
+        this._localStorageService.setAvatarUrl(result['avatarUrl']);
+        this._localStorageService.setIdentifycations(result['identifycations']);
+        this._localStorageService.setRoutes(result['routes']);
+      });
+  }
 
 }

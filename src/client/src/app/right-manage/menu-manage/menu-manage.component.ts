@@ -82,6 +82,8 @@ export class MenuManageComponent implements OnInit {
 
               this.selectedNode = null;
               this.editedElement = new Element();
+
+              this._elementService.RefreshToken();
             }
 
           )
@@ -113,6 +115,8 @@ export class MenuManageComponent implements OnInit {
 
             // 重置编辑表单
             this.cancelEdit(form);
+
+            this._elementService.RefreshToken();
           }
         );
       } else {
@@ -124,6 +128,8 @@ export class MenuManageComponent implements OnInit {
 
             // 重置编辑表单
             this.cancelEdit(form);
+
+            this._elementService.RefreshToken();
           }
         );
       }

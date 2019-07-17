@@ -1,0 +1,101 @@
+<!--搜索栏-->
+<div nz-row>
+  <div style="width: 250px;">
+    <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+      <input type="text" nz-input placeholder="搜索关键字" name="searchText" [(ngModel)]="searchText" autocomplete="off" />
+    </nz-input-group>
+    <ng-template #suffixIconButton>
+      <button nz-button nzType="default" nzSearch (click)="searchData()"><i nz-icon type="search"></i></button>
+    </ng-template>
+  </div>
+</div>
+
+<!--操作栏-->
+<div nz-row class="mt-10">
+  <nz-button-group>
+    <button nz-button (click)="addData()"><i nz-icon nzType="plus"></i> 添加数据</button>
+  </nz-button-group>
+</div>
+
+
+<!--信息展示-->
+<div nz-row class="mt-10">
+  <nz-table #headerTable [nzData]="listOfData" [nzFrontPagination]="false" nzHideOnSinglePage="true"
+    [nzBordered]="true">
+    <thead>
+      <tr>
+        <th nzAlign="center" nzWidth="75px">序号</th>
+        <th nzAlign="center" nzWidth="150px">字段1</th>
+        <th nzAlign="center" nzWidth="150px">字段2</th>
+        <th nzAlign="center" nzWidth="150px">字段3</th>
+        <th nzAlign="center" nzWidth="150px">字段4</th>
+        <th nzAlign="center">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of listOfData;let i = index">
+        <td nzAlign="center" nzWidth="75px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+        <td nzAlign="center" nzWidth="150px">{{ data.field1 }}</td>
+        <td nzAlign="center" nzWidth="150px">{{ data.field2 }}</td>
+        <td nzAlign="center" nzWidth="150px">{{ data.field3 }}</td>
+        <td nzAlign="center" nzWidth="150px">{{ data.field4 }}</td>
+        <td nzAlign="center" nzWidth="150px">
+          <a (click)="editData(data)">修改</a>&nbsp;
+          <a (click)="deleteData(data)">删除</a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>
+<div nz-row class="mt-10">
+  <nz-pagination [(nzPageIndex)]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" [nzShowTotal]="totalTemplate"
+    nzShowSizeChanger [nzPageSizeOptions]="[10,20,30,40,50]" (nzPageSizeChange)="pageSizeChange($event)"
+    (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
+  <ng-template #totalTemplate let-total> 共计 {{ total }} 数据 </ng-template>
+</div>
+
+<!--模板内容-->
+<ng-template #editTpl>
+  <form nz-form #form="ngForm" (ngSubmit)="submit(form)">
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">字段1</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="name" [(ngModel)]="editedData.field1"
+          #name="ngModel"/>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">字段2</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="name" [(ngModel)]="editedData.field2"
+          #name="ngModel"/>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">字段3</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="name" [(ngModel)]="editedData.field3"
+          #name="ngModel"/>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">字段4</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input class="w250 cb" nz-input autocomplete="off" type="text" name="name" [(ngModel)]="editedData.field4"
+          #name="ngModel"/>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control [nzSpan]="12" [nzOffset]="5">
+        <button class="mr-5" nz-button type="submit">提交</button>
+        <button class="mr-5" nz-button type="button" (click)="cancel(form)">取消</button>
+      </nz-form-control>
+    </nz-form-item>
+
+  </form>
+</ng-template>

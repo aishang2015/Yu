@@ -1,4 +1,4 @@
-<nz-card style="margin-top: 5px;background: radial-gradient(white, grey);">
+<nz-card style="margin-top: 5px;background: grey;">
 
   <div nz-row class="mt-5" *ngFor="let condition of option.childCondition">
     <div nz-col nzSpan="1">
@@ -13,7 +13,7 @@
         <nz-select [(ngModel)]="condition.operateType" style="width: 150px;">
           <nz-option *ngFor="let item of operateData" [nzLabel]="item.name" [nzValue]="item.value"></nz-option>
         </nz-select>
-        <input nz-input placeholder="" style="width: calc(100% - 300px);" [(ngModel)]="condition.value" name="value">
+        <input nz-input autocomplete="off" placeholder="" style="width: calc(100% - 300px);" [(ngModel)]="condition.value" name="value">
       </nz-input-group>
     </div>
   </div>

@@ -2,29 +2,24 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Yu.Core.Constants;
 using Yu.Core.Extensions;
-using Yu.Service.WebAdmin.Role;
 
-namespace Yu.Service.Handler
+namespace Yu.Core.Mvc
 {
-
-    // 由于要访问roleservice临时将文件放在这里
     public class ApiAuthorizationHandler : AuthorizationHandler<ApiAuthorizationRequirement>
     {
         private readonly IMemoryCache _memoryCache;
 
-        private readonly IRoleService _roleService;
-
-        public ApiAuthorizationHandler(IMemoryCache memoryCache, IRoleService roleService)
+        public ApiAuthorizationHandler(IMemoryCache memoryCache)
         {
             _memoryCache = memoryCache;
-            _roleService = roleService;
         }
 
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ApiAuthorizationRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ApiAuthorizationRequirement requirement)
         {
             // 转化为HTTPCONTEXT
             AuthorizationFilterContext filterContext = context.Resource as AuthorizationFilterContext;
@@ -39,19 +34,25 @@ namespace Yu.Service.Handler
             if (roles.Contains("系统管理员"))
             {
                 context.Succeed(requirement);
-                return;
+                return Task.CompletedTask;
             }
             else
             {
                 var api = requestPath + '|' + requestMethod;
                 foreach (var role in roles)
                 {
-                    var permissions = await _roleService.GetRolePermission(role);
-                    var apis = permissions.Where(tuple => tuple.Item1 == PermissionTypes.Apis).Select(tuple => tuple.Item2).FirstOrDefault().Split(',');
-                    if (apis.Contains(api))
+                    // 缓存中获取该角色的权限
+                    var result = _memoryCache.TryGetValue(CommonConstants.RoleMemoryCacheKey + role, out List<(string, string)> permissions);
+
+                    // 无法获取则直接处理失败
+                    if (result)
                     {
-                        context.Succeed(requirement);
-                        return;
+                        var apis = permissions.Where(tuple => tuple.Item1 == PermissionTypes.Apis).Select(tuple => tuple.Item2).FirstOrDefault().Split(',');
+                        if (apis.Contains(api))
+                        {
+                            context.Succeed(requirement);
+                            return Task.CompletedTask; 
+                        }
                     }
 
                 }
@@ -59,6 +60,7 @@ namespace Yu.Service.Handler
             }
 
             context.Fail();
+            return Task.CompletedTask;
         }
     }
 }

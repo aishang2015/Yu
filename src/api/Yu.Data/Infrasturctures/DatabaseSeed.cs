@@ -50,10 +50,10 @@ namespace Yu.Data.Infrasturctures
                 }
                 else
                 {
-                    var dbContext = serviceScope.ServiceProvider.GetRequiredService<TDbContext>();
+                    //var dbContext = serviceScope.ServiceProvider.GetRequiredService<TDbContext>();
 
                     // 更新API数据
-                    UpdateApi(dbContext, app);
+                    //UpdateApi(dbContext, app);
 
                 }
             }
@@ -97,8 +97,8 @@ namespace Yu.Data.Infrasturctures
         // 初始化实体数据表
         private static void InitEntityData<TDbContext>(TDbContext dbContext) where TDbContext : DbContext
         {
-            // 所有实体的类型
-            var types = EntityTypeFinder.FindEntityTypes();
+            // 所有标注DataRuleManage特性的实体的类型
+            var types = EntityTypeFinder.FindDataRuleManageEntityTypes();
 
             foreach (var type in types)
             {
@@ -198,13 +198,13 @@ namespace Yu.Data.Infrasturctures
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'5b3acd28-4d57-46ce-7d68-08d708fe7bef',N'实体管理-删除实体数据',N'Entity',N'DELETE',N'/api/entity')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'598f8a41-6857-4012-7d69-08d708fe7bef',N'组织结构管理-取得所有组织',N'Group',N'GET',N'/api/group')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'0273a51b-6a4e-4b77-7d6a-08d708fe7bef',N'组织结构管理-删除组织',N'Group',N'DELETE',N'/api/group')");
-            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'22e89a74-3e03-4f1d-7d6b-08d708fe7bef',N'组织结构管理-添加组织',N'Group',N'POST',N'/api/group')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'22e89a74-3e03-4f1d-7d6b-08d708fe7bef',N'组织结构管理-创建组织',N'Group',N'POST',N'/api/group')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'a97d11cb-a691-4567-7d6c-08d708fe7bef',N'组织结构管理-更新组织',N'Group',N'PUT',N'/api/group')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'b809dfc3-7af0-43c1-7d6d-08d708fe7bef',N'角色管理-取得全部角色名称',N'Role',N'GET',N'/api/roleNames')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'75e133dc-63ae-4027-7d6e-08d708fe7bef',N'角色管理-取得角色概要数据',N'Role',N'GET',N'/api/roleOutline')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'26b0f3a0-dd75-4e44-7d6f-08d708fe7bef',N'角色管理-取得角色详细数据',N'Role',N'GET',N'/api/role')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'0df18f48-730c-4398-7d70-08d708fe7bef',N'角色管理-删除角色数据',N'Role',N'DELETE',N'/api/role')");
-            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'6330e0bd-42fc-4ac6-7d71-08d708fe7bef',N'角色管理-添加角色',N'Role',N'POST',N'/api/role')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'6330e0bd-42fc-4ac6-7d71-08d708fe7bef',N'角色管理-创建角色',N'Role',N'POST',N'/api/role')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'90678f43-39c7-4ccf-7d72-08d708fe7bef',N'角色管理-更新角色',N'Role',N'PUT',N'/api/role')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'8488942f-ed09-4d55-7d73-08d708fe7bef',N'规则管理-查看所有规则组',N'Rule',N'GET',N'/api/ruleGroup')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'a6b958f7-5d93-456c-7d74-08d708fe7bef',N'规则管理-查看规则组内容',N'Rule',N'GET',N'/api/ruleDetail')");
@@ -216,6 +216,10 @@ namespace Yu.Data.Infrasturctures
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'40998129-255c-4edf-7d7a-08d708fe7bef',N'用户管理-更新用户数据',N'User',N'PUT',N'/api/userDetail')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'7ec86556-becf-49f3-7d7b-08d708fe7bef',N'用户管理-删除用户数据',N'User',N'DELETE',N'/api/userDetail')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'65f688c1-c679-4d38-7d7c-08d708fe7bef',N'用户管理-设置用户头像',N'User',N'POST',N'api/userAvatar')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'433fdb0b-60de-48af-3faf-08d70a9168cf',N'测试业务数据-取得业务数据',N'TestData',N'GET',N'api/testData')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'1d5e2b3b-92e1-4b3a-3fb0-08d70a9168cf',N'测试业务数据-添加业务数据',N'TestData',N'POST',N'api/testData')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'5a9a8098-b9e3-433d-3fb1-08d70a9168cf',N'测试业务数据-更新业务数据',N'TestData',N'PUT',N'api/testData')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Api]([Id],[Name],[Controller],[Type],[Address])VALUES(N'9fa0de04-6e5e-414a-3fb2-08d70a9168cf',N'测试业务数据-删除业务数据',N'TestData',N'DELETE',N'api/testData')");
 
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Element]([Id],[Name],[ElementType],[Identification],[Route])VALUES(N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b',N'权限管理',1,N'rightmanage',N'')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Element]([Id],[Name],[ElementType],[Identification],[Route])VALUES(N'ad592b36-dd5b-447b-fa6d-08d7072f517b',N'用户管理',1,N'usermanage',N'/right/user')");
@@ -248,6 +252,11 @@ namespace Yu.Data.Infrasturctures
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Element]([Id],[Name],[ElementType],[Identification],[Route])VALUES(N'e6e3efe1-10f0-4078-3654-08d709bf0b65',N'添加数据',2,N'addentitybtn',N'')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Element]([Id],[Name],[ElementType],[Identification],[Route])VALUES(N'a93f70c4-61b9-481f-3655-08d709bf0b65',N'修改数据',3,N'editentitylink',N'')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Element]([Id],[Name],[ElementType],[Identification],[Route])VALUES(N'90617210-63ee-4d54-3656-08d709bf0b65',N'删除数据',3,N'deletedatalink',N'')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Element]([Id],[Name],[ElementType],[Identification],[Route])VALUES(N'd668c8ce-725c-441e-b594-08d70a926b62',N'功能实验',1,N'test',N'')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Element]([Id],[Name],[ElementType],[Identification],[Route])VALUES(N'96a6cf48-3208-4b2e-b595-08d70a926b62',N'数据实验',1,N'testdata',N'/test/testdata')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Element]([Id],[Name],[ElementType],[Identification],[Route])VALUES(N'eec66a46-a9bf-4d92-b596-08d70a926b62',N'添加数据',2,N'addtestdatabtn',N'')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Element]([Id],[Name],[ElementType],[Identification],[Route])VALUES(N'8bbc621c-f162-4c36-b597-08d70a926b62',N'修改数据',3,N'edittestdatalink',N'')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[Element]([Id],[Name],[ElementType],[Identification],[Route])VALUES(N'034190ce-60f5-43d9-b598-08d70a926b62',N'删除数据',3,N'deletetestdatalink',N'')");
 
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementApi]([Id],[ElementId],[ApiId])VALUES(N'260632bd-6db9-4d83-4e7b-08d709bf1c3c',N'96469b51-7236-48c4-363c-08d709bf0b65',N'afb4c264-b57a-4936-7d79-08d708fe7bef')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementApi]([Id],[ElementId],[ApiId])VALUES(N'3ca2b96a-3d90-4730-4e7c-08d709bf1c3c',N'c1be82cf-cf72-425f-363d-08d709bf0b65',N'3220f72a-a4ca-4326-7d78-08d708fe7bef')");
@@ -286,6 +295,10 @@ namespace Yu.Data.Infrasturctures
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementApi]([Id],[ElementId],[ApiId])VALUES(N'3b13385b-1c4d-4de9-4ea0-08d709bf1c3c',N'515f8064-e91c-41e2-fa74-08d7072f517b',N'b4d9c97c-a17d-48e5-7d65-08d708fe7bef')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementApi]([Id],[ElementId],[ApiId])VALUES(N'd42a94ac-01b5-4848-361c-08d709ca74e9',N'ad592b36-dd5b-447b-fa6d-08d7072f517b',N'5b343f0f-d587-4e10-7d77-08d708fe7bef')");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementApi]([Id],[ElementId],[ApiId])VALUES(N'a98623fb-55ef-4aed-361d-08d709ca74e9',N'ad592b36-dd5b-447b-fa6d-08d7072f517b',N'b809dfc3-7af0-43c1-7d6d-08d708fe7bef')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementApi]([Id],[ElementId],[ApiId])VALUES(N'210ac47e-da3c-47f0-12d1-08d70a9271c7',N'96a6cf48-3208-4b2e-b595-08d70a926b62',N'433fdb0b-60de-48af-3faf-08d70a9168cf')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementApi]([Id],[ElementId],[ApiId])VALUES(N'132600bc-cd4d-46de-12d2-08d70a9271c7',N'eec66a46-a9bf-4d92-b596-08d70a926b62',N'1d5e2b3b-92e1-4b3a-3fb0-08d70a9168cf')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementApi]([Id],[ElementId],[ApiId])VALUES(N'0cd7651d-a2ff-4913-12d3-08d70a9271c7',N'8bbc621c-f162-4c36-b597-08d70a926b62',N'5a9a8098-b9e3-433d-3fb1-08d70a9168cf')");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementApi]([Id],[ElementId],[ApiId])VALUES(N'46f19335-1a33-4d60-12d4-08d70a9271c7',N'034190ce-60f5-43d9-b598-08d70a926b62',N'9fa0de04-6e5e-414a-3fb2-08d70a9168cf')");
 
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'05e877a1-d897-4a68-6d14-08d7072f517f',N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b',N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b',0)");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'b66e1bef-da5d-4ad1-6d15-08d7072f517f',N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b',N'ad592b36-dd5b-447b-fa6d-08d7072f517b',1)");
@@ -371,6 +384,18 @@ namespace Yu.Data.Infrasturctures
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'e54fdc52-d0a9-475d-a992-08d709bf0b6f',N'c5fdd1a3-aafe-430e-fa6c-08d7072f517b',N'90617210-63ee-4d54-3656-08d709bf0b65',2)");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'ae2a0b11-1fa2-4932-a993-08d709bf0b6f',N'515f8064-e91c-41e2-fa74-08d7072f517b',N'90617210-63ee-4d54-3656-08d709bf0b65',1)");
             dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'f888d3cf-de89-4ed1-a994-08d709bf0b6f',N'90617210-63ee-4d54-3656-08d709bf0b65',N'90617210-63ee-4d54-3656-08d709bf0b65',0)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'b3a04b81-0fbf-41ba-90a8-08d70a926b67',N'd668c8ce-725c-441e-b594-08d70a926b62',N'd668c8ce-725c-441e-b594-08d70a926b62',0)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'1a102b51-9930-4c5c-90a9-08d70a926b67',N'd668c8ce-725c-441e-b594-08d70a926b62',N'96a6cf48-3208-4b2e-b595-08d70a926b62',1)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'194e4727-cab0-42a0-90aa-08d70a926b67',N'96a6cf48-3208-4b2e-b595-08d70a926b62',N'96a6cf48-3208-4b2e-b595-08d70a926b62',0)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'7b322934-f3c1-45aa-90ab-08d70a926b67',N'd668c8ce-725c-441e-b594-08d70a926b62',N'eec66a46-a9bf-4d92-b596-08d70a926b62',2)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'6f17fa64-d597-48a6-90ac-08d70a926b67',N'96a6cf48-3208-4b2e-b595-08d70a926b62',N'eec66a46-a9bf-4d92-b596-08d70a926b62',1)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'4d84431e-5fa7-4ba4-90ad-08d70a926b67',N'eec66a46-a9bf-4d92-b596-08d70a926b62',N'eec66a46-a9bf-4d92-b596-08d70a926b62',0)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'ae10ff66-7f83-42d5-90ae-08d70a926b67',N'd668c8ce-725c-441e-b594-08d70a926b62',N'8bbc621c-f162-4c36-b597-08d70a926b62',2)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'9f3efe69-7ae3-4ccf-90af-08d70a926b67',N'96a6cf48-3208-4b2e-b595-08d70a926b62',N'8bbc621c-f162-4c36-b597-08d70a926b62',1)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'8778fbb3-bf77-426f-90b0-08d70a926b67',N'8bbc621c-f162-4c36-b597-08d70a926b62',N'8bbc621c-f162-4c36-b597-08d70a926b62',0)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'ce989156-95db-49e9-90b1-08d70a926b67',N'd668c8ce-725c-441e-b594-08d70a926b62',N'034190ce-60f5-43d9-b598-08d70a926b62',2)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'd03ef8e1-2d82-42e6-90b2-08d70a926b67',N'96a6cf48-3208-4b2e-b595-08d70a926b62',N'034190ce-60f5-43d9-b598-08d70a926b62',1)");
+            dbContext.Database.ExecuteSqlCommand("INSERT INTO[dbo].[ElementTree]([Id],[Ancestor],[Descendant],[Length])VALUES(N'e91b3c20-bf6f-4496-90b3-08d70a926b67',N'034190ce-60f5-43d9-b598-08d70a926b62',N'034190ce-60f5-43d9-b598-08d70a926b62',0)");
 
 
         }

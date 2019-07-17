@@ -47,8 +47,10 @@ namespace Yu.Core.Jwt
             var oldExpires = claimsPrincipal.GetClaimValue(CustomClaimTypes.Expires);
             var expireDateTime = Utils.DateTimeUtil.GetDateTime(oldExpires);
 
-            // 当超过刷新间或者token仍在有效期内的情况下不刷新token
-            if (expireDateTime.AddMinutes(_jwtOption.RefreshEffectiveTime) < DateTime.Now || expireDateTime > DateTime.Now)
+            //// 当超过刷新间或者token仍在有效期内的情况下不刷新token
+            //if (expireDateTime.AddMinutes(_jwtOption.RefreshEffectiveTime) < DateTime.Now || expireDateTime > DateTime.Now)
+            // 期限超过则不能刷新
+            if (expireDateTime.AddMinutes(_jwtOption.RefreshEffectiveTime) < DateTime.Now)
             {
                 return null;
             }

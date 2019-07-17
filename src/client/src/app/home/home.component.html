@@ -14,6 +14,13 @@
                     <li nz-menu-item [(nzSelected)]="selectMap.rightentity" *ngIf="canOperate('entitymanage')" [routerLink]="[ '/right/entity' ]" (click)="setBreadCrumb('权限管理','实体数据管理')"><i nz-icon nzType="profile" nzTheme="outline"></i>实体数据管理</li>
                 </ul>
             </li>
+
+            <li nz-submenu [(nzOpen)]="openMap.test" *ngIf="canOperate('test')">
+                <span title><i nz-icon nzType="idcard" nzTheme="outline"></i><span class="nav-text">功能实验</span></span>
+                <ul>
+                    <li nz-menu-item [(nzSelected)]="selectMap.rightuser" *ngIf="canOperate('testdata')" [routerLink]="[ '/test/testdata' ]" (click)="setBreadCrumb('功能实验','数据实验')"><i nz-icon nzType="user" nzTheme="outline"></i>数据实验</li>
+                </ul>
+            </li>
         </ul>
     </nz-sider>
     <nz-layout>

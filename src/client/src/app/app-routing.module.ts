@@ -6,6 +6,7 @@ const routes: Routes = [
   { path: 'dashboard', loadChildren: './dashboard/dashboard.module#DashboardModule', canActivate: [LoginGuard] },
   { path: 'login', loadChildren: './account/account.module#AccountModule', canActivate: [LoginGuard] },
   { path: 'right', loadChildren: './right-manage/right-manage.module#RightManageModule', canActivate: [LoginGuard] },
+  { path: 'test', loadChildren: './test/test.module#TestModule', canActivate: [LoginGuard] },
   { path: '', pathMatch: 'full', redirectTo: 'login' },
 ];
 

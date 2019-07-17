@@ -77,5 +77,20 @@ namespace Yu.Data.Infrasturctures
             return null;
         }
 
+        /// <summary>
+        /// 查找所有拥有[DataRuleManage]特性的实体
+        /// </summary>
+        /// <returns></returns>
+        public static List<Type> FindDataRuleManageEntityTypes()
+        {
+            var typeList = FindEntityTypes();
+            var result = typeList.Where(t =>
+            {
+                var attribute = t.GetCustomAttributes(typeof(DataRuleManageAttribute), false).FirstOrDefault();
+                return attribute != null;
+            });
+            return result.ToList();
+        }
+
     }
 }

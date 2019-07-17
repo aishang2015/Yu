@@ -27,7 +27,8 @@ export class HomeComponent implements OnInit {
 
   // 展开map
   openMap: { [name: string]: boolean } = {
-    'right': false
+    'right': false,
+    'test': false,
   }
 
   // 选择的菜单项
@@ -38,7 +39,9 @@ export class HomeComponent implements OnInit {
     'rightmenu': false,
     'rightapi': false,
     'rightrule': false,
-    'rightentity': false
+    'rightentity': false,
+
+    'testdata':false,
   }
 
   constructor(private router: Router,
@@ -78,6 +81,6 @@ export class HomeComponent implements OnInit {
     return identifycations.findIndex(i => i == identifycation) > -1;
   }
 
-  
+
 
 }

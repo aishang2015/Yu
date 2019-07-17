@@ -3,11 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Yu.Core.Constants;
 using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Element.InputModels;
 using Yu.Model.WebAdmin.Element.OutputModels;
+using Yu.Service.WebAdmin.Role;
 using ApiEntity = Yu.Data.Entities.Right.Api;
 using Ele = Yu.Data.Entities.Right.Element;
 using EleTree = Yu.Data.Entities.Right.ElementTree;
@@ -28,15 +30,20 @@ namespace Yu.Service.WebAdmin.Element
         // 工作单元
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
+        // 角色服务
+        private readonly IRoleService _roleService;
+
         public ElementService(IRepository<Ele, Guid> elementRepository, 
             IRepository<EleTree, Guid> elementTreeRepository, 
             IRepository<ElementApi, Guid> elementApiRepository, 
-            IUnitOfWork<BaseIdentityDbContext> unitOfWork)
+            IUnitOfWork<BaseIdentityDbContext> unitOfWork,
+            IRoleService roleService)
         {
             _elementRepository = elementRepository;
             _elementTreeRepository = elementTreeRepository;
             _elementApiRepository = elementApiRepository;
             _unitOfWork = unitOfWork;
+            _roleService = roleService;
         }
 
         /// <summary>
@@ -101,6 +108,9 @@ namespace Yu.Service.WebAdmin.Element
 
             // 工作单元提交
             await _unitOfWork.CommitAsync();
+
+            // 更新系统管理员权限
+            await _roleService.UpdateRolePermissionCache(CommonConstants.SystemManagerRole);
         }
 
         /// <summary>
@@ -116,6 +126,9 @@ namespace Yu.Service.WebAdmin.Element
 
             // 工作单元提交
             await _unitOfWork.CommitAsync();
+
+            // 更新系统管理员权限
+            await _roleService.UpdateRolePermissionCache(CommonConstants.SystemManagerRole);
         }
 
         /// <summary>
@@ -124,12 +137,14 @@ namespace Yu.Service.WebAdmin.Element
         public IEnumerable<ElementResult> GetAllElement()
         {
             var result = new List<ElementResult>();
-            var elements = _elementRepository.GetAll();
+            var elements = _elementRepository.GetAllNoTracking().ToList();
+            var elementTrees = _elementTreeRepository.GetAllNoTracking().ToList();
+            var elementApis = _elementApiRepository.GetAllNoTracking().ToList();
             foreach (var element in elements)
             {
-                var elementTree = _elementTreeRepository.GetByWhere(et => et.Descendant == element.Id && et.Length == 1)
+                var elementTree = elementTrees.Where(et => et.Descendant == element.Id && et.Length == 1)
                     .FirstOrDefault();
-                var apis = _elementApiRepository.GetByWhereNoTracking(ea => ea.ElementId == element.Id)
+                var apis = elementApis.Where(ea => ea.ElementId == element.Id)
                     .Select(ea => ea.ApiId.ToString().ToLower()).ToArray();
                 result.Add(new ElementResult
                 {
@@ -164,6 +179,9 @@ namespace Yu.Service.WebAdmin.Element
                 });
             }
             await _unitOfWork.CommitAsync();
+
+            // 更新系统管理员权限
+            await _roleService.UpdateRolePermissionCache(CommonConstants.SystemManagerRole);
         }
     }
 }
