@@ -12,5 +12,7 @@
         public const string RoleMemoryCacheKey = "RoleCache:";
 
         public const string SystemManagerRole = "系统管理员";
+
+        public const char StringConnectChar = '+';
     }
 }

@@ -3,14 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Yu.Core.Constants;
 using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Element.InputModels;
 using Yu.Model.WebAdmin.Element.OutputModels;
-using Yu.Service.WebAdmin.Role;
-using ApiEntity = Yu.Data.Entities.Right.Api;
 using Ele = Yu.Data.Entities.Right.Element;
 using EleTree = Yu.Data.Entities.Right.ElementTree;
 
@@ -30,20 +27,15 @@ namespace Yu.Service.WebAdmin.Element
         // 工作单元
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
-        // 角色服务
-        private readonly IRoleService _roleService;
-
-        public ElementService(IRepository<Ele, Guid> elementRepository, 
-            IRepository<EleTree, Guid> elementTreeRepository, 
-            IRepository<ElementApi, Guid> elementApiRepository, 
-            IUnitOfWork<BaseIdentityDbContext> unitOfWork,
-            IRoleService roleService)
+        public ElementService(IRepository<Ele, Guid> elementRepository,
+            IRepository<EleTree, Guid> elementTreeRepository,
+            IRepository<ElementApi, Guid> elementApiRepository,
+            IUnitOfWork<BaseIdentityDbContext> unitOfWork)
         {
             _elementRepository = elementRepository;
             _elementTreeRepository = elementTreeRepository;
             _elementApiRepository = elementApiRepository;
             _unitOfWork = unitOfWork;
-            _roleService = roleService;
         }
 
         /// <summary>
@@ -108,9 +100,6 @@ namespace Yu.Service.WebAdmin.Element
 
             // 工作单元提交
             await _unitOfWork.CommitAsync();
-
-            // 更新系统管理员权限
-            await _roleService.UpdateRolePermissionCache(CommonConstants.SystemManagerRole);
         }
 
         /// <summary>
@@ -126,9 +115,6 @@ namespace Yu.Service.WebAdmin.Element
 
             // 工作单元提交
             await _unitOfWork.CommitAsync();
-
-            // 更新系统管理员权限
-            await _roleService.UpdateRolePermissionCache(CommonConstants.SystemManagerRole);
         }
 
         /// <summary>
@@ -179,9 +165,6 @@ namespace Yu.Service.WebAdmin.Element
                 });
             }
             await _unitOfWork.CommitAsync();
-
-            // 更新系统管理员权限
-            await _roleService.UpdateRolePermissionCache(CommonConstants.SystemManagerRole);
         }
     }
 }

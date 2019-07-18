@@ -42,21 +42,22 @@ namespace Yu.Core.Mvc
                 foreach (var role in roles)
                 {
                     // 缓存中获取该角色的权限
-                    var result = _memoryCache.TryGetValue(CommonConstants.RoleMemoryCacheKey + role, out List<(string, string)> permissions);
+                    var result = _memoryCache.TryGetValue(CommonConstants.RoleMemoryCacheKey + role, out Dictionary<string, string> permissions);
 
                     // 无法获取则直接处理失败
                     if (result)
                     {
-                        var apis = permissions.Where(tuple => tuple.Item1 == PermissionTypes.Apis).Select(tuple => tuple.Item2).FirstOrDefault().Split(',');
-                        if (apis.Contains(api))
+                        var apisValue = permissions.TryGetValue(PermissionTypes.Apis, out string apis);
+                        if (apisValue)
                         {
-                            context.Succeed(requirement);
-                            return Task.CompletedTask; 
+                            if (apis.Split(CommonConstants.StringConnectChar).Contains(api))
+                            {
+                                context.Succeed(requirement);
+                                return Task.CompletedTask;
+                            }
                         }
                     }
-
                 }
-
             }
 
             context.Fail();

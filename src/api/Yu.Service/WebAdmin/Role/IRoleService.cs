@@ -51,12 +51,12 @@ namespace Yu.Service.WebAdmin.Role
         /// 取得角色拥有的所有权限
         /// </summary>
         /// <param name="roleName">角色名称</param>
-        Task<List<ValueTuple<string, string>>> GetRolePermission(string roleName);
+        Task<Dictionary<string, string>> GetRolePermission(string roleName);
 
         /// <summary>
         /// 更新角色拥有的所有权限的缓存
         /// </summary>
         /// <param name="roleName">角色名称</param>
-        Task UpdateRolePermissionCache(string roleName);
+        Task<Dictionary<string, string>> UpdateRolePermissionCache(string roleName);
     }
 }

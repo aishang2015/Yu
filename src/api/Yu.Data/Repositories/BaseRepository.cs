@@ -1,12 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Serialize.Linq.Serializers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Yu.Core.Constants;
+using Yu.Core.Expressions;
 using Yu.Data.Entities;
+using Z.EntityFramework.Plus;
 
 namespace Yu.Data.Repositories
 {
@@ -24,11 +29,68 @@ namespace Yu.Data.Repositories
 
         private readonly DbSet<TEntity> _dataSet;
 
-        public BaseRepository(IHttpContextAccessor httpContextAccessor)
+        private readonly Expression<Func<TEntity, bool>> _condition;
+
+        public BaseRepository(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache)
         {
             _context = httpContextAccessor.HttpContext.RequestServices.GetService<TDbContext>();
+
             _dataSet = _context.Set<TEntity>();
+
+            // 根据数据规则过滤数据
+            var roles = (from claim in httpContextAccessor.HttpContext.User.Claims
+                         where claim.Type == CustomClaimTypes.Role
+                         select claim.Value).FirstOrDefault()?.Split(',');
+
+            // 用户拥有角色并且角色内没有系统管理员
+            if (roles != null && !roles.Contains(CommonConstants.SystemManagerRole))
+            {
+                // 表达式合集
+                var expressionList = new List<LambdaExpression>();
+
+                // 所有角色的规则组合集
+                var allRuleGroups = new List<string> { };
+
+                // 循环所有角色取得角色的规则组
+                foreach (var role in roles)
+                {
+                    // 取得角色的权限
+                    var result = memoryCache.TryGetValue(CommonConstants.RoleMemoryCacheKey + role, out Dictionary<string, string> permissions);
+                    if (result)
+                    {
+                        result = permissions.TryGetValue(PermissionTypes.DataRules, out string ruleStr);
+                        if (result)
+                        {
+                            var ruleGroups = ruleStr.Split(CommonConstants.StringConnectChar).ToList();
+                            allRuleGroups.AddRange(ruleGroups);
+                        }
+                    }
+                }
+
+                // 所有规则组
+                foreach (var group in allRuleGroups)
+                {
+                    // 找到符合当前实体的规则
+                    var items = group.Split('|');
+                    if (items[0] == typeof(TDbContext).Name && items[1] == typeof(TEntity).Name)
+                    {
+                        // 表达式反序列化
+                        var serializer = new ExpressionSerializer(new JsonSerializer());
+                        serializer.AddKnownType(typeof(Core.Expressions.ExpressionType));
+                        var lambda = (LambdaExpression)serializer.DeserializeText(items[2]);
+                        expressionList.Add(lambda);
+                    }
+                }
+
+                // 连接lambda表达式生成统一条件
+                if (expressionList.Count > 0)
+                {
+                    _condition = (Expression<Func<TEntity, bool>>)(new ExpressionUtil<TEntity>()
+                        .JoinLambdaExpression(expressionList, ExpressionCombineType.And));
+                }
+            }
         }
+
 
         /// <summary>
         /// 删除一条数据
@@ -72,7 +134,7 @@ namespace Yu.Data.Repositories
         /// <returns>数据查询结果</returns>
         public IQueryable<TEntity> GetAll()
         {
-            return _dataSet;
+            return _condition == null ? _dataSet : _dataSet.Where(_condition);
         }
 
         /// <summary>
@@ -81,7 +143,7 @@ namespace Yu.Data.Repositories
         /// <returns>数据查询结果</returns>
         public IQueryable<TEntity> GetAllNoTracking()
         {
-            return _dataSet.AsNoTracking();
+            return _condition == null ? _dataSet.AsNoTracking() : _dataSet.AsNoTracking().Where(_condition);
         }
 
         /// <summary>
@@ -91,7 +153,7 @@ namespace Yu.Data.Repositories
         /// <returns>数据查询结果</returns>
         public TEntity GetById(TPrimaryKey key)
         {
-            return _dataSet.Find(key);
+            return _condition == null ? _dataSet.Find(key) : GetAllNoTracking().FirstOrDefault(e => e.Id.Equals(key));
         }
 
         /// <summary>
@@ -118,7 +180,7 @@ namespace Yu.Data.Repositories
         /// <returns>数据查询结果</returns>
         public IQueryable<TEntity> GetByWhere(Expression<Func<TEntity, bool>> where)
         {
-            return _dataSet.Where(where);
+            return _condition == null ? _dataSet.Where(where) : _dataSet.Where(_condition).Where(where);
         }
 
         /// <summary>
@@ -128,7 +190,7 @@ namespace Yu.Data.Repositories
         /// <returns>数据查询结果</returns>
         public IQueryable<TEntity> GetByWhereNoTracking(Expression<Func<TEntity, bool>> where)
         {
-            return _dataSet.AsNoTracking().Where(where);
+            return GetAllNoTracking().Where(where);
         }
 
         /// <summary>
