@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,11 +11,11 @@ using Yu.Core.Cors;
 using Yu.Core.Extensions;
 using Yu.Core.FileManage;
 using Yu.Core.Jwt;
+using Yu.Core.Mvc;
 using Yu.Core.Swagger;
 using Yu.Core.Validators;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
-using Yu.Service.Handler;
 
 namespace Yu.Api
 {
@@ -66,14 +65,6 @@ namespace Yu.Api
             services.AddSwaggerConfiguration(); // 配置swagger
 
             services.AddFileManage(); // 静态文件操作类
-
-            //【授权】
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("ApiPermission", policy => policy.Requirements.Add(new ApiAuthorizationRequirement()));
-            });
-            // 注入权限处理器
-            services.AddTransient<IAuthorizationHandler, ApiAuthorizationHandler>();
         }
 
         // 构建管道

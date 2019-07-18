@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading.Tasks;
 using Yu.Core.Constants;
 using Yu.Core.Extensions;
@@ -88,12 +87,14 @@ namespace Yu.Api.Controllers
             });
 
             // 根据用户的角色获取用户页面侧的权限内容
-            List<string> identites = new List<string> { }, routes = new List<string> { };
+            List<string> identities = new List<string> { }, routes = new List<string> { };
             foreach (var role in roles.Split(','))
             {
-                var permissions = await _roleService.GetRolePermission(role);
-                identites.AddRange(permissions.Where(p => p.Item1 == PermissionTypes.Identities).Select(p => p.Item2));
-                routes.AddRange(permissions.Where(p => p.Item1 == PermissionTypes.Routes).Select(p => p.Item2));
+                var permissions = await _roleService.UpdateRolePermissionCache(role);
+                permissions.TryGetValue(PermissionTypes.Identities, out string identityStr);
+                permissions.TryGetValue(PermissionTypes.Routes, out string routeStr);
+                identities.AddRange(identityStr.Split(CommonConstants.StringConnectChar));
+                routes.AddRange(routeStr.Split(CommonConstants.StringConnectChar));
             }
 
             // 返回结果
@@ -102,7 +103,7 @@ namespace Yu.Api.Controllers
                 Token = token,
                 UserName = user.UserName,
                 AvatarUrl = user.Avatar ?? string.Empty,
-                Identifycations = identites.ToArray(),
+                Identifycations = identities.ToArray(),
                 Routes = routes.ToArray()
             });
         }
@@ -145,12 +146,14 @@ namespace Yu.Api.Controllers
             });
 
             // 根据用户的角色获取用户页面侧的权限内容
-            List<string> identites = new List<string> { }, routes = new List<string> { };
+            List<string> identities = new List<string> { }, routes = new List<string> { };
             foreach (var role in roles.Split(','))
             {
-                var permissions = await _roleService.GetRolePermission(role);
-                identites.AddRange(permissions.Where(p => p.Item1 == PermissionTypes.Identities).Select(p => p.Item2));
-                routes.AddRange(permissions.Where(p => p.Item1 == PermissionTypes.Routes).Select(p => p.Item2));
+                var permissions = await _roleService.UpdateRolePermissionCache(role);
+                permissions.TryGetValue(PermissionTypes.Identities, out string identityStr);
+                permissions.TryGetValue(PermissionTypes.Routes, out string routeStr);
+                identities.AddRange(identityStr.Split(','));
+                routes.AddRange(routeStr.Split(','));
             }
 
             // 返回结果
@@ -159,7 +162,7 @@ namespace Yu.Api.Controllers
                 Token = newtoken,
                 UserName = user.UserName,
                 AvatarUrl = user.Avatar ?? string.Empty,
-                Identifycations = identites.ToArray(),
+                Identifycations = identities.ToArray(),
                 Routes = routes.ToArray()
             });
         }

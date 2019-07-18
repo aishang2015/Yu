@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Yu.Core.Utils;
 
@@ -8,7 +9,7 @@ namespace Yu.Core.Expressions
     public class ExpressionUtil<T> where T : class
     {
         // 生成ParameterExpression用来参与表达式树
-        private ParameterExpression t = ParameterExpressionUtil.GetParameterExpression(typeof(T));
+        private ParameterExpression _parameterExpression = ParameterExpressionUtil.GetParameterExpression(typeof(T));
 
         /// <summary>
         /// 根据参数获取表达式树列表
@@ -27,7 +28,7 @@ namespace Yu.Core.Expressions
                 if (tuple.Item2 != null && !string.IsNullOrEmpty(tuple.Item2.ToString()))
                 {
                     // 左侧表达式
-                    var left = Expression.Property(t, tuple.Item1);
+                    var left = Expression.Property(_parameterExpression, tuple.Item1);
 
                     // 右侧表达式
                     var right = Expression.Constant(tuple.Item2);
@@ -78,22 +79,25 @@ namespace Yu.Core.Expressions
         public Expression CombinExpressions(List<Expression> expressions, ExpressionCombineType combineType)
         {
             Expression where = Expression.Constant(true);
-            switch (combineType)
+            if (expressions.Count() > 0)
             {
-                case ExpressionCombineType.And:
-                    where = Expression.Constant(true);
-                    foreach (var expression in expressions)
-                    {
-                        where = Expression.And(where, expression);
-                    }
-                    break;
-                case ExpressionCombineType.Or:
-                    where = expressions.Count > 0 ? Expression.Constant(false) : Expression.Constant(true);
-                    foreach (var expression in expressions)
-                    {
-                        where = Expression.Or(where, expression);
-                    }
-                    break;
+                switch (combineType)
+                {
+                    case ExpressionCombineType.And:
+                        where = expressions[0];
+                        for (int i = 1; i < expressions.Count(); i++)
+                        {
+                            where = Expression.And(where, expressions[i]);
+                        }
+                        break;
+                    case ExpressionCombineType.Or:
+                        where = expressions[0];
+                        for (int i = 1; i < expressions.Count(); i++)
+                        {
+                            where = Expression.Or(where, expressions[i]);
+                        }
+                        break;
+                }
             }
             return where;
         }
@@ -105,7 +109,38 @@ namespace Yu.Core.Expressions
         /// <returns></returns>
         public Expression<Func<T, bool>> GetLambda(Expression where)
         {
-            return Expression.Lambda<Func<T, bool>>(where, t);
+            return Expression.Lambda<Func<T, bool>>(where, _parameterExpression);
+        }
+
+        /// <summary>
+        /// 组合lambda表达式
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="expressions"></param>
+        /// <returns></returns>
+        public LambdaExpression JoinLambdaExpression(List<LambdaExpression> expressions, ExpressionCombineType combineType)
+        {
+            if (expressions.Count() == 0)
+                return null;
+            LambdaExpression lambda = expressions[0];
+            if (expressions.Count() > 0)
+            {
+                foreach (var ex in expressions)
+                {
+                    var invokedExpr = Expression.Invoke(lambda, ex.Parameters.Cast<Expression>());
+                    switch (combineType)
+                    {
+                        case ExpressionCombineType.And:
+                            lambda = Expression.Lambda(Expression.And(ex.Body, invokedExpr), lambda.Parameters);
+                            break;
+                        case ExpressionCombineType.Or:
+                            lambda = Expression.Lambda(Expression.Or(ex.Body, invokedExpr), lambda.Parameters);
+                            break;
+                    }
+                }
+
+            }
+            return lambda;
         }
 
     }
@@ -196,22 +231,25 @@ namespace Yu.Core.Expressions
         public Expression CombinExpressions(List<Expression> expressions, ExpressionCombineType combineType)
         {
             Expression where = Expression.Constant(true);
-            switch (combineType)
+            if (expressions.Count() > 0)
             {
-                case ExpressionCombineType.And:
-                    where = Expression.Constant(true);
-                    foreach (var expression in expressions)
-                    {
-                        where = Expression.And(where, expression);
-                    }
-                    break;
-                case ExpressionCombineType.Or:
-                    where = expressions.Count > 0 ? Expression.Constant(false) : Expression.Constant(true);
-                    foreach (var expression in expressions)
-                    {
-                        where = Expression.Or(where, expression);
-                    }
-                    break;
+                switch (combineType)
+                {
+                    case ExpressionCombineType.And:
+                        where = expressions[0];
+                        for (int i = 1; i < expressions.Count(); i++)
+                        {
+                            where = Expression.And(where, expressions[i]);
+                        }
+                        break;
+                    case ExpressionCombineType.Or:
+                        where = expressions[0];
+                        for (int i = 1; i < expressions.Count(); i++)
+                        {
+                            where = Expression.Or(where, expressions[i]);
+                        }
+                        break;
+                }
             }
             return where;
         }
@@ -225,6 +263,40 @@ namespace Yu.Core.Expressions
         {
             var lambdaType = (typeof(Func<,>).MakeGenericType(_entityType, typeof(bool)));
             return Expression.Lambda(lambdaType, where, _parameterExpression);
+        }
+
+        /// <summary>
+        /// 组合lambda表达式
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="expressions"></param>
+        /// <returns></returns>
+        public LambdaExpression JoinLambdaExpression(List<LambdaExpression> expressions, ExpressionCombineType combineType)
+        {
+            var lambdaType = (typeof(Func<,>).MakeGenericType(_entityType, typeof(bool)));
+
+            if (expressions.Count() == 0)
+                return null;
+            LambdaExpression lambda = expressions[0];
+
+            if (expressions.Count() > 0)
+            {
+                foreach (var ex in expressions)
+                {
+                    var invokedExpr = Expression.Invoke(lambda, ex.Parameters.Cast<Expression>());
+                    switch (combineType)
+                    {
+                        case ExpressionCombineType.And:
+                            lambda = Expression.Lambda(lambdaType, Expression.And(ex.Body, invokedExpr), lambda.Parameters);
+                            break;
+                        case ExpressionCombineType.Or:
+                            lambda = Expression.Lambda(lambdaType, Expression.Or(ex.Body, invokedExpr), lambda.Parameters);
+                            break;
+                    }
+                }
+
+            }
+            return lambda;
         }
     }
 
