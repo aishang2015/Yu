@@ -210,8 +210,7 @@ namespace Yu.Service.WebAdmin.Role
             await UpdateRoleClaim(identityRole, role.DataRules, CustomClaimTypes.Rule);
 
             // 更新缓存
-            _memoryCache.Remove(CommonConstants.RoleMemoryCacheKey + identityRole.Name);
-            await GetRolePermission(identityRole.Name);
+            await UpdateRolePermissionCache(identityRole.Name);
         }
 
         /// <summary>
@@ -326,6 +325,9 @@ namespace Yu.Service.WebAdmin.Role
                         // 角色的数据访问规则
                         result.Add((PermissionTypes.DataRules, string.Empty));
 
+                        // Api权限
+                        result.Add((PermissionTypes.Apis, string.Join(',', _apiRepository.GetAllNoTracking().Select(a => a.Address + '|' + a.Type))));
+
                         // 设置缓存
                         _memoryCache.Set(CommonConstants.RoleMemoryCacheKey + roleName, result);
 
@@ -333,6 +335,17 @@ namespace Yu.Service.WebAdmin.Role
                     });
 
             }
+        }
+
+
+        /// <summary>
+        /// 更新角色拥有的所有权限的缓存
+        /// </summary>
+        /// <param name="roleName">角色名称</param>
+        public async Task UpdateRolePermissionCache(string roleName)
+        {
+            _memoryCache.Remove(CommonConstants.RoleMemoryCacheKey + roleName);
+            await GetRolePermission(roleName);
         }
     }
 }

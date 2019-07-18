@@ -52,5 +52,11 @@ namespace Yu.Service.WebAdmin.Role
         /// </summary>
         /// <param name="roleName">角色名称</param>
         Task<List<ValueTuple<string, string>>> GetRolePermission(string roleName);
+
+        /// <summary>
+        /// 更新角色拥有的所有权限的缓存
+        /// </summary>
+        /// <param name="roleName">角色名称</param>
+        Task UpdateRolePermissionCache(string roleName);
     }
 }

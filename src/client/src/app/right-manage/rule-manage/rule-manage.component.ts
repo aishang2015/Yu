@@ -108,7 +108,7 @@ export class RuleManageComponent implements OnInit {
   }
 
   // 取消
-  cancel(){
+  cancel() {
     this.isEditMode = false;
   }
 
@@ -208,11 +208,13 @@ export class RuleManageComponent implements OnInit {
 
   // 重置规则条件字段值
   resetRuleConditionField(options) {
-    for (var option of options) {
-      for (var condition of option.childCondition) {
+    if (options.childCondition) {
+      for (var condition of options.childCondition) {
         condition.field = null;
       }
-      this.resetRuleConditionField(option.childRuleOption);
+    }
+    if (options.childRuleOption) {
+      this.resetRuleConditionField(options.childRuleOption);
     }
   }
 

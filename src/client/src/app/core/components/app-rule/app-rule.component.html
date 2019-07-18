@@ -13,7 +13,7 @@
         <nz-select [(ngModel)]="condition.operateType" style="width: 150px;">
           <nz-option *ngFor="let item of operateData" [nzLabel]="item.name" [nzValue]="item.value"></nz-option>
         </nz-select>
-        <input nz-input placeholder="" style="width: calc(100% - 300px);" [(ngModel)]="condition.value" name="value">
+        <input nz-input autocomplete="off"  placeholder="" style="width: calc(100% - 300px);" [(ngModel)]="condition.value" name="value">
       </nz-input-group>
     </div>
   </div>

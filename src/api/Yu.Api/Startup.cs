@@ -45,6 +45,8 @@ namespace Yu.Api
 
             services.AddJwtAuthentication(Configuration); // 配置jwt认证
 
+            services.AddApiAuthorization(); // 添加api认证Handler
+
             services.AddRepositories<BaseIdentityDbContext>(); // 批量注入仓储
 
             services.AddCommonDbContext<BaseDbContext>

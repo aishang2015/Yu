@@ -97,8 +97,8 @@ namespace Yu.Data.Infrasturctures
         // 初始化实体数据表
         private static void InitEntityData<TDbContext>(TDbContext dbContext) where TDbContext : DbContext
         {
-            // 所有实体的类型
-            var types = EntityTypeFinder.FindEntityTypes();
+            // 所有标注DataRuleManage特性的实体的类型
+            var types = EntityTypeFinder.FindDataRuleManageEntityTypes();
 
             foreach (var type in types)
             {

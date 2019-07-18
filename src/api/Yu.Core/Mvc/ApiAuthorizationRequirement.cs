@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace Yu.Service.Handler
+namespace Yu.Core.Mvc
 {
     public class ApiAuthorizationRequirement : IAuthorizationRequirement
     {

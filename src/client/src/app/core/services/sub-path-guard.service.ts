@@ -17,6 +17,13 @@ export class SubPathGuard implements CanActivate {
   // 控制是否允许进入路由
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
+    // 模块内跳转不会进入login-guard所以在模块内token失效并且刷新token的时间内不能转跳到模块内的其他组件。
+    // 如果token已经被清空则直接跳到登录页面
+    if (route.routeConfig.path != 'login' && this._localStorageService.getToken() == null) {
+      this.router.navigate(['/login']);
+      return false;
+    }
+
     // 检查是否有路由权限
     var routes = this._localStorageService.getRoutes();
     if (routes.findIndex(r => r == state.url) < 0) {
