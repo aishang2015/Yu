@@ -76,16 +76,6 @@ namespace Yu.Api.Controllers
             // 取得用户的角色
             var roles = await _accountService.FindUserRole(user);
 
-            // 取得用户的组织
-            var group = await _accountService.FindUserGroup(user);
-
-            // 生成JwtToken
-            var token = _jwtFactory.GenerateJwtToken(new List<(string, string)>{
-                (CustomClaimTypes.UserName,user.UserName),
-                (CustomClaimTypes.Role,roles),
-                (CustomClaimTypes.Group,group==null?string.Empty:group.Id.ToString()),
-            });
-
             // 根据用户的角色获取用户页面侧的权限内容
             List<string> identities = new List<string> { }, routes = new List<string> { };
             foreach (var role in roles.Split(','))
@@ -96,6 +86,19 @@ namespace Yu.Api.Controllers
                 identities.AddRange(identityStr.Split(CommonConstants.StringConnectChar));
                 routes.AddRange(routeStr.Split(CommonConstants.StringConnectChar));
             }
+
+            // 取得用户的组织
+            var group = await _accountService.FindUserGroup(user);
+
+            // 生成JwtToken
+            var token = _jwtFactory.GenerateJwtToken(new List<(string, string)>{
+                (CustomClaimTypes.UserName,user.UserName),
+                (CustomClaimTypes.Role,roles),
+                (CustomClaimTypes.Group,group==null?string.Empty:group.Id.ToString()),
+            });
+
+            // 保存jwtToken
+            _jwtFactory.StoreToken(user.UserName, token);
 
             // 返回结果
             return Ok(new LoginResult
@@ -117,8 +120,8 @@ namespace Yu.Api.Controllers
         public async Task<IActionResult> RefreshToken()
         {
             var oldToken = Request.Headers["Authorization"].ToString();
-            //var newtoken = _jwtFactory.RefreshJwtToken(oldToken?.Replace("Bearer ", string.Empty));
 
+            // 解析旧Token
             var claimPrincipal = _jwtFactory.CanRefresh(oldToken?.Replace("Bearer ", string.Empty));
 
             // token刷新失败
@@ -135,6 +138,17 @@ namespace Yu.Api.Controllers
             // 取得用户的角色
             var roles = await _accountService.FindUserRole(user);
 
+            // 根据用户的角色获取用户页面侧的权限内容
+            List<string> identities = new List<string> { }, routes = new List<string> { };
+            foreach (var role in roles.Split(','))
+            {
+                var permissions = await _roleService.UpdateRolePermissionCache(role);
+                permissions.TryGetValue(PermissionTypes.Identities, out string identityStr);
+                permissions.TryGetValue(PermissionTypes.Routes, out string routeStr);
+                identities.AddRange(identityStr.Split(CommonConstants.StringConnectChar));
+                routes.AddRange(routeStr.Split(CommonConstants.StringConnectChar));
+            }
+
             // 取得用户的组织
             var group = await _accountService.FindUserGroup(user);
 
@@ -145,16 +159,8 @@ namespace Yu.Api.Controllers
                 (CustomClaimTypes.Group,group==null?string.Empty:group.Id.ToString()),
             });
 
-            // 根据用户的角色获取用户页面侧的权限内容
-            List<string> identities = new List<string> { }, routes = new List<string> { };
-            foreach (var role in roles.Split(','))
-            {
-                var permissions = await _roleService.UpdateRolePermissionCache(role);
-                permissions.TryGetValue(PermissionTypes.Identities, out string identityStr);
-                permissions.TryGetValue(PermissionTypes.Routes, out string routeStr);
-                identities.AddRange(identityStr.Split(','));
-                routes.AddRange(routeStr.Split(','));
-            }
+            // 保存jwtToken
+            _jwtFactory.StoreToken(userName, newtoken);
 
             // 返回结果
             return Ok(new LoginResult

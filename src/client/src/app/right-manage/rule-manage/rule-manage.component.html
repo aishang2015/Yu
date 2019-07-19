@@ -1,14 +1,14 @@
 <div class="explorer">
 
   <div nz-col nzSpan="6" class="tree">
-    <button nz-button (click)="addRuleGroup()">添加新规则组</button>
+    <button nz-button (click)="addRuleGroup()" *canOperate="'addrulegroupbtn'" >添加新规则组</button>
     <nz-table #basicTable [nzData]="ruleGroups" nzShowPagination="false">
       <tbody>
         <tr *ngFor="let data of basicTable.data">
           <td>{{data.name}}</td>
           <td style="width:70px;" *ngIf="!isEditMode">
-            <a (click)="edit(data)">编辑</a>
-            <a (click)="delete(data)">删除</a>
+            <a (click)="edit(data)" *canOperate="'editrulegroup'">编辑</a>
+            <a (click)="delete(data)" *canOperate="'deleterulegrouplink'">删除</a>
           </td>
         </tr>
       </tbody>

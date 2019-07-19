@@ -26,7 +26,7 @@ namespace Yu.Core.Validators
                 // 关于模型验证，当模型验证结果错误的时候，框架会自动返回400
                 // 在这里可以自行定义返回内容。
                 // 针对FluentValidation，在这里统一错误的返回形式，来达到和
-                // controller一致的效果。
+                // controller的ModelStateError一致的效果。
                 options.InvalidModelStateResponseFactory = (context) =>
                 {
                     return new BadRequestObjectResult(context.ModelState);

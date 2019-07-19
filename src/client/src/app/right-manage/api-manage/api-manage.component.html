@@ -11,7 +11,7 @@
 </div>
 
 <!--操作栏-->
-<div nz-row class="mt-10">
+<div nz-row class="mt-10" *canOperate="'addapibtn'">
   <nz-button-group>
     <button nz-button (click)="addApi()"><i nz-icon nzType="plus"></i> 添加Api</button>
   </nz-button-group>
@@ -42,8 +42,8 @@
         </td>
         <td nzAlign="center">{{ data.address }}</td>
         <td nzAlign="center" nzWidth="150px">
-          <a (click)="editApi(data)">修改</a>&nbsp;
-          <a (click)="deleteApi(data)">删除</a>
+          <a (click)="editApi(data)" *canOperate="'editapilink'">修改</a>&nbsp;
+          <a (click)="deleteApi(data)" *canOperate="'deleteapilink'">删除</a>
         </td>
       </tr>
     </tbody>

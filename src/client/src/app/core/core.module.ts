@@ -9,13 +9,13 @@ import { ThrottleClickDirective } from './directives/throttle-click.directive';
 import { ImageUriPipe } from './pipes/image-uri.pipe';
 import { AppRuleComponent } from './components/app-rule/app-rule.component';
 import { UserNameValidatorDirective } from './validators/username-validator.directive';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CanOperateDirective } from './directives/can-operate.directive';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    NgZorroAntdModule
+    NgZorroAntdModule,
   ],
   declarations: [
     AppRuleComponent, // 规则编辑组件
@@ -27,7 +27,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     UserNameValidatorDirective, // 用户名验证器
 
     DebounceClickDirective,  // 去抖点击 
-    ThrottleClickDirective // 节流点击
+    ThrottleClickDirective, // 节流点击
+    CanOperateDirective, // 结构型指令判断用户是否有权限操作此元素
   ],
   exports: [
     FormsModule,
@@ -37,6 +38,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ImageUriPipe,
     TelephoneValidatorDirective,
     UserNameValidatorDirective,
+    CanOperateDirective,
     DebounceClickDirective,
     ThrottleClickDirective,
   ]

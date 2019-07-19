@@ -15,7 +15,7 @@
 </div>
 
 <!--操作-->
-<div nz-row class="mt-10">
+<div nz-row class="mt-10" *canOperate="'addentitybtn'">
   <nz-button-group>
     <button nz-button (click)="addEntity()"><i nz-icon nzType="plus"></i> 添加记录</button>
   </nz-button-group>
@@ -45,8 +45,8 @@
         <td nzAlign="center" nzWidth="180px">{{ data.field }}</td>
         <td nzAlign="center" nzWidth="180px">{{ data.fieldDescribe }}</td>
         <td nzAlign="center">
-          <a (click)="deleteEntity(data)">删除</a> &nbsp;
-          <a (click)="editEntity(data)">修改</a>
+          <a (click)="deleteEntity(data)" *canOperate="'deletedatalink'">删除</a> &nbsp;
+          <a (click)="editEntity(data)" *canOperate="'editentitylink'">修改</a>
         </td>
       </tr>
     </tbody>

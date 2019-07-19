@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { from, of } from 'rxjs';
+import { map, delay, mergeAll, mergeMap, concatAll, concatMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-main',

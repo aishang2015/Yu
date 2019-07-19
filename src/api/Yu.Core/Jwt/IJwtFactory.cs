@@ -17,5 +17,8 @@ namespace Yu.Core.Jwt
 
         // 解析jwttoken
         ClaimsPrincipal CanRefresh(string token);
+
+        // 保存token到缓存
+        void StoreToken(string key, string token);
     }
 }

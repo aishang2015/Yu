@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
+using Yu.Core.Extensions;
 
 namespace Yu.Core.Jwt
 {
@@ -11,10 +13,13 @@ namespace Yu.Core.Jwt
     {
         public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
+            // 使用缓存
+            services.AddMemoryCache();
+
             // 注入Jwt配置文件
             services.Configure<JwtOption>(configuration.GetSection("JwtOption"));
 
-            // 取得配置文件
+            // 配置文件
             var option = services.BuildServiceProvider().GetRequiredService<IOptions<JwtOption>>().Value;
 
             services.AddAuthentication(ops =>
@@ -38,7 +43,32 @@ namespace Yu.Core.Jwt
                 // 自定义事件
                 ops.Events = new JwtBearerEvents()
                 {
-                    OnMessageReceived = context => { return Task.CompletedTask; }
+                    OnMessageReceived = context => { return Task.CompletedTask; },
+                    OnTokenValidated = context =>
+                     {
+                         // 取得当前请求下的memorycache
+                         var memoryCache = context.HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
+
+                         // 判断用户名对应的token是否缓存
+                         var userName = context.Principal.GetUserName();
+                         var exist = memoryCache.TryGetValue(userName, out string token);
+                         if (exist)
+                         {
+                             // 验证缓存的token和当前访问的token是否是同一个
+                             var bearerToken = context.Request.Headers["Authorization"].ToString();
+                             if (!bearerToken.Contains(token))
+                             {
+                                 context.Fail("Unauthorized");
+                             }
+                         }
+                         else
+                         {
+                             // 没有缓存的token 认证失败
+                             context.Fail("Unauthorized");
+                         }
+                         return Task.CompletedTask;
+                     }
+
                 };
             });
 

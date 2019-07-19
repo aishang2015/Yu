@@ -11,7 +11,7 @@
 </div>
 
 <!--操作栏-->
-<div nz-row class="mt-10">
+<div nz-row class="mt-10" *canOperate="'addrolebtn'">
   <nz-button-group>
     <button nz-button (click)="addRole()"><i nz-icon nzType="plus"></i> 添加角色</button>
   </nz-button-group>
@@ -35,8 +35,8 @@
         <td nzAlign="center" nzWidth="300px">{{ data.name }}</td>
         <td nzAlign="center">{{ data.describe }}</td>
         <td nzAlign="center" nzWidth="150px">
-          <a (click)="editApi(data)">修改</a>&nbsp;
-          <a (click)="deleteApi(data)">删除</a>
+          <a (click)="editApi(data)" *canOperate="'editrolelink'">修改</a>&nbsp;
+          <a (click)="deleteApi(data)" *canOperate="'deleterolelink'">删除</a>
         </td>
       </tr>
     </tbody>

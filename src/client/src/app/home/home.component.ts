@@ -73,7 +73,7 @@ export class HomeComponent implements OnInit {
   }
 
   // 是否有操作权限
-  canOperate(identifycation) {
+  isCanOperate(identifycation) {
     var identifycations = this._localStorageService.getIdentifycations();
     return identifycations.findIndex(i => i == identifycation) > -1;
   }

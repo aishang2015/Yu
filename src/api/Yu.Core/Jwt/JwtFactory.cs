@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,12 @@ namespace Yu.Core.Jwt
     {
         private readonly JwtOption _jwtOption;
 
-        public JwtFactory(IOptions<JwtOption> jwtOption)
+        private readonly IMemoryCache _memoryCache;
+
+        public JwtFactory(IOptions<JwtOption> jwtOption, IMemoryCache memoryCache)
         {
             _jwtOption = jwtOption.Value;
+            _memoryCache = memoryCache;
         }
 
         // 解析jwttoken
@@ -87,6 +91,13 @@ namespace Yu.Core.Jwt
                 signingCredentials: _jwtOption.SigningCredentials);
             var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             return token;
+        }
+
+        // 保存token到缓存
+        public void StoreToken(string key, string token)
+        {
+            _memoryCache.Set(key, token, 
+                new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_jwtOption.EffectiveTime) });
         }
     }
 }

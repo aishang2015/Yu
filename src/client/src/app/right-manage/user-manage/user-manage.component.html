@@ -11,7 +11,7 @@
 </div>
 
 <!--操作栏-->
-<div nz-row class="mt-10">
+<div nz-row class="mt-10" *canOperate="'adduserbtn'">
   <nz-button-group>
     <button nz-button (click)="addUser()"><i nz-icon nzType="plus"></i>添加用户</button>
   </nz-button-group>
@@ -42,10 +42,10 @@
         <td nzAlign="center" nzWidth="150px">{{ data.roles }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.groupName }}</td>
         <td nzAlign="center">
-          <a (appThrottleClick)="viewUserDetail(data)">查看</a>&nbsp;&nbsp;
-          <a (appThrottleClick)="editAvatar(data)">头像</a>&nbsp;&nbsp;
-          <a (appThrottleClick)="editUser(data)">编辑</a>&nbsp;&nbsp;
-          <a (appThrottleClick)="deleteUser(data)">删除</a>
+          <a (appThrottleClick)="viewUserDetail(data)" *canOperate="'viewuserlink'">查看</a>&nbsp;&nbsp;
+          <a (appThrottleClick)="editAvatar(data)" *canOperate="'editavatarlink'">头像</a>&nbsp;&nbsp;
+          <a (appThrottleClick)="editUser(data)" *canOperate="'edituserlink'">编辑</a>&nbsp;&nbsp;
+          <a (appThrottleClick)="deleteUser(data)" *canOperate="'deleteuserlink'">删除</a>
         </td>
       </tr>
     </tbody>

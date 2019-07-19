@@ -31,8 +31,6 @@ namespace Yu.Api
         // 配置服务
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMemoryCache(); // 添加缓存
-
             services.AddCaptcha(Configuration); // 配置验证码工具
 
             services.AddAutoMapper();   // 配置AutoMapper

@@ -3,11 +3,11 @@
   <div nz-col nzSpan="6" class="tree">
     <div class="mt-5">
       <nz-button-group>
-        <button nz-button nzType="default" (appThrottleClick)="createGroup()" [disabled]="isEditMode"><i nz-icon
+        <button nz-button nzType="default" (appThrottleClick)="createGroup()" [disabled]="isEditMode" *canOperate="'addgroupbtn'"><i nz-icon
             type="plus"></i></button>
-        <button nz-button nzType="default" (appThrottleClick)="editGroup()" [disabled]="isEditMode"><i nz-icon
+        <button nz-button nzType="default" (appThrottleClick)="editGroup()" [disabled]="isEditMode" *canOperate="'editgroupbtn'"><i nz-icon
             type="edit"></i></button>
-        <button nz-button nzType="default" (appThrottleClick)="deleteGroup()" [disabled]="isEditMode"><i nz-icon
+        <button nz-button nzType="default" (appThrottleClick)="deleteGroup()" [disabled]="isEditMode" *canOperate="'deletegroupbtn'"><i nz-icon
             type="delete"></i></button>
       </nz-button-group>
     </div>

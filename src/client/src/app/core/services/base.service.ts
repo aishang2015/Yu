@@ -50,8 +50,14 @@ export abstract class BaseService {
           
           return result;
         }),
-        mergeMap(_ => {
-          return operate;
+
+        // 单一输出情况下无所谓用哪个了
+        mergeMap(tokenResult => {
+          if (tokenResult) {
+            return operate;
+          }else{
+            return Observable.throw('refresh token fail');
+          }
         })
       );
     } else {
