@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using Yu.Core.Expressions;
 
 namespace Yu.Core.Utils
 {
@@ -75,8 +76,13 @@ namespace Yu.Core.Utils
         /// <param name="o"></param>
         /// <param name="t"></param>
         /// <returns></returns>
-        public static object ConvertToType(object o, Type t)
+        public static object ConvertToType(object o, ExpressionType type, Type t)
         {
+            if (type == ExpressionType.ListContain || type == ExpressionType.ListNotContain)
+            {
+                return o;
+            }
+
             if (t == typeof(string))
             {
                 return o.ToString();

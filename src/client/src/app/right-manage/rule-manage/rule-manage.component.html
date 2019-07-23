@@ -1,7 +1,7 @@
 <div class="explorer">
 
   <div nz-col nzSpan="6" class="tree">
-    <button nz-button (click)="addRuleGroup()" *canOperate="'addrulegroupbtn'" >添加新规则组</button>
+    <button nz-button (click)="addRuleGroup()" *canOperate="'addrulegroupbtn'">添加新规则组</button>
     <nz-table #basicTable [nzData]="ruleGroups" nzShowPagination="false">
       <tbody>
         <tr *ngFor="let data of basicTable.data">
@@ -19,13 +19,24 @@
   <div *ngIf="isEditMode" nz-col nzSpan="18" class="content">
 
     <div class="mt-5">
-      <input nz-input style="width: 250px;" [(ngModel)]="ruleGroup.name" name="groupname" placeholder="请输入规则组名" autocomplete="off">
+      <input nz-input style="width: 250px;" [(ngModel)]="ruleGroup.name" name="groupname" placeholder="请输入规则组名"
+        autocomplete="off">
+
+      <a nz-popover style="margin-left: 15px" [nzContent]="contentTemplate" nzTrigger="click"><i nz-icon nzType="info-circle"
+          nzTheme="outline"></i></a>
+      <ng-template #contentTemplate>
+        <div>
+          <p *ngFor="let tip of tips">{{ tip }}</p>
+        </div>
+      </ng-template>
       <nz-input-group nzCompact style="margin-top: 5px;">
         <nz-select [(ngModel)]="ruleGroup.dbContext" style="width: 250px;">
-          <nz-option *ngFor="let item of getDbContextData()" [nzLabel]="item" [nzValue]="item" placeholder="选择数据库"></nz-option>
+          <nz-option *ngFor="let item of getDbContextData()" [nzLabel]="item" [nzValue]="item" placeholder="选择数据库">
+          </nz-option>
         </nz-select>
         <nz-select [(ngModel)]="ruleGroup.entity" style="width: 250px;" (ngModelChange)="tableDataChange($event)">
-          <nz-option *ngFor="let item of getTableData()" [nzLabel]="item" [nzValue]="item" placeholder="选择表"></nz-option>
+          <nz-option *ngFor="let item of getTableData()" [nzLabel]="item" [nzValue]="item" placeholder="选择表">
+          </nz-option>
         </nz-select>
       </nz-input-group>
     </div>

@@ -197,7 +197,6 @@ namespace Yu.Service.WebAdmin.User
                     return false;
                 }
                 user.GroupName = group.GroupName;
-                user.GroupId = group.Id;
             }
             else
             {
@@ -211,8 +210,6 @@ namespace Yu.Service.WebAdmin.User
             {
                 await _userManager.AddToRolesAsync(user, userDetail.Roles);
             }
-
-            user.Roles = string.Join(',', userDetail.Roles);
 
             // 保存用户信息
             await _userManager.UpdateAsync(user);

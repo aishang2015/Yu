@@ -36,38 +36,17 @@ namespace Yu.Data.Repositories
 
             _dataSet = _context.Set<TEntity>();
 
-            // 根据数据规则过滤数据
-            var roles = (from claim in httpContextAccessor.HttpContext.User.Claims
-                         where claim.Type == CustomClaimTypes.Role
-                         select claim.Value).FirstOrDefault()?.Split(',');
-
-            // 用户拥有角色并且角色内没有系统管理员
-            if (roles != null && !roles.Contains(CommonConstants.SystemManagerRole))
+            var userName = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == CustomClaimTypes.UserName)?.Value;
+            if (!string.IsNullOrEmpty(userName))
             {
                 // 表达式合集
                 var expressionList = new List<LambdaExpression>();
 
-                // 所有角色的规则组合集
-                var allRuleGroups = new List<string> { };
-
-                // 循环所有角色取得角色的规则组
-                foreach (var role in roles)
-                {
-                    // 取得角色的权限
-                    var result = memoryCache.TryGetValue(CommonConstants.RoleMemoryCacheKey + role, out Dictionary<string, string> permissions);
-                    if (result)
-                    {
-                        result = permissions.TryGetValue(PermissionTypes.DataRules, out string ruleStr);
-                        if (result)
-                        {
-                            var ruleGroups = ruleStr.Split(CommonConstants.StringConnectChar).ToList();
-                            allRuleGroups.AddRange(ruleGroups);
-                        }
-                    }
-                }
+                // 取得用户的数据规则
+                var result = memoryCache.TryGetValue(CommonConstants.RoleMemoryCacheKey + userName, out List<string> permissions);
 
                 // 所有规则组
-                foreach (var group in allRuleGroups)
+                foreach (var group in permissions)
                 {
                     // 找到符合当前实体的规则
                     var items = group.Split('|');
@@ -88,6 +67,7 @@ namespace Yu.Data.Repositories
                         .JoinLambdaExpression(expressionList, ExpressionCombineType.And));
                 }
             }
+
         }
 
 

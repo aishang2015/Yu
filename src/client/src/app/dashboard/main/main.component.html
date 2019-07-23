@@ -1,2 +1,63 @@
-<!-- <editor [(ngModel)]="dataModel" [init]="setting"></editor> -->
-<div>dashboard</div>
+<h1><a name="header-n294" class="md-header-anchor md-print-anchor" href="af://n294"> </a><span>YU</span></h1>
+<p><span>基于asp net core2 和angular6 开发，在asp net core identity基础上实现了基于用户和角色的组织，界面以及数据等内容的可扩展的权限管理系统。</span></p>
+<h3><a name="header-n296" class="md-header-anchor md-print-anchor" href="af://n296"> </a><span>示例</span></h3>
+
+<p><span>展示程序使用的是sample分支的源代码，在master基础上添加了展示数据模块和定时刷新数据库的功能。</span></p>
+<h3><a name="header-n299" class="md-header-anchor md-print-anchor" href="af://n299"> </a><span>技术框架</span></h3>
+<ul>
+    <li>
+        <p><span>api</span></p>
+        <ul>
+            <li><span>核心框架：AspNetCore 2.2</span></li>
+            <li><span>持久层框架：Entity Framework 2.2</span></li>
+            <li><span>缓存：MemroyCache</span></li>
+            <li><span>日志：Nlog.Web.AspNetCore 4.8.2</span></li>
+            <li><span>对象映射：AutoMapper 8.1.0</span></li>
+            <li><span>模型验证：FluentValidation.AspNetCore 8.4.0</span></li>
+            <li><span>Expression序列化和反序列化：Serialize.Linq 1.8.1 </span></li>
+            <li><span>API文档：Swashbuckle.AspNetCore 4.0.1</span></li>
+
+        </ul>
+    </li>
+
+</ul>
+<ul>
+    <li>
+        <p><span>web</span></p>
+        <ul>
+            <li><span>核心框架：angular 7.2.0</span></li>
+            <li><span>UI框架：ng-zorro-antd 7.5.1</span></li>
+            <li><span>jwt：angular-jwt 2.1.0</span></li>
+
+        </ul>
+    </li>
+
+</ul>
+<h3><a name="header-n330" class="md-header-anchor md-print-anchor" href="af://n330"> </a><span>开发环境</span></h3>
+<ul>
+    <li><span>SQL Server Express LocalDb(SqlLocalDb)</span></li>
+    <li><span>Node 10.4.0 &amp; NPM 6.1.0</span></li>
+    <li><span>.NET Core 2.2 sdk</span></li>
+    <li><span>Angular CLI 7.3.8</span></li>
+    <li><span>Windows 10</span></li>
+
+</ul>
+<h3><a name="header-n342" class="md-header-anchor md-print-anchor" href="af://n342"> </a><span>开发工具</span></h3>
+<ul>
+    <li><span>visual studio 2017</span></li>
+    <li><span>visual code</span></li>
+
+</ul>
+<h3><a name="header-n348" class="md-header-anchor md-print-anchor" href="af://n348"> </a><span>安装运行</span></h3>
+<p><span>考虑到未来可能有多个web客户端，于是没有把代码统一由vs管理，而是分开开发。示例程序服务器中使用了sql server 2012。本地开发环境使用了vs2017自带的SQL Server Express
+        LocalDb(SqlLocalDb)，可以根据需要自行修改appsettings.json的配置，数据会在数据库自动创建时自动插入。</span></p>
+<p><strong><span>api端</span></strong></p>
+<p><span>确保安装了net core2.2 sdk，使用vs2017打开，vs会自动还原所有包，f5直接运行。</span></p>
+<p><strong><span>web端</span></strong></p>
+<pre><code class='language-javascript' lang='javascript'>$ npm install 
+$ ng serve --open
+</code></pre>
+<h3><a name="header-n354" class="md-header-anchor md-print-anchor" href="af://n354"> </a><span>功能特性</span></h3>
+<p>&nbsp;</p>
+<h3><a name="header-n356" class="md-header-anchor md-print-anchor" href="af://n356"> </a><span>应用程序结构</span></h3>
+<p>&nbsp;</p>

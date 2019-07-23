@@ -12,7 +12,9 @@ namespace Yu.Core.Expressions
         Equal = 1, // 相等
         NotEqual = 2, // 不相等
         StringContain = 3, // 字符串包含
-        ListContain = 4, // list包含
+        StringNotContain = 4, // 字符串不包含
+        ListContain = 5, // list包含
+        ListNotContain = 6, // list包含
 
         // todo 添加更多
     }

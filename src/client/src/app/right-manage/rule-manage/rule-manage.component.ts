@@ -14,6 +14,13 @@ import { EntityService } from 'src/app/core/services/entity.service';
 })
 export class RuleManageComponent implements OnInit {
 
+
+  // 提示
+  tips: string[] = [
+    '保留关键字1：${UserName}代表登陆用户的用户名',
+    '保留关键字2：${UserGroupId}代表登录用户的组织ID'
+  ];
+
   // 规则组数组
   ruleGroups: RuleGroup[] = [];
 

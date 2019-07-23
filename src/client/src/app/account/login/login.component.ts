@@ -62,6 +62,7 @@ export class LoginComponent implements OnInit {
           error => {
             this.refresh(); // 刷新验证码
             this.loginModel.captchaCode = null;
+            this.loginModel.password = null;
           }
         )
     }

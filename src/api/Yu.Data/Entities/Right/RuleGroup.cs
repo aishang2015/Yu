@@ -16,8 +16,5 @@ namespace Yu.Data.Entities.Right
 
         [Description("对应实体")]
         public string Entity { get; set; }
-
-        [Description("序列化的表达式")]
-        public string Lambda { get; set; }
     }
 }

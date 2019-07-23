@@ -1,18 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Yu.Core.Constants;
 using Yu.Core.Extensions;
 using Yu.Core.Jwt;
 using Yu.Core.Mvc;
+using Yu.Data.Infrasturctures;
 using Yu.Model.Account.InputModels;
 using Yu.Model.Account.OutputModels;
 using Yu.Model.Message;
 using Yu.Service.Account;
 using Yu.Service.WebAdmin.Role;
+using Yu.Service.WebAdmin.Rule;
 
 namespace Yu.Api.Controllers
 {
@@ -25,13 +29,20 @@ namespace Yu.Api.Controllers
 
         private readonly IRoleService _roleService;
 
+        private readonly IRuleService _ruleService;
+
         private readonly IMemoryCache _memoryCache;
 
-        public AccountController(IJwtFactory jwtFactory, IAccountService accountService, IRoleService roleService, IMemoryCache memoryCache)
+        public AccountController(IJwtFactory jwtFactory,
+            IAccountService accountService,
+            IRoleService roleService,
+            IRuleService ruleService,
+            IMemoryCache memoryCache)
         {
             _jwtFactory = jwtFactory;
             _accountService = accountService;
             _roleService = roleService;
+            _ruleService = ruleService;
             _memoryCache = memoryCache;
         }
 
@@ -73,42 +84,8 @@ namespace Yu.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            // 取得用户的角色
-            var roles = await _accountService.FindUserRole(user);
-
-            // 根据用户的角色获取用户页面侧的权限内容
-            List<string> identities = new List<string> { }, routes = new List<string> { };
-            foreach (var role in roles.Split(','))
-            {
-                var permissions = await _roleService.UpdateRolePermissionCache(role);
-                permissions.TryGetValue(PermissionTypes.Identities, out string identityStr);
-                permissions.TryGetValue(PermissionTypes.Routes, out string routeStr);
-                identities.AddRange(identityStr.Split(CommonConstants.StringConnectChar));
-                routes.AddRange(routeStr.Split(CommonConstants.StringConnectChar));
-            }
-
-            // 取得用户的组织
-            var group = await _accountService.FindUserGroup(user);
-
-            // 生成JwtToken
-            var token = _jwtFactory.GenerateJwtToken(new List<(string, string)>{
-                (CustomClaimTypes.UserName,user.UserName),
-                (CustomClaimTypes.Role,roles),
-                (CustomClaimTypes.Group,group==null?string.Empty:group.Id.ToString()),
-            });
-
-            // 保存jwtToken
-            _jwtFactory.StoreToken(user.UserName, token);
-
-            // 返回结果
-            return Ok(new LoginResult
-            {
-                Token = token,
-                UserName = user.UserName,
-                AvatarUrl = user.Avatar ?? string.Empty,
-                Identifycations = identities.ToArray(),
-                Routes = routes.ToArray()
-            });
+            var loginResult = await GetLoginResult(user);
+            return Ok(loginResult);
         }
 
         /// <summary>
@@ -135,42 +112,8 @@ namespace Yu.Api.Controllers
             var userName = claimPrincipal.GetUserName();
             var user = await _accountService.FindUser(userName);
 
-            // 取得用户的角色
-            var roles = await _accountService.FindUserRole(user);
-
-            // 根据用户的角色获取用户页面侧的权限内容
-            List<string> identities = new List<string> { }, routes = new List<string> { };
-            foreach (var role in roles.Split(','))
-            {
-                var permissions = await _roleService.UpdateRolePermissionCache(role);
-                permissions.TryGetValue(PermissionTypes.Identities, out string identityStr);
-                permissions.TryGetValue(PermissionTypes.Routes, out string routeStr);
-                identities.AddRange(identityStr.Split(CommonConstants.StringConnectChar));
-                routes.AddRange(routeStr.Split(CommonConstants.StringConnectChar));
-            }
-
-            // 取得用户的组织
-            var group = await _accountService.FindUserGroup(user);
-
-            // 生成JwtToken
-            var newtoken = _jwtFactory.GenerateJwtToken(new List<(string, string)>{
-                (CustomClaimTypes.UserName,userName),
-                (CustomClaimTypes.Role,roles),
-                (CustomClaimTypes.Group,group==null?string.Empty:group.Id.ToString()),
-            });
-
-            // 保存jwtToken
-            _jwtFactory.StoreToken(userName, newtoken);
-
-            // 返回结果
-            return Ok(new LoginResult
-            {
-                Token = newtoken,
-                UserName = user.UserName,
-                AvatarUrl = user.Avatar ?? string.Empty,
-                Identifycations = identities.ToArray(),
-                Routes = routes.ToArray()
-            });
+            var loginResult = await GetLoginResult(user);
+            return Ok(loginResult);
         }
 
         /// <summary>
@@ -189,6 +132,52 @@ namespace Yu.Api.Controllers
                 return BadRequest(ModelState);
             }
             return Ok();
+        }
+
+        /// <summary>
+        /// 获取token，加载权限到缓存,生成response结果
+        /// </summary>
+        private async Task<LoginResult> GetLoginResult(BaseIdentityUser user)
+        {
+            // 根据用户的角色获取用户页面侧的权限内容
+            List<string> identities = new List<string> { }, routes = new List<string> { };
+            foreach (var role in user.Roles.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+                // 更新并取得用户角色的权限
+                var permissions = await _roleService.UpdateRolePermissionCache(role);
+
+                // 整合页面需要的权限数据
+                permissions.TryGetValue(PermissionTypes.Identities, out string identityStr);
+                permissions.TryGetValue(PermissionTypes.Routes, out string routeStr);
+                identities.AddRange(identityStr.Split(CommonConstants.StringConnectChar, StringSplitOptions.RemoveEmptyEntries));
+                routes.AddRange(routeStr.Split(CommonConstants.StringConnectChar, StringSplitOptions.RemoveEmptyEntries));
+            }
+
+            // 取得用户的组织
+            var group = await _accountService.FindUserGroup(user);
+
+            // 生成JwtToken
+            var token = _jwtFactory.GenerateJwtToken(new List<(string, string)>{
+                (CustomClaimTypes.UserName,user.UserName),
+                (CustomClaimTypes.Role,user.Roles),
+                (CustomClaimTypes.Group,group==null?string.Empty:group.Id.ToString()),
+            });
+
+            // 保存jwtToken到缓存
+            _jwtFactory.StoreToken(user.UserName, token);
+
+            // 用户所有的数据权限缓存化
+            await _ruleService.UpdateRulePermissionCache(user);
+
+            // 返回结果
+            return new LoginResult
+            {
+                Token = token,
+                UserName = user.UserName,
+                AvatarUrl = user.Avatar ?? string.Empty,
+                Identifycations = identities.Distinct().ToArray(),
+                Routes = routes.Distinct().ToArray()
+            };
         }
 
 

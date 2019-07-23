@@ -18,7 +18,7 @@ export class ApiService extends BaseService {
   // 取得api
   getApis(pageIndex, pageSize, searchText) {
     const uri = UriConstant.ApiUri + `?pageIndex=${pageIndex}&pageSize=${pageSize}&searchText=${searchText}`;
-    return this.SafeRequestGeneric(this.http.get(uri));
+    return this.SafeRequest(this.http.get(uri));
   }
 
   // 添加api

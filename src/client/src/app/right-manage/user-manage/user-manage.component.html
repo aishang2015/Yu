@@ -119,8 +119,8 @@
       <nz-form-label [nzSpan]="5">用户名</nz-form-label>
       <nz-form-control [nzSpan]="12"
         [ngClass]="{'has-error': userName.invalid && (userName.dirty || userName.touched || isSubmit)}">
-        <input nz-input autocomplete="off" type="text" name="userName" #userName="ngModel"
-          [(ngModel)]="editUserDetail.userName" required appUserName />
+        <input nz-input autocomplete="off" type="text" name="userName" #userName="ngModel" style="color: black;"
+          [(ngModel)]="editUserDetail.userName" required appUserName [disabled]="editUserDetail.id"/>
         <nz-form-explain
           *ngIf="userName.invalid && (userName.dirty || userName.touched|| isSubmit) && userName.errors.required">
           请输入用户名</nz-form-explain>
@@ -158,7 +158,7 @@
 
     <nz-divider nzText="角色信息"></nz-divider>
 
-    <nz-form-label [nzSpan]="5">昵称</nz-form-label>
+    <nz-form-label [nzSpan]="5">用户角色</nz-form-label>
     <nz-form-control [nzSpan]="12">
       <nz-select [(ngModel)]="editUserDetail.roles" name="roles" [nzSize]="size" nzMode="multiple"
         nzPlaceHolder="请选择角色">

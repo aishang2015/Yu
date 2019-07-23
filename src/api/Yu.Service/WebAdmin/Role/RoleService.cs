@@ -14,6 +14,7 @@ using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Role.InputOuputModels;
 using Yu.Model.WebAdmin.Role.OutputModels;
+using Yu.Service.WebAdmin.Rule;
 using ApiEntity = Yu.Data.Entities.Right.Api;
 using ElementEntity = Yu.Data.Entities.Right.Element;
 
@@ -31,8 +32,6 @@ namespace Yu.Service.WebAdmin.Role
 
         private readonly IRepository<ApiEntity, Guid> _apiRepository;
 
-        private readonly IRepository<RuleGroup, Guid> _ruleGroupRepository;
-
         private readonly IMemoryCache _memoryCache;
 
         public RoleService(RoleManager<BaseIdentityRole> roleManager,
@@ -40,7 +39,6 @@ namespace Yu.Service.WebAdmin.Role
             IRepository<ElementTree, Guid> elementTreeRepository,
             IRepository<ElementApi, Guid> elementApiRepository,
             IRepository<ApiEntity, Guid> apiRepository,
-            IRepository<RuleGroup, Guid> ruleGroupRespository,
             IMemoryCache memoryCache)
         {
             _roleManager = roleManager;
@@ -48,7 +46,6 @@ namespace Yu.Service.WebAdmin.Role
             _elementTreeRepository = elementTreeRepository;
             _elementApiRepository = elementApiRepository;
             _apiRepository = apiRepository;
-            _ruleGroupRepository = ruleGroupRespository;
             _memoryCache = memoryCache;
         }
 
@@ -288,17 +285,6 @@ namespace Yu.Service.WebAdmin.Role
                         // 角色可访问的API
                         result.Add(PermissionTypes.Apis, string.Join(CommonConstants.StringConnectChar, apis));
 
-                        // 关联的数据规则
-                        var ruleIds = claims.Where(c => c.Type == CustomClaimTypes.Rule).Select(c => c.Value);
-                        var ruleGroups = _ruleGroupRepository.GetByWhereNoTracking(rg => ruleIds.Contains(rg.Id.ToString()))
-                            .Select(a => a.DbContext + '|' + a.Entity + '|' + a.Lambda);
-
-                        // 角色的数据访问规则
-                        result.Add(PermissionTypes.DataRules, string.Join(CommonConstants.StringConnectChar, ruleGroups));
-
-                        // 设置缓存
-                        _memoryCache.Set(CommonConstants.RoleMemoryCacheKey + roleName, result);
-
                         return result;
                     }
                 );
@@ -322,14 +308,8 @@ namespace Yu.Service.WebAdmin.Role
                         // 角色拥有路由
                         result.Add(PermissionTypes.Routes, string.Join(CommonConstants.StringConnectChar, elements.Select(e => e.Route)));
 
-                        // 角色的数据访问规则
-                        result.Add(PermissionTypes.DataRules, string.Empty);
-
                         // Api权限
                         result.Add(PermissionTypes.Apis, string.Join(CommonConstants.StringConnectChar, _apiRepository.GetAllNoTracking().Select(a => a.Address + '|' + a.Type)));
-
-                        // 设置缓存
-                        _memoryCache.Set(CommonConstants.RoleMemoryCacheKey + roleName, result);
 
                         return result;
                     });

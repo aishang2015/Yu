@@ -53,13 +53,26 @@ namespace Yu.Core.Expressions
                             expressionList.Add(containExpression);
                             break;
 
+                        // 不包含(string的bool Contains(String value)方法)
+                        case ExpressionType.StringNotContain:
+                            var notContainExpression = Expression.Not(Expression.Call(left, typeof(string).GetMethod("Contains", new Type[] { typeof(string) }), right));
+                            expressionList.Add(notContainExpression);
+                            break;
+
                         // 包含(List<T>的bool Contains(T t)方法)
                         case ExpressionType.ListContain:
-
                             var propertyType = typeof(T).GetProperty(tuple.Item1).PropertyType;
                             var genericListType = typeof(List<>).MakeGenericType(propertyType);
                             var listContainExpression = Expression.Call(right, genericListType.GetMethod("Contains", new Type[] { propertyType }), left);
                             expressionList.Add(listContainExpression);
+                            break;
+
+                        // 不包含(List<T>的bool Contains(T t)方法)
+                        case ExpressionType.ListNotContain:
+                            propertyType = typeof(T).GetProperty(tuple.Item1).PropertyType;
+                            genericListType = typeof(List<>).MakeGenericType(propertyType);
+                            var listNotContainExpression = Expression.Not(Expression.Call(right, genericListType.GetMethod("Contains", new Type[] { propertyType }), left));
+                            expressionList.Add(listNotContainExpression);
                             break;
 
 
@@ -183,7 +196,7 @@ namespace Yu.Core.Expressions
                     var left = Expression.Property(_parameterExpression, tuple.Item1);
 
                     // 右侧表达式
-                    var value = ReflectionUtil.ConvertToType(tuple.Item2, propertyType);
+                    var value = ReflectionUtil.ConvertToType(tuple.Item2, tuple.Item3, propertyType);
                     var right = Expression.Constant(value);
 
                     switch (tuple.Item3)
@@ -206,6 +219,12 @@ namespace Yu.Core.Expressions
                             expressionList.Add(containExpression);
                             break;
 
+                        // 不包含(string的bool Contains(String value)方法)
+                        case ExpressionType.StringNotContain:
+                            var notContainExpression = Expression.Not(Expression.Call(left, typeof(string).GetMethod("Contains", new Type[] { typeof(string) }), right));
+                            expressionList.Add(notContainExpression);
+                            break;
+
                         // 包含(List<T>的bool Contains(T t)方法)
                         case ExpressionType.ListContain:
 
@@ -214,7 +233,12 @@ namespace Yu.Core.Expressions
                             expressionList.Add(listContainExpression);
                             break;
 
-
+                        // 不包含(List<T>的bool Contains(T t)方法)
+                        case ExpressionType.ListNotContain:
+                            genericListType = typeof(List<>).MakeGenericType(propertyType);
+                            var listNotContainExpression = Expression.Not(Expression.Call(right, genericListType.GetMethod("Contains", new Type[] { propertyType }), left));
+                            expressionList.Add(listNotContainExpression);
+                            break;
                     }
                 }
             }

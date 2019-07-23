@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Yu.Data.Entities.Right;
+using Yu.Data.Infrasturctures;
 using Yu.Model.WebAdmin.Rule.OutputModels;
 using RuleEntity = Yu.Data.Entities.Right.Rule;
 
@@ -36,5 +38,10 @@ namespace Yu.Service.WebAdmin.Rule
         /// <param name="ruleGroupId">规则组ID</param>
         /// <returns></returns>
         RuleResult GetRuleResult(Guid ruleGroupId);
+
+        /// <summary>
+        /// 更新角色拥有的所有权限的缓存
+        /// </summary>
+        Task UpdateRulePermissionCache(BaseIdentityUser user);
     }
 }
