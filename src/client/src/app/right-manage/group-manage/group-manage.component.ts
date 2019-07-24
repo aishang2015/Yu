@@ -24,6 +24,9 @@ export class GroupManageComponent implements OnInit {
 
   // 提交
   isSubmit: boolean = false;
+  
+  // 是否等待
+  isLoading = false;
 
   constructor(private _groupService: GroupService,
     private _messageService: NzMessageService,
@@ -93,6 +96,8 @@ export class GroupManageComponent implements OnInit {
     if (form.valid) {
       this.isSubmit = false;
 
+      this.isLoading = true;
+
       if (this.editedGroup.id) {
         this._groupService.updateGroup(this.editedGroup).subscribe(
           result => {
@@ -101,7 +106,9 @@ export class GroupManageComponent implements OnInit {
 
             // 重置编辑表单
             this.cancelEdit(form);
-          }
+            this.isLoading = false;
+          },
+          error => { this.isLoading = false; }
         );
       } else {
         this._groupService.addGroup(this.editedGroup).subscribe(
@@ -111,7 +118,9 @@ export class GroupManageComponent implements OnInit {
 
             // 重置编辑表单
             this.cancelEdit(form);
-          }
+            this.isLoading = false;
+          },
+          error => { this.isLoading = false; }
         );
       }
     }

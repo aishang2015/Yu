@@ -30,17 +30,6 @@ export class HomeComponent implements OnInit {
     'right': false
   }
 
-  // 选择的菜单项
-  selectMap: { [name: string]: boolean } = {
-    'rightuser': false,
-    'rightrole': false,
-    'rightgroup': false,
-    'rightmenu': false,
-    'rightapi': false,
-    'rightrule': false,
-    'rightentity': false
-  }
-
   constructor(private router: Router,
     private _localStorageService: LocalStorageService) { }
 
@@ -65,10 +54,6 @@ export class HomeComponent implements OnInit {
 
     for (const key in this.openMap) {
       this.openMap[key] = false;
-    };
-
-    for (const key in this.selectMap) {
-      this.selectMap[key] = false;
     };
   }
 

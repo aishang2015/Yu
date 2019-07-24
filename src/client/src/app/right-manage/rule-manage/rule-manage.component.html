@@ -44,8 +44,8 @@
     <app-rule [(option)]="ruleOptions" [fieldData]="getFieldData()"></app-rule>
 
 
-    <button nz-button class="mt-5" (click)="saveRule($event)">保存规则</button>
-    <button nz-button class="mt-5 ml-5" (click)="cancel($event)">取消保存</button>
+    <button nz-button class="mt-5" (click)="saveRule($event)" [nzLoading]="isLoading">保存规则</button>
+    <button nz-button class="mt-5 ml-5" (click)="cancel($event)" [nzLoading]="isLoading">取消保存</button>
 
     <div>
 

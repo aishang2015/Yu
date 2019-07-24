@@ -48,6 +48,9 @@ export class MenuManageComponent implements OnInit {
   // 是否提交
   isSubmit: boolean = false;
 
+  // 是否等待
+  isLoading = false;
+
   constructor(private _modalService: NzModalService,
     private _elementService: ElementService,
     private _messageService: NzMessageService,
@@ -103,8 +106,8 @@ export class MenuManageComponent implements OnInit {
   submit(form) {
     this.isSubmit = true;
     if (form.valid) {
+      this.isLoading = true;
       this.isSubmit = false;
-      let name = form.controls['name'].value;
 
       if (this.editedElement.id) {
         this._elementService.updateElement(this.editedElement).subscribe(
@@ -117,7 +120,9 @@ export class MenuManageComponent implements OnInit {
             this.cancelEdit(form);
 
             this._elementService.RefreshToken();
-          }
+            this.isLoading = false;
+          },
+          error => { this.isLoading = false; }
         );
       } else {
         this._elementService.addElement(this.editedElement).subscribe(
@@ -130,7 +135,9 @@ export class MenuManageComponent implements OnInit {
             this.cancelEdit(form);
 
             this._elementService.RefreshToken();
-          }
+            this.isLoading = false;
+          },
+          error => { this.isLoading = false; }
         );
       }
     }

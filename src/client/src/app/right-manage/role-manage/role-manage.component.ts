@@ -30,6 +30,9 @@ export class RoleManageComponent implements OnInit {
   // 是否提交
   isSubmit = false;
 
+  // 是否等待
+  isLoading = false;
+
   // 编辑模板
   @ViewChild("editTpl")
   editTpl;
@@ -62,6 +65,7 @@ export class RoleManageComponent implements OnInit {
 
   // 添加角色
   addRole() {
+    this.isSubmit = false;
     this.editedRole = new Role();
     this.nzModal = this._modalService.create({
       nzTitle: null,
@@ -115,24 +119,33 @@ export class RoleManageComponent implements OnInit {
     this.isSubmit = true;
     if (form.valid) {
 
+      this.isLoading = true;
+
       // 更新的情况
       if (this.editedRole.id) {
-        this._roleService.updateRoleDetail(this.editedRole).subscribe(result => {
-          this.nzModal.close();
-          this._messageService.success("更新成功");
-          this.initRoles();
-          form.reset();
-        });
+        this._roleService.updateRoleDetail(this.editedRole).subscribe(
+          result => {
+            this.nzModal.close();
+            this._messageService.success("更新成功");
+            this.initRoles();
+            form.reset();
+            this.isLoading = false;
+          },
+          error => { this.isLoading = false; },
+        );
       } else {
 
         // 添加的情况
-        this._roleService.addRoleDetail(this.editedRole).subscribe(result => {
-          this.nzModal.close();
-          this._messageService.success("添加成功");
-          this.initRoles();
-          form.reset();
-        });
-
+        this._roleService.addRoleDetail(this.editedRole).subscribe(
+          result => {
+            this.nzModal.close();
+            this._messageService.success("添加成功");
+            this.initRoles();
+            form.reset();
+            this.isLoading = false;
+          },
+          error => { this.isLoading = false; },
+        );
       }
     }
   }

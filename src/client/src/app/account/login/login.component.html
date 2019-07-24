@@ -34,7 +34,7 @@
       </nz-form-item>
       <nz-form-item>
         <nz-form-control>
-          <button nz-button nzType="primary" nzBlock [disabled]="!loginForm.valid">登录系统</button>
+          <button nz-button nzType="primary" nzBlock [disabled]="!loginForm.valid" [nzLoading]="isLoading">登录系统</button>
         </nz-form-control>
       </nz-form-item>
     </form>

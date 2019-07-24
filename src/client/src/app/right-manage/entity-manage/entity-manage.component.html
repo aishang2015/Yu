@@ -116,8 +116,8 @@
 
     <nz-form-item>
       <nz-form-control [nzSpan]="12" [nzOffset]="5">
-        <button class="mr-5" nz-button type="submit">提交</button>
-        <button class="mr-5" nz-button type="button" (click)="cancel(form)">取消</button>
+        <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading">提交</button>
+        <button class="mr-5" nz-button type="button" (click)="cancel(form)" [nzLoading]="isLoading">取消</button>
       </nz-form-control>
     </nz-form-item>
 

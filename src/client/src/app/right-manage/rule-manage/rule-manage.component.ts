@@ -57,6 +57,9 @@ export class RuleManageComponent implements OnInit {
   // 编辑模式
   isEditMode = false;
 
+  // 是否等待
+  isLoading = false;
+
   constructor(private _ruleService: RuleService,
     private _messageService: NzMessageService,
     private _modalService: NzModalService,
@@ -69,6 +72,8 @@ export class RuleManageComponent implements OnInit {
 
   // 保存规则组
   saveRule() {
+    
+    this.isLoading = true;
 
     if (!this.ruleGroup.name) {
       this._messageService.error("请输入规则组名称！");
@@ -109,7 +114,9 @@ export class RuleManageComponent implements OnInit {
         this._messageService.success("操作成功");
         this.isEditMode = false;
         this.initRuleGroups();
-      }
+        this.isLoading = false;
+      },
+      error => { this.isLoading = false; },
     );
 
   }

@@ -20,6 +20,9 @@ export class LoginComponent implements OnInit {
 
   // 编辑模型
   loginModel: LoginModel = new LoginModel();
+  
+  // 是否等待
+  isLoading = false;
 
   constructor(private accountService: AccountService,
     private messageService: NzMessageService,
@@ -35,6 +38,9 @@ export class LoginComponent implements OnInit {
 
     // 验证通过
     if (loginForm.valid) {
+
+      this.isLoading = true;
+
       this.accountService.login(this.loginModel)
         .subscribe(
           result => {
@@ -58,11 +64,12 @@ export class LoginComponent implements OnInit {
             this.localStorageService.setAvatarUrl(result['avatarUrl']);
             this.localStorageService.setIdentifycations(result['identifycations']);
             this.localStorageService.setRoutes(result['routes']);
+            this.isLoading = false;
           },
           error => {
             this.refresh(); // 刷新验证码
             this.loginModel.captchaCode = null;
-            this.loginModel.password = null;
+            this.isLoading = false;
           }
         )
     }

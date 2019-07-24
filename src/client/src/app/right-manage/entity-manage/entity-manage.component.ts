@@ -26,6 +26,9 @@ export class EntityManageComponent implements OnInit {
   // 是否已经提交
   isSubmit = false;
 
+  // 是否等待
+  isLoading = false;
+
   @ViewChild('editTpl')
   editTpl;
 
@@ -84,19 +87,30 @@ export class EntityManageComponent implements OnInit {
   // 保存修改
   submit(form) {
     this.isSubmit = true;
+    this.isLoading = true;
     if (form.valid) {
       if (this.editedEntity.id) {
-        this._entityService.updateEntity(this.editedEntity).subscribe(result => {
-          this._messageService.success("更新成功");
-          this.nzModal.close();
-          this.initData();
-        });
+        this._entityService.updateEntity(this.editedEntity).subscribe(
+          result => {
+            this._messageService.success("更新成功");
+            this.nzModal.close();
+            this.initData();
+
+            this.isLoading = false;
+          },
+          error => { this.isLoading = false; }
+        );
       } else {
-        this._entityService.addEntity(this.editedEntity).subscribe(result => {
-          this._messageService.success("创建成功");
-          this.nzModal.close();
-          this.initData();
-        });
+        this._entityService.addEntity(this.editedEntity).subscribe(
+          result => {
+            this._messageService.success("创建成功");
+            this.nzModal.close();
+            this.initData();
+
+            this.isLoading = false;
+          },
+          error => { this.isLoading = false; }
+        );
       }
     }
   }

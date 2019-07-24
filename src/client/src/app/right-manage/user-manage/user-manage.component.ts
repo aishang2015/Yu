@@ -60,6 +60,9 @@ export class UserManageComponent implements OnInit {
   // 提交
   isSubmit: boolean = false;
 
+  // 是否等待
+  isLoading = false;
+
   // 编辑模板
   @ViewChild('editContentTpl')
   editContentTpl;
@@ -159,6 +162,8 @@ export class UserManageComponent implements OnInit {
 
     this.isSubmit = true;
 
+    this.isLoading = true;
+
     // 数据合法
     if (form.valid) {
 
@@ -167,21 +172,27 @@ export class UserManageComponent implements OnInit {
       // 修改的情况
       if (this.editUserDetail.id) {
 
-        this._userService.updateUserDetail(this.editUserDetail)
-          .subscribe(
-            result => {
-              this._messageService.success("修改成功！");
-              this.editModal.destroy();
-              this.getUserInfo();
-            }
-          );
+        this._userService.updateUserDetail(this.editUserDetail).subscribe(
+          result => {
+            this._messageService.success("修改成功！");
+            this.editModal.destroy();
+            this.getUserInfo();
+            this.isLoading = false;
+          },
+          error => { this.isLoading = false; },
+        );
 
       } else {
-        this._userService.addUser(this.editUserDetail).subscribe(result => {
-          this._messageService.success("添加成功！");
-          this.editModal.destroy();
-          this.getUserInfo();
-        });
+        this._userService.addUser(this.editUserDetail).subscribe(
+          result => {
+            this._messageService.success("添加成功！");
+            this.editModal.destroy();
+            this.getUserInfo();
+
+            this.isLoading = false;
+          },
+          error => { this.isLoading = false; }
+        );
       }
 
 

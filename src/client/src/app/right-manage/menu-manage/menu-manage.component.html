@@ -89,8 +89,8 @@
 
         <nz-form-item *ngIf="isEditMode">
           <nz-form-control [nzSpan]="12" [nzOffset]="5">
-            <button class="mr-5" nz-button nzType="primary" type="submit">提交</button>
-            <button class="mr-5" nz-button nzType="primary" type="button" (click)="cancelEdit(editForm)">取消</button>
+            <button class="mr-5" nz-button nzType="primary" type="submit" [nzLoading]="isLoading">提交</button>
+            <button class="mr-5" nz-button nzType="primary" type="button" (click)="cancelEdit(editForm)" [nzLoading]="isLoading">取消</button>
           </nz-form-control>
         </nz-form-item>
 

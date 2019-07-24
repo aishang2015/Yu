@@ -30,6 +30,9 @@ export class ApiManageComponent implements OnInit {
   // 是否提交
   isSubmit = false;
 
+  // 是否等待
+  isLoading = false;
+
   // 模态对话框模板
   @ViewChild('editTpl')
   editTpl;
@@ -117,6 +120,7 @@ export class ApiManageComponent implements OnInit {
   // 提交修改
   submit(form) {
     this.isSubmit = true;
+    this.isLoading = true;
     if (form.valid) {
       this.isSubmit = false;
       if (this.editedApi.id) {
@@ -124,13 +128,20 @@ export class ApiManageComponent implements OnInit {
           this._messageService.success("更新成功");
           this.initData();
           this.nzModal.close();
-        })
+          this.isLoading = false;
+        },
+          error => { this.isLoading = false; },
+        )
       } else {
         this._apiService.addApi(this.editedApi).subscribe(result => {
           this._messageService.success("创建成功");
           this.initData();
           this.nzModal.close();
-        });
+
+          this.isLoading = false;
+        },
+          error => { this.isLoading = false; },
+        );
       }
     }
   }
