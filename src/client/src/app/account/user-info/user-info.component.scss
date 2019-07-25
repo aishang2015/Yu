@@ -1,0 +1,39 @@
+.info_label{
+    display: inline-block;
+    width: 120px;
+    text-align: right;
+}
+
+.info_content{
+    display: inline-block; 
+    width: auto;
+}
+
+.info_explain{
+    margin-left: 120px;
+}
+
+.validate_code{
+    display: inline-block; 
+    width: 80px;
+}
+
+.avatar-uploader{
+    width: 100%;
+    text-align: center;
+    nz-upload{
+        display: inline-block;
+    }
+}
+.avatar{
+    height: 128px;
+    width: 128px;
+}
+.upload-icon {
+    font-size: 32px;
+    color: #999;
+}
+.ant-upload-text {
+    margin-top: 8px;
+    color: #666;
+}

@@ -32,7 +32,7 @@ export class UserService extends BaseService {
   }
 
   // 添加用户
-  addUser(userDetail){
+  addUser(userDetail) {
     let uri = UriConstant.UserDetailUri;
     return this.SafeRequest(this.http.post(uri, userDetail));
   }
@@ -41,5 +41,11 @@ export class UserService extends BaseService {
   deleteUser(userId) {
     let uri = `${UriConstant.UserDetailUri}?id=${userId}`;
     return this.SafeRequest(this.http.delete(uri));
+  }
+
+  // 取得当前用户信息
+  getUserInfo() {
+    let uri = UriConstant.UserInfoUri;
+    return this.SafeRequest(this.http.get(uri));
   }
 }

@@ -1,0 +1,204 @@
+<nz-tabset>
+  <nz-tab nzTitle="我的信息">
+
+    <form nz-form #form="ngForm" (ngSubmit)="submit(form)">
+
+      <div class="mt-20">
+        <div class="info_label">头像：</div>
+        <div class="info_content">
+          <nz-avatar [nzSize]="48" nzIcon="user" [nzSrc]="userInfo.avatar | imageUri"></nz-avatar>
+        </div>
+      </div>
+
+      <div class="mt-20">
+        <div class="info_label">登录名：</div>
+        <div class="info_content">{{ userInfo.userName }}</div>
+      </div>
+
+      <div class="mt-20">
+        <div class="info_label">姓名：</div>
+        <div class="info_content">{{ userInfo.fullName }}</div>
+      </div>
+
+      <div class="mt-20">
+        <div class="info_label">系统角色：</div>
+        <div class="info_content">{{ userInfo.roles }}</div>
+      </div>
+
+      <div class="mt-20">
+        <div class="info_label">所在部门：</div>
+        <div class="info_content">{{ userInfo.groupName }}</div>
+      </div>
+
+      <nz-divider></nz-divider>
+
+
+      <div class="mt-20">
+        <div class="info_label">电话号码：</div>
+        <div class="info_content">{{ userInfo.phoneNumber }}</div>
+      </div>
+
+      <div class="mt-20">
+        <div class="info_label">电子邮箱：</div>
+        <div class="info_content">{{ userInfo.email }}</div>
+      </div>
+
+      <div class="mt-20">
+        <div class="info_label">微信账号：</div>
+        <div class="info_content">{{ userInfo.nickName }}</div>
+      </div>
+
+      <nz-divider></nz-divider>
+
+      <div class="mt-20">
+        <div class="info_label">性别：</div>
+        <div class="info_content">{{ userInfo.userName | gender }}</div>
+      </div>
+
+      <div class="mt-20">
+        <div class="info_label">出生日期：</div>
+        <div class="info_content">{{ userInfo.birthday | date:'yyyy-MM-dd' }}</div>
+      </div>
+
+      <div class="mt-20">
+        <div class="info_label">籍贯：</div>
+        <div class="info_content">{{ userInfo.native }}</div>
+      </div>
+
+      <div class="mt-20">
+        <div class="info_label">毕业院校：</div>
+        <div class="info_content">{{ userInfo.graduate }}</div>
+      </div>
+
+      <div class="mt-20">
+        <div class="info_label">学历水平：</div>
+        <div class="info_content">{{ userInfo.education }}</div>
+      </div>
+
+      <div class="mt-20">
+        <div class="info_label"></div>
+        <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading">保存</button>
+      </div>
+
+    </form>
+
+  </nz-tab>
+  <nz-tab nzTitle="修改头像">
+
+    <div>
+      <h2>点击修改头像</h2>
+      <small>只能上传JPG格式图片，图片大小必须小于2MB，图像高宽必须一致。</small>
+      <div class="avatar-uploader">
+        <nz-upload [nzAction]="uploadUrl" nzName="avatar" nzListType="picture-card" [nzShowUploadList]="false"
+          [nzBeforeUpload]="beforeUpload" (nzChange)="handleChange($event)">
+          <ng-container *ngIf="!avatarUrl">
+            <i class="upload-icon" nz-icon [nzType]="loading ? 'loading' : 'plus'"></i>
+            <div class="ant-upload-text">Upload</div>
+          </ng-container>
+          <img *ngIf="avatarUrl" [src]="avatarUrl" class="avatar" />
+        </nz-upload>
+      </div>
+    </div>
+
+  </nz-tab>
+  <nz-tab nzTitle="修改密码">
+
+    <nz-alert nzType="info" nzMessage="密码策略为：最小6位，必须包含大小写字母，数字和符号"></nz-alert>
+
+    <form #form="ngForm" (ngSubmit)="changePwd(form)" appConfirmPassword>
+      <nz-form-item>
+        <nz-form-control
+          [ngClass]="{'has-error': oldPassword.invalid && (oldPassword.dirty || oldPassword.touched || isSubmit)}">
+          <nz-form-label class="info_label">旧密码：</nz-form-label>
+          <input nz-input class="info_content" type="password" [(ngModel)]="changePwdModel.oldPassword"
+            name="oldPassword" #oldPassword="ngModel" required />
+          <nz-form-explain class="info_explain"
+            *ngIf="oldPassword.invalid && (oldPassword.dirty || oldPassword.touched || isSubmit) && oldPassword.errors.required">
+            请输入旧密码</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control
+          [ngClass]="{'has-error': newPassword.invalid && (newPassword.dirty || newPassword.touched || isSubmit)}">
+          <nz-form-label class="info_label">新密码：</nz-form-label>
+          <input nz-input class="info_content" type="password" [(ngModel)]="changePwdModel.newPassword"
+            name="newPassword" #newPassword="ngModel" required />
+          <nz-form-explain class="info_explain"
+            *ngIf="newPassword.invalid && (newPassword.dirty || newPassword.touched || isSubmit) && newPassword.errors.required">
+            请输入新密码</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control
+          [ngClass]="{'has-error': (confirmPassword.invalid || form.errors?.isNotSame) && (confirmPassword.dirty || confirmPassword.touched || isSubmit)}">
+          <nz-form-label class="info_label">确认新密码：</nz-form-label>
+          <input nz-input class="info_content" type="password" [(ngModel)]="changePwdModel.confirmPassword"
+            name="confirmPassword" #confirmPassword="ngModel" required />
+          <nz-form-explain class="info_explain"
+            *ngIf="confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched || isSubmit) && confirmPassword.errors.required">
+            请输入确认密码</nz-form-explain>
+          <nz-form-explain class="info_explain"
+            *ngIf="form.errors?.isNotSame && (confirmPassword.dirty || confirmPassword.touched || isSubmit) ">
+            确认密码和新密码不一致</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <div class="info_label"></div>
+          <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading">确认修改</button>
+        </nz-form-control>
+      </nz-form-item>
+
+    </form>
+
+  </nz-tab>
+  <nz-tab nzTitle="绑定手机" [nzDisabled]="true">
+
+    <form>
+      <div class="mt-20">
+        <div class="info_label">手机号码：</div>
+        <input nz-input class="info_content" type="password" />
+      </div>
+      <div class="mt-20">
+        <div class="info_label">验证码：</div>
+        <input nz-input class="validate_code" type="password" />
+        <button nz-button class="ml-5 info_content">发送</button>
+      </div>
+      <div class="mt-20">
+        <div class="info_label"></div>
+        <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading">确认修改</button>
+      </div>
+    </form>
+
+  </nz-tab>
+  <nz-tab nzTitle="绑定邮箱" [nzDisabled]="true">
+
+    <form>
+      <div class="mt-20">
+        <div class="info_label">电子邮箱地址：</div>
+        <input nz-input class="info_content" type="password" />
+      </div>
+      <div class="mt-20">
+        <div class="info_label"></div>
+        <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading">发送认证邮件</button>
+      </div>
+    </form>
+
+  </nz-tab>
+  <nz-tab nzTitle="绑定微信" [nzDisabled]="true">
+
+    <form>
+      <div class="mt-20">
+        <div class="info_label"></div>
+        <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading">绑定微信帐号</button>
+      </div>
+    </form>
+
+  </nz-tab>
+  <nz-tab nzTitle="用户设定" [nzDisabled]="true">
+
+  </nz-tab>
+</nz-tabset>

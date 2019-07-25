@@ -27,7 +27,7 @@ export class UriConstant {
     static readonly UserDetailUri = UriConstant.BaseApiUri + 'userDetail';
 
     // 用户头像上传地址
-    static readonly UserAvatarUri = UriConstant.BaseApiUri + 'userAvatar';
+    static readonly UserAvatarUri = UriConstant.BaseApiUri + 'userInfo/avatar';
 
     // API数据地址
     static readonly ApiUri = UriConstant.BaseApiUri + 'api';
@@ -61,4 +61,10 @@ export class UriConstant {
 
     // 全部角色名称
     static readonly RoleNameUri = UriConstant.BaseApiUri + 'roleNames';
+
+    // 当前用户信息
+    static readonly UserInfoUri = UriConstant.BaseApiUri + 'userInfo';
+
+    // 修改当前用户密码
+    static readonly UserChangePwdUri = UriConstant.BaseApiUri + 'userInfo/password';
 }

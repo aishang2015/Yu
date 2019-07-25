@@ -114,6 +114,18 @@ namespace Yu.Service.WebAdmin.User
             return result;
         }
 
+
+        /// <summary>
+        /// 取得用户详细数据
+        /// </summary>
+        /// <param name="userName">用户名</param>
+        /// <returns>用户数据</returns>
+        public async Task<UserDetail> GetUserDetail(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            return await GetUserDetail(user.Id);
+        }
+
         /// <summary>
         /// 取得用户概要数据
         /// </summary>
@@ -158,7 +170,7 @@ namespace Yu.Service.WebAdmin.User
         /// <param name="userId">用户ID</param>
         /// <param name="formFile">表单头像文件</param>
         /// <returns></returns>
-        public async Task UpdateUserAvatar(Guid userId, IFormFile formFile)
+        public async Task<string> UpdateUserAvatar(Guid userId, IFormFile formFile)
         {
             // 生成新文件名
             var endfix = formFile.FileName.Split('.').Last();
@@ -172,6 +184,19 @@ namespace Yu.Service.WebAdmin.User
             _fileStore.DeleteFile(user.Avatar, _serverFileRootPath);
             user.Avatar = newName;
             await _userManager.UpdateAsync(user);
+            return newName;
+        }
+
+        /// <summary>
+        /// 更新用户头像
+        /// </summary>
+        /// <param name="useName">用户名</param>
+        /// <param name="formFile">表单头像文件</param>
+        /// <returns></returns>
+        public async Task<string> UpdateUserAvatar(string userName, IFormFile formFile)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            return await UpdateUserAvatar(user.Id, formFile);
         }
 
         /// <summary>

@@ -24,6 +24,13 @@ namespace Yu.Service.WebAdmin.User
         Task<UserDetail> GetUserDetail(Guid userId);
 
         /// <summary>
+        /// 取得用户详细数据
+        /// </summary>
+        /// <param name="userName">用户名</param>
+        /// <returns>用户数据</returns>
+        Task<UserDetail> GetUserDetail(string userName);
+
+        /// <summary>
         /// 更新用户信息
         /// </summary>
         /// <param name="userDetail">用户信息</param>
@@ -40,7 +47,15 @@ namespace Yu.Service.WebAdmin.User
         /// <param name="userId">用户ID</param>
         /// <param name="formFile">表单头像文件</param>
         /// <returns></returns>
-        Task UpdateUserAvatar(Guid userId, IFormFile formFile);
+        Task<string> UpdateUserAvatar(Guid userId, IFormFile formFile);
+
+        /// <summary>
+        /// 更新用户头像
+        /// </summary>
+        /// <param name="useName">用户名</param>
+        /// <param name="formFile">表单头像文件</param>
+        /// <returns></returns>
+        Task<string> UpdateUserAvatar(string userName, IFormFile formFile);
 
         /// <summary>
         /// 删除用户

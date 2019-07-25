@@ -11,6 +11,9 @@ namespace Yu.Model.WebAdmin.User.OutputModels
         // 用户名
         public virtual string UserName { get; set; }
 
+        // 用户姓名
+        public virtual string FullName { get; set; }
+
         // 邮箱
         public virtual string Email { get; set; }
 
@@ -28,6 +31,18 @@ namespace Yu.Model.WebAdmin.User.OutputModels
 
         // 性别
         public Gender Gender { get; set; }
+
+        // 出生日期
+        public string Birthday { get; set; }
+
+        // 籍贯
+        public string Native { get; set; }
+
+        // 毕业学校
+        public string Graduate { get; set; }
+
+        // 学历
+        public string Education { get; set; }
 
         // 用户角色
         public string[] Roles { get; set; }

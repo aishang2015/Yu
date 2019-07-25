@@ -41,7 +41,7 @@ export class HomeComponent implements OnInit {
   // 注销
   logout() {
     location.reload();
-    localStorage.clear();
+    this._localStorageService.clear();
   }
 
   setBreadCrumb(item1, item2) {

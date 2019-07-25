@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Yu.Model.WebAdmin.User.OutputModels
 {
@@ -20,6 +18,11 @@ namespace Yu.Model.WebAdmin.User.OutputModels
         /// 用户名
         /// </summary>
         public string UserName { get; set; }
+
+        /// <summary>
+        /// 姓名
+        /// </summary>
+        public string FullName { get; set; }
 
         /// <summary>
         /// 用户角色

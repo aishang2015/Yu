@@ -27,6 +27,7 @@
         <th nzAlign="center" nzWidth="75px">序号</th>
         <th nzAlign="center" nzWidth="75px">头像</th>
         <th nzAlign="center" nzWidth="150px">用户名</th>
+        <th nzAlign="center" nzWidth="150px">姓名</th>
         <th nzAlign="center" nzWidth="150px">用户角色</th>
         <th nzAlign="center" nzWidth="150px">所属组织</th>
         <th nzAlign="center">操作</th>
@@ -39,6 +40,7 @@
           <nz-avatar nzIcon="user" [nzSrc]="data.avatar | imageUri" nzSize="large"></nz-avatar>
         </td>
         <td nzAlign="center" nzWidth="150px">{{ data.userName }}</td>
+        <td nzAlign="center" nzWidth="150px">{{ data.fullName }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.roles }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.groupName }}</td>
         <td nzAlign="center">
@@ -81,6 +83,10 @@
     <div class="propDescribe">OPENID:</div>
     <div class="propValue">{{ userDetail.openId }}</div>
   </div>
+  <div nz-row class="mt-5">
+    <div class="propDescribe">微信昵称:</div>
+    <div class="propValue">{{ userDetail.nickName }}</div>
+  </div>
 
   <nz-divider nzText="角色信息"></nz-divider>
   <div nz-row class="mt-5">
@@ -96,12 +102,33 @@
 
   <nz-divider nzText="基本信息"></nz-divider>
   <div nz-row class="mt-5">
-    <div class="propDescribe">昵称:</div>
-    <div class="propValue">{{ userDetail.nickName }}</div>
+    <div class="propDescribe">姓名:</div>
+    <div class="propValue">{{ userDetail.fullName }}</div>
   </div>
+
   <div nz-row class="mt-5">
     <div class="propDescribe">性别:</div>
     <div class="propValue">{{ userDetail.gender | gender }}</div>
+  </div>
+
+  <div nz-row class="mt-5">
+    <div class="propDescribe">出生日期:</div>
+    <div class="propValue">{{ userDetail.birthday | date:'yyyy-MM-dd'  }}</div>
+  </div>
+
+  <div nz-row class="mt-5">
+    <div class="propDescribe">籍贯:</div>
+    <div class="propValue">{{ userDetail.native }}</div>
+  </div>
+
+  <div nz-row class="mt-5">
+    <div class="propDescribe">毕业院校:</div>
+    <div class="propValue">{{ userDetail.graduate }}</div>
+  </div>
+
+  <div nz-row class="mt-5">
+    <div class="propDescribe">学历:</div>
+    <div class="propValue">{{ userDetail.education }}</div>
   </div>
 
   <div class="mt-5" style="text-align: center">
@@ -120,7 +147,7 @@
       <nz-form-control [nzSpan]="12"
         [ngClass]="{'has-error': userName.invalid && (userName.dirty || userName.touched || isSubmit)}">
         <input nz-input autocomplete="off" type="text" name="userName" #userName="ngModel" style="color: black;"
-          [(ngModel)]="editUserDetail.userName" required appUserName [disabled]="editUserDetail.id"/>
+          [(ngModel)]="editUserDetail.userName" required appUserName [disabled]="editUserDetail.id" />
         <nz-form-explain
           *ngIf="userName.invalid && (userName.dirty || userName.touched|| isSubmit) && userName.errors.required">
           请输入用户名</nz-form-explain>
@@ -156,6 +183,14 @@
       </nz-form-control>
     </nz-form-item>
 
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">微信昵称</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input nz-input placeholder="请输入昵称" autocomplete="off" type="text" name="nickName"
+          [(ngModel)]="editUserDetail.nickName" />
+      </nz-form-control>
+    </nz-form-item>
+
     <nz-divider nzText="角色信息"></nz-divider>
 
     <nz-form-label [nzSpan]="5">用户角色</nz-form-label>
@@ -178,10 +213,10 @@
     <nz-divider nzText="基本信息"></nz-divider>
 
     <nz-form-item>
-      <nz-form-label [nzSpan]="5">昵称</nz-form-label>
+      <nz-form-label [nzSpan]="5">姓名</nz-form-label>
       <nz-form-control [nzSpan]="12">
-        <input nz-input placeholder="请输入昵称" autocomplete="off" type="text" name="nickName"
-          [(ngModel)]="editUserDetail.nickName" />
+        <input nz-input placeholder="请输入姓名" autocomplete="off" type="text" name="fullName"
+          [(ngModel)]="editUserDetail.fullName" />
       </nz-form-control>
     </nz-form-item>
 
@@ -195,9 +230,41 @@
     </nz-form-item>
 
     <nz-form-item>
+      <nz-form-label [nzSpan]="5">出生日期</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <nz-date-picker [(ngModel)]="editUserDetail.birthday" name="birthday"></nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">籍贯</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input nz-input placeholder="请输入籍贯" autocomplete="off" type="text" name="native"
+          [(ngModel)]="editUserDetail.native" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">毕业学校</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input nz-input placeholder="请输入毕业学校" autocomplete="off" type="text" name="graduate"
+          [(ngModel)]="editUserDetail.graduate" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">学历</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <input nz-input placeholder="请输入学历" autocomplete="off" type="text" name="education"
+          [(ngModel)]="editUserDetail.education" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
       <nz-form-control [nzSpan]="12" [nzOffset]="5">
         <button class="mr-5" nz-button nzType="primary" type="submit" [nzLoading]="isLoading">提交</button>
-        <button class="mr-5" nz-button nzType="primary" type="button" (click)="cancelEdit()" [nzLoading]="isLoading">取消</button>
+        <button class="mr-5" nz-button nzType="primary" type="button" (click)="cancelEdit()"
+          [nzLoading]="isLoading">取消</button>
       </nz-form-control>
     </nz-form-item>
 

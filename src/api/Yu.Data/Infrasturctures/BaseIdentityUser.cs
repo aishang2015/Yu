@@ -8,21 +8,36 @@ namespace Yu.Data.Infrasturctures
     {
         #region 认证字段
 
+        // 微信OpenId
         public string OpenId { get; set; }
+
+        // 微信昵称
+        public string NickName { get; set; }
 
         #endregion
 
-
         #region 用户信息字段
 
-        // 昵称
-        public string NickName { get; set; }
+        // 姓名
+        public string FullName { get; set; }
 
         // 头像
         public string Avatar { get; set; }
 
         // 性别
         public Gender Gender { get; set; }
+
+        // 出生日期
+        public DateTime? Birthday { get; set; }
+
+        // 籍贯
+        public string Native { get; set; }
+
+        // 毕业学校
+        public string Graduate { get; set; }
+
+        // 学历
+        public string Education { get; set; }
 
         #endregion
 

@@ -3,6 +3,7 @@ import { BaseService } from './base.service';
 import { LoginModel } from 'src/app/account/models/login-model';
 import { HttpClient } from '@angular/common/http';
 import { UriConstant } from '../constants/uri-constant';
+import { CommonConstant } from '../constants/common-constant';
 
 @Injectable({
   providedIn: 'root'
@@ -21,5 +22,11 @@ export class AccountService extends BaseService {
   // 取得验证码图片
   getCaptchaImage() {
     return this.http.get(UriConstant.CaptchaUri, { observe: 'response', responseType: 'blob' });
+  }
+
+  // 修改当前用户密码
+  changePwd(model) {
+    let uri = UriConstant.UserChangePwdUri;
+    return this.SafeRequest(this.http.post(uri, model));
   }
 }
