@@ -58,16 +58,25 @@ namespace Yu.Core.Jwt
                              var bearerToken = context.Request.Headers["Authorization"].ToString();
                              if (!bearerToken.Contains(token))
                              {
-                                 context.Fail("Unauthorized");
+                                 context.Fail("TokenNoExist");
                              }
                          }
                          else
                          {
                              // 没有缓存的token 认证失败
-                             context.Fail("Unauthorized");
+                             context.Fail("TokenNoExist");
                          }
                          return Task.CompletedTask;
-                     }
+                     },
+                    OnChallenge = context =>
+                    {
+                        if (context.AuthenticateFailure.Message == "TokenNoExist")
+                        {
+                            context.HandleResponse();
+                            context.Response.StatusCode = 470;
+                        }
+                        return Task.CompletedTask;
+                    }
 
                 };
             });

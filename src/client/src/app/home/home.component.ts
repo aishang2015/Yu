@@ -40,8 +40,8 @@ export class HomeComponent implements OnInit {
 
   // 注销
   logout() {
-    location.reload();
     this._localStorageService.clear();
+    this.router.navigate(['/login']);
   }
 
   setBreadCrumb(item1, item2) {

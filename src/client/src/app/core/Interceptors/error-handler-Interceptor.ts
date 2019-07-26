@@ -6,12 +6,14 @@ import { CommonConstant } from '../constants/common-constant';
 import { NzMessageService } from 'ng-zorro-antd';
 import { Injectable } from '@angular/core';
 import { LocalStorageService } from '../services/local-storage.service';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class ErrorHandlerInterceptor implements HttpInterceptor {
 
     constructor(private _messageService: NzMessageService,
-        private _localStorageService: LocalStorageService) { }
+        private _localStorageService: LocalStorageService,
+        private _router:Router) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(req).pipe(
@@ -21,6 +23,10 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
                     msg = '您没有操作权限！请重新登录或联系管理员。';
                 } else if (error.status == HttpCodeConstant.Code403) {
                     msg = '您没有该操作的权限！请联系管理员。';
+                }  else if (error.status == HttpCodeConstant.Code470) {
+                    msg = '您的登录状态已经被清除，可能长时间未操作或者有其他人登录此账号。';
+                    this._localStorageService.clear();
+                    this._router.navigate(['/login']);
                 } else if (error.status == HttpCodeConstant.Code404) {
                     msg = '没有找到资源！';
                 } else if (error.status == HttpCodeConstant.Code500) {

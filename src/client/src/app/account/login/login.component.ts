@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
 
   // 编辑模型
   loginModel: LoginModel = new LoginModel();
-  
+
   // 是否等待
   isLoading = false;
 
@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
 
             // jwt 保存localstorage
             this.messageService.success("登录成功！");
-            location.reload();
+            //location.reload();
 
             // 保存token
             this.localStorageService.setToken(result['token']);
@@ -65,6 +65,8 @@ export class LoginComponent implements OnInit {
             this.localStorageService.setIdentifycations(result['identifycations']);
             this.localStorageService.setRoutes(result['routes']);
             this.isLoading = false;
+            location.reload();
+            // setTimeout(() => this.router.navigate(['/dashboard']), 1000);
           },
           error => {
             this.refresh(); // 刷新验证码
