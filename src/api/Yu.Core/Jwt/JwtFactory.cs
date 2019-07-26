@@ -98,6 +98,12 @@ namespace Yu.Core.Jwt
         {
             _memoryCache.Set(key, token, 
                 new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_jwtOption.EffectiveTime) });
+        }     
+        
+        // 保存token到缓存
+        public void RemoveToken(string key)
+        {
+            _memoryCache.Remove(key);
         }
     }
 }

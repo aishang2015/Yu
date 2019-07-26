@@ -45,9 +45,7 @@ namespace Yu.Data.Infrasturctures
 
         public string Roles { get; set; }
 
-        public string GroupName { get; set; }
-
-        public Guid GroupId { get; set; }
+        public Guid? GroupId { get; set; }
 
         #endregion
     }

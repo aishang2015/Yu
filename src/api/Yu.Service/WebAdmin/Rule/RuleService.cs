@@ -222,9 +222,9 @@ namespace Yu.Service.WebAdmin.Rule
 
                              // 关联的数据规则
                              var ruleIds = claims.Where(c => c.Type == CustomClaimTypes.Rule).Select(c => c.Value);
-                             foreach (var group in _ruleGroupRepository.GetByWhereNoTracking(rg => ruleIds.Contains(rg.Id.ToString())).ToList())
+                             foreach (var ruleGroup in _ruleGroupRepository.GetByWhereNoTracking(rg => ruleIds.Contains(rg.Id.ToString())).ToList())
                              {
-                                 ruleGroups.Add(group.DbContext + '|' + group.Entity + '|' + GetExpressionStr(group.Id, user.UserName, user.GroupId.ToString()));
+                                 ruleGroups.Add(ruleGroup.DbContext + '|' + ruleGroup.Entity + '|' + GetExpressionStr(ruleGroup.Id, user.UserName, user.GroupId.ToString()));
                              }
                          }
 

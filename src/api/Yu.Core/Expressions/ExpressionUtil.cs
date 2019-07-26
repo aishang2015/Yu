@@ -144,10 +144,10 @@ namespace Yu.Core.Expressions
                     switch (combineType)
                     {
                         case ExpressionCombineType.And:
-                            lambda = Expression.Lambda(Expression.And(ex.Body, invokedExpr), lambda.Parameters);
+                            lambda = Expression.Lambda(Expression.And(ex.Body, invokedExpr), ex.Parameters);
                             break;
                         case ExpressionCombineType.Or:
-                            lambda = Expression.Lambda(Expression.Or(ex.Body, invokedExpr), lambda.Parameters);
+                            lambda = Expression.Lambda(Expression.Or(ex.Body, invokedExpr), ex.Parameters);
                             break;
                     }
                 }
@@ -311,10 +311,10 @@ namespace Yu.Core.Expressions
                     switch (combineType)
                     {
                         case ExpressionCombineType.And:
-                            lambda = Expression.Lambda(lambdaType, Expression.And(ex.Body, invokedExpr), lambda.Parameters);
+                            lambda = Expression.Lambda(lambdaType, Expression.And(ex.Body, invokedExpr), ex.Parameters);
                             break;
                         case ExpressionCombineType.Or:
-                            lambda = Expression.Lambda(lambdaType, Expression.Or(ex.Body, invokedExpr), lambda.Parameters);
+                            lambda = Expression.Lambda(lambdaType, Expression.Or(ex.Body, invokedExpr), ex.Parameters);
                             break;
                     }
                 }

@@ -20,5 +20,8 @@ namespace Yu.Core.Jwt
 
         // 保存token到缓存
         void StoreToken(string key, string token);
+
+        // 删除用户token
+        void RemoveToken(string key);
     }
 }

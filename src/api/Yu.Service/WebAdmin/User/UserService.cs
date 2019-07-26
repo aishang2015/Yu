@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Yu.Core.Constants;
 using Yu.Core.Expressions;
 using Yu.Core.FileManage;
+using Yu.Core.Jwt;
 using Yu.Data.Entities;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
@@ -29,16 +30,22 @@ namespace Yu.Service.WebAdmin.User
 
         private IFileStore _fileStore;
 
+        private readonly IJwtFactory _jwtFactory;
+
         private string _serverFileRootPath;
 
-        public UserService(UserManager<BaseIdentityUser> userManager,
+        public UserService(
+            UserManager<BaseIdentityUser> userManager,
             RoleManager<BaseIdentityRole> roleManager,
             IRepository<GroupEntity, Guid> groupRepository,
-            IFileStore fileStore, IConfiguration configuration)
+            IJwtFactory jwtFactory,
+            IFileStore fileStore,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _groupRepository = groupRepository;
+            _jwtFactory = jwtFactory;
             _fileStore = fileStore;
             _serverFileRootPath = configuration["AvatarFileOption:ServerFileStorePath"];
         }
@@ -91,6 +98,9 @@ namespace Yu.Service.WebAdmin.User
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
             await _userManager.DeleteAsync(user);
+
+            // 清除用户登录缓存，强制用户下线
+            _jwtFactory.RemoveToken(user.UserName);
         }
 
         /// <summary>
@@ -103,14 +113,20 @@ namespace Yu.Service.WebAdmin.User
             var user = await _userManager.FindByIdAsync(userId.ToString());
             var result = Mapper.Map<UserDetail>(user);
 
-            // 组织
+            // 组织id和名称
             var claims = await _userManager.GetClaimsAsync(user);
-            var groupid = claims.Where(c => c.Type == CustomClaimTypes.Group).Select(c => c.Value).FirstOrDefault();
+            var groupid = claims.FirstOrDefault(c => c.Type == CustomClaimTypes.Group)?.Value;
             result.GroupId = groupid;
+            if (!string.IsNullOrEmpty(groupid))
+            {
+                result.GroupName = _groupRepository.GetById(Guid.Parse(groupid))?.GroupName;
+            }
 
-            // 角色
+            // 角色名称
             var roles = await _userManager.GetRolesAsync(user);
             result.Roles = roles.ToArray();
+
+            // 返回结果
             return result;
         }
 
@@ -216,16 +232,6 @@ namespace Yu.Service.WebAdmin.User
             if (!string.IsNullOrEmpty(userDetail.GroupId))
             {
                 await _userManager.AddClaimAsync(user, new Claim(CustomClaimTypes.Group, userDetail.GroupId.ToString()));
-                var group = _groupRepository.GetById(Guid.Parse(userDetail.GroupId));
-                if (group == null)
-                {
-                    return false;
-                }
-                user.GroupName = group.GroupName;
-            }
-            else
-            {
-                user.GroupName = string.Empty;
             }
 
             // 先删除再添加角色
@@ -238,6 +244,9 @@ namespace Yu.Service.WebAdmin.User
 
             // 保存用户信息
             await _userManager.UpdateAsync(user);
+
+            // 清除用户登录缓存，强制用户下线
+            _jwtFactory.RemoveToken(user.UserName);
 
             return true;
         }
