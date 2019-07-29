@@ -12,6 +12,7 @@ using Yu.Core.Extensions;
 using Yu.Core.FileManage;
 using Yu.Core.Jwt;
 using Yu.Core.Mvc;
+using Yu.Core.Quartznet;
 using Yu.Core.Swagger;
 using Yu.Core.Validators;
 using Yu.Data.Infrasturctures;
@@ -63,6 +64,8 @@ namespace Yu.Api
             services.AddSwaggerConfiguration(); // 配置swagger
 
             services.AddFileManage(); // 静态文件操作类
+
+            services.AddQuartzNet(); // 添加作业调度
         }
 
         // 构建管道
