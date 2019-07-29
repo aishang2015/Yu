@@ -34,10 +34,10 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         /// <returns></returns>
         [HttpGet("userOutline")]
         [Description("取得用户概要情报")]
-        public IActionResult GetUserOutlines([FromQuery]PagedQuery query)
+        public async Task<IActionResult> GetUserOutlines([FromQuery]PagedQuery query)
         {
             // 取得数据            
-            var result = _userService.GetUserOutlines(query.PageIndex, query.PageSize, query.SearchText);
+            var result = await _userService.GetUserOutlinesAsync(query.PageIndex, query.PageSize, query.SearchText);
             return Ok(result);
         }
 
@@ -50,7 +50,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("取得用户数据")]
         public async Task<IActionResult> GetUserDetail([FromQuery]IdQuery query)
         {
-            var user = await _userService.GetUserDetail(query.Id);
+            var user = await _userService.GetUserDetailAsync(query.Id);
             return Ok(user);
         }
 
@@ -58,7 +58,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("添加新用户")]
         public async Task<IActionResult> AddNewUser([FromBody]UserDetail userDetail)
         {
-            var result = await _userService.AddUser(userDetail);
+            var result = await _userService.AddUserAsync(userDetail);
             if (result)
             {
                 return Ok();
@@ -79,7 +79,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("更新用户数据")]
         public async Task<IActionResult> UpdateUserDetail([FromBody]UserDetail query)
         {
-            var result = await _userService.UpdateUserDetail(query);
+            var result = await _userService.UpdateUserDetailAsync(query);
             if (result)
             {
                 return Ok();
@@ -100,7 +100,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("删除用户数据")]
         public async Task<IActionResult> DeleteUser([FromQuery]IdQuery query)
         {
-            await _userService.DeleteUser(query.Id);
+            await _userService.DeleteUserAsync(query.Id);
             return Ok();
         }
 
@@ -112,7 +112,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("设置用户头像")]
         public async Task<IActionResult> SetUserAvatar([FromQuery]Guid userId, [FromForm]IFormFile file)
         {
-            await _userService.UpdateUserAvatar(userId, Request.Form.Files[0]);
+            await _userService.UpdateUserAvatarAsync(userId, Request.Form.Files[0]);
             return Ok();
         }
 

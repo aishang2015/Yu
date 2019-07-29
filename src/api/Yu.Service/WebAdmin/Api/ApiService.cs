@@ -27,7 +27,7 @@ namespace Yu.Service.WebAdmin.Api
         /// 添加api数据
         /// </summary>
         /// <param name="api">api数据</param>
-        public async Task AddApi(ApiEntity api)
+        public async Task AddApiAsync(ApiEntity api)
         {
             await _apiRepository.InsertAsync(api);
             await _unitOfWork.CommitAsync();
@@ -37,7 +37,7 @@ namespace Yu.Service.WebAdmin.Api
         /// 删除api数据
         /// </summary>
         /// <param name="apiId">api的id</param>
-        public async Task DeleteApi(Guid apiId)
+        public async Task DeleteApiAsync(Guid apiId)
         {
             _apiRepository.DeleteRange(api => api.Id == apiId);
             await _unitOfWork.CommitAsync();
@@ -68,7 +68,7 @@ namespace Yu.Service.WebAdmin.Api
         /// 更新api数据
         /// </summary>
         /// <param name="api">api数据</param>
-        public async Task UpdateApi(ApiEntity api)
+        public async Task UpdateApiAsync(ApiEntity api)
         {
             _apiRepository.Update(api);
             await _unitOfWork.CommitAsync();

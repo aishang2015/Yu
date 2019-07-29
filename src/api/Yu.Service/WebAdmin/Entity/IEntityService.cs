@@ -19,16 +19,16 @@ namespace Yu.Service.WebAdmin.Entity
         /// <summary>
         /// 更新实体
         /// </summary>
-        Task UpdateEntity(EntityE entity);
+        Task UpdateEntityAsync(EntityE entity);
 
         /// <summary>
         /// 插入实体
         /// </summary>
-        Task InsertEntity(EntityE entity);
+        Task InsertEntityAsync(EntityE entity);
 
         /// <summary>
         /// 删除实体
         /// </summary>
-        Task DeleteEntity(Guid entityId);
+        Task DeleteEntityAsync(Guid entityId);
     }
 }

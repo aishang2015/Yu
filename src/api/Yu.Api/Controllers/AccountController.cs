@@ -17,6 +17,7 @@ using Yu.Model.Message;
 using Yu.Service.Account;
 using Yu.Service.WebAdmin.Role;
 using Yu.Service.WebAdmin.Rule;
+using Yu.Service.WebAdmin.User;
 
 namespace Yu.Api.Controllers
 {
@@ -27,6 +28,8 @@ namespace Yu.Api.Controllers
 
         private readonly IAccountService _accountService;
 
+        private readonly IUserService _userService;
+
         private readonly IRoleService _roleService;
 
         private readonly IRuleService _ruleService;
@@ -35,12 +38,14 @@ namespace Yu.Api.Controllers
 
         public AccountController(IJwtFactory jwtFactory,
             IAccountService accountService,
+            IUserService userService,
             IRoleService roleService,
             IRuleService ruleService,
             IMemoryCache memoryCache)
         {
             _jwtFactory = jwtFactory;
             _accountService = accountService;
+            _userService = userService;
             _roleService = roleService;
             _ruleService = ruleService;
             _memoryCache = memoryCache;
@@ -77,7 +82,7 @@ namespace Yu.Api.Controllers
             _memoryCache.Remove(model.CaptchaCodeId);
 
             // 检查用户名密码
-            var user = await _accountService.FindUser(model.UserName, model.Password);
+            var user = await _accountService.FindUserAsync(model.UserName, model.Password);
             if (user == null)
             {
                 ModelState.AddModelError("UserName,Password", ErrorMessages.Account_E006);
@@ -110,7 +115,7 @@ namespace Yu.Api.Controllers
 
             // 根据token保存的用户名取得用户,更新用户数据
             var userName = claimPrincipal.GetUserName();
-            var user = await _accountService.FindUser(userName);
+            var user = await _accountService.FindUserAsync(userName);
 
             var loginResult = await GetLoginResult(user);
             return Ok(loginResult);
@@ -125,7 +130,7 @@ namespace Yu.Api.Controllers
         public async Task<IActionResult> ChangePwd([FromBody]ChangePwdModel model)
         {
             var userName = User.GetUserName();
-            var result = await _accountService.ChangePassword(userName, model.OldPassword, model.NewPassword);
+            var result = await _accountService.ChangePasswordAsync(userName, model.OldPassword, model.NewPassword);
             if (!result)
             {
                 ModelState.AddModelError("Password", ErrorMessages.Account_E008);
@@ -141,10 +146,14 @@ namespace Yu.Api.Controllers
         {
             // 根据用户的角色获取用户页面侧的权限内容
             List<string> identities = new List<string> { }, routes = new List<string> { };
-            foreach (var role in user.Roles.Split(',', StringSplitOptions.RemoveEmptyEntries))
+
+            // 用户的角色
+            var userRoles = await _userService.GetUserRolesAsync(user);
+
+            foreach (var role in userRoles)
             {
                 // 更新并取得用户角色的权限
-                var permissions = await _roleService.UpdateRolePermissionCache(role);
+                var permissions = await _roleService.UpdateRolePermissionCacheAsync(role);
 
                 // 整合页面需要的权限数据
                 permissions.TryGetValue(PermissionTypes.Identities, out string identityStr);
@@ -153,21 +162,17 @@ namespace Yu.Api.Controllers
                 routes.AddRange(routeStr.Split(CommonConstants.StringConnectChar, StringSplitOptions.RemoveEmptyEntries));
             }
 
-            // 取得用户的组织
-            var group = await _accountService.FindUserGroup(user);
-
             // 生成JwtToken
             var token = _jwtFactory.GenerateJwtToken(new List<(string, string)>{
                 (CustomClaimTypes.UserName,user.UserName),
-                (CustomClaimTypes.Role,user.Roles),
-                (CustomClaimTypes.Group,group==null?string.Empty:group.Id.ToString()),
+                (CustomClaimTypes.Role, string.Join(',',userRoles)),
             });
 
             // 保存jwtToken到缓存
             _jwtFactory.StoreToken(user.UserName, token);
 
             // 用户所有的数据权限缓存化
-            await _ruleService.UpdateRulePermissionCache(user);
+            await _ruleService.UpdateRulePermissionCacheAsync(user, userRoles);
 
             // 返回结果
             return new LoginResult

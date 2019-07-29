@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
 using Yu.Model.WebAdmin.Rule.OutputModels;
-using RuleEntity = Yu.Data.Entities.Right.Rule;
 
 namespace Yu.Service.WebAdmin.Rule
 {
@@ -17,14 +15,14 @@ namespace Yu.Service.WebAdmin.Rule
         /// <param name="rules">规则</param>
         /// <param name="ruleConditions">条件</param>
         /// <param name="ruleGroup">规则组</param>
-        Task<bool> AddOrUpdateRule(IEnumerable<RuleEntityResult> rules, IEnumerable<RuleConditionResult> ruleConditions, RuleGroup ruleGroup);
+        Task<bool> AddOrUpdateRuleAsync(IEnumerable<RuleEntityResult> rules, IEnumerable<RuleConditionResult> ruleConditions, RuleGroup ruleGroup);
 
         /// <summary>
         /// 删除规则组
         /// </summary>
         /// <param name="ruleGroupId">规则组ID</param>
         /// <returns></returns>
-        Task DeleteRuleGroup(Guid ruleGroupId);
+        Task DeleteRuleGroupAsync(Guid ruleGroupId);
 
         /// <summary>
         /// 取得所有规则组
@@ -42,6 +40,6 @@ namespace Yu.Service.WebAdmin.Rule
         /// <summary>
         /// 更新角色拥有的所有权限的缓存
         /// </summary>
-        Task UpdateRulePermissionCache(BaseIdentityUser user);
+        Task UpdateRulePermissionCacheAsync(BaseIdentityUser user, List<string> userRoles);
     }
 }

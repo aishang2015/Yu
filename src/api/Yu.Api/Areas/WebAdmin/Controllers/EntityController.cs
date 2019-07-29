@@ -39,7 +39,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [HttpPost("entity")]
         public async Task<IActionResult> AddEntity([FromBody]Entity entity)
         {
-            await _entityService.InsertEntity(entity);
+            await _entityService.InsertEntityAsync(entity);
             return Ok();
 
         }
@@ -48,7 +48,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [HttpPut("entity")]
         public async Task<IActionResult> UpdateEntity([FromBody]Entity entity)
         {
-            await _entityService.UpdateEntity(entity);
+            await _entityService.UpdateEntityAsync(entity);
             return Ok();
 
         }
@@ -57,7 +57,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [HttpDelete("entity")]
         public async Task<IActionResult> DeleteEntity([FromQuery]IdQuery query)
         {
-            await _entityService.DeleteEntity(query.Id);
+            await _entityService.DeleteEntityAsync(query.Id);
             return Ok();
         }
     }

@@ -40,7 +40,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("取得角色详细数据")]
         public async Task<IActionResult> GetRoleDetail([FromQuery]IdQuery query)
         {
-            var data = await _roleService.GetRole(query.Id);
+            var data = await _roleService.GetRoleAsync(query.Id);
             return Ok(data);
         }
 
@@ -48,7 +48,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("删除角色数据")]
         public async Task<IActionResult> DeleteRole([FromQuery]IdQuery query)
         {
-            await _roleService.DeleteRole(query.Id);
+            await _roleService.DeleteRoleAsync(query.Id);
             return Ok();
         }
 
@@ -56,7 +56,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("创建角色")]
         public async Task<IActionResult> AddRole([FromBody]RoleDetail role)
         {
-            var result = await _roleService.AddRole(role);
+            var result = await _roleService.AddRoleAsync(role);
             if (result)
             {
                 return Ok();
@@ -72,7 +72,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("更新角色")]
         public async Task<IActionResult> UpdateRole([FromBody]RoleDetail role)
         {
-            await _roleService.UpdateRole(role);
+            await _roleService.UpdateRoleAsync(role);
             return Ok();
         }
     }

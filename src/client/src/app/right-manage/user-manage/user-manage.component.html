@@ -97,7 +97,7 @@
   <nz-divider nzText="组织信息"></nz-divider>
   <div nz-row class="mt-5">
     <div class="propDescribe">所属组织:</div>
-    <div class="propValue">{{ userDetail.groupName }}</div>
+    <div class="propValue">{{ userDetail.userGroupName }}</div>
   </div>
 
   <nz-divider nzText="基本信息"></nz-divider>
@@ -206,7 +206,7 @@
     <nz-form-label [nzSpan]="5">组织名称</nz-form-label>
     <nz-form-control [nzSpan]="12">
       <nz-tree-select [nzNodes]="groupNodes" nzShowSearch name="groupId" nzPlaceHolder="请选择所属组织"
-        [(ngModel)]="editUserDetail.groupId">
+        [(ngModel)]="editUserDetail.userGroupId">
       </nz-tree-select>
     </nz-form-control>
 

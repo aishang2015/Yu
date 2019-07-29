@@ -37,7 +37,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("删除组织")]
         public async Task<IActionResult> DeleteGroup([FromQuery]IdQuery idQuery)
         {
-            await _groupService.DeleteGroup(idQuery.Id);
+            await _groupService.DeleteGroupAsync(idQuery.Id);
             return Ok();
         }
 
@@ -48,7 +48,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("创建组织")]
         public async Task<IActionResult> AddGroup(GroupDetail groupDetail)
         {
-            await _groupService.CreateGroup(groupDetail);
+            await _groupService.CreateGroupAsync(groupDetail);
             return Ok();
         }
 
@@ -59,7 +59,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("更新组织")]
         public async Task<IActionResult> UpdateGroup(GroupDetail groupDetail)
         {
-            await _groupService.UpdateGroup(groupDetail);
+            await _groupService.UpdateGroupAsync(groupDetail);
             return Ok();
         }
     }

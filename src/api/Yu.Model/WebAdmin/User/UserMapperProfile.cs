@@ -11,11 +11,9 @@ namespace Yu.Model.WebAdmin.User
         public UserMapperProfile()
         {
             AllowNullCollections = true;
-            CreateMap<BaseIdentityUser, UserOutline>()
-                .ForMember(uo => uo.Roles, ex => ex.MapFrom(biu => biu.Roles.Split(',', StringSplitOptions.None).ToArray()));
+            CreateMap<BaseIdentityUser, UserOutline>();
             CreateMap<BaseIdentityUser, UserDetail>();
-            CreateMap<UserDetail, BaseIdentityUser>()
-                .ForMember(biu => biu.Roles, ex => ex.MapFrom(ud => string.Join(',', ud.Roles)));
+            CreateMap<UserDetail, BaseIdentityUser>();
         }
     }
 }

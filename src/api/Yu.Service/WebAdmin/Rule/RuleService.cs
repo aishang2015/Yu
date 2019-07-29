@@ -32,8 +32,6 @@ namespace Yu.Service.WebAdmin.Rule
 
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
-        private readonly UserManager<BaseIdentityUser> _userManager;
-
         private readonly RoleManager<BaseIdentityRole> _roleManager;
 
         private readonly IMemoryCache _memoryCache;
@@ -46,7 +44,6 @@ namespace Yu.Service.WebAdmin.Rule
             IRepository<RuleGroup, Guid> ruleGroupRepository,
             IRepository<GroupTree, Guid> groupTreeRepository,
             IUnitOfWork<BaseIdentityDbContext> unitOfWork,
-            UserManager<BaseIdentityUser> userManager,
             RoleManager<BaseIdentityRole> roleManager,
             IMemoryCache memoryCache,
             IHttpContextAccessor httpContextAccessor)
@@ -56,7 +53,6 @@ namespace Yu.Service.WebAdmin.Rule
             _ruleGroupRepository = ruleGroupRepository;
             _groupTreeRepository = groupTreeRepository;
             _unitOfWork = unitOfWork;
-            _userManager = userManager;
             _roleManager = roleManager;
             _memoryCache = memoryCache;
             _httpContextAccessor = httpContextAccessor;
@@ -68,7 +64,7 @@ namespace Yu.Service.WebAdmin.Rule
         /// <param name="rules">规则</param>
         /// <param name="ruleConditions">条件</param>
         /// <param name="ruleGroup">规则组</param>
-        public async Task<bool> AddOrUpdateRule(IEnumerable<RuleEntityResult> rules, IEnumerable<RuleConditionResult> ruleConditions, RuleGroup ruleGroup)
+        public async Task<bool> AddOrUpdateRuleAsync(IEnumerable<RuleEntityResult> rules, IEnumerable<RuleConditionResult> ruleConditions, RuleGroup ruleGroup)
         {
             // 因为有动态参数的存在,表达式暂时不持久化到数据库,暂时删除group的lambda字段
             //// 生成表达式保存到数据库
@@ -159,7 +155,7 @@ namespace Yu.Service.WebAdmin.Rule
         /// 删除规则组
         /// </summary>
         /// <param name="ruleGroupId">规则组ID</param>
-        public async Task DeleteRuleGroup(Guid ruleGroupId)
+        public async Task DeleteRuleGroupAsync(Guid ruleGroupId)
         {
             _ruleGroupRepository.DeleteRange(r => r.Id == ruleGroupId);
             _ruleRepository.DeleteRange(r => r.RuleGroupId == ruleGroupId);
@@ -196,15 +192,13 @@ namespace Yu.Service.WebAdmin.Rule
         /// <summary>
         /// 更新角色拥有的所有数据权限的缓存
         /// </summary>
-        public async Task UpdateRulePermissionCache(BaseIdentityUser user)
+        public async Task UpdateRulePermissionCacheAsync(BaseIdentityUser user, List<string> userRoles)
         {
-            var roles = user.Roles.Split(',', StringSplitOptions.RemoveEmptyEntries);
-
             // 清除此用户的缓存
             _memoryCache.Remove(CommonConstants.RuleMemoryCacheKey + user.UserName);
 
             // 系统管理员可以访问任何数据
-            if (roles.Contains(CommonConstants.SystemManagerRole))
+            if (userRoles.Contains(CommonConstants.SystemManagerRole))
             {
                 _memoryCache.GetOrCreate(CommonConstants.RuleMemoryCacheKey + user.UserName, entity => new List<string>());
             }
@@ -214,7 +208,7 @@ namespace Yu.Service.WebAdmin.Rule
                      async entity =>
                      {
                          var ruleGroups = new List<string> { };
-                         foreach (var roleName in roles)
+                         foreach (var roleName in userRoles)
                          {
                              // 查找用户所有的规则
                              var role = await _roleManager.FindByNameAsync(roleName);
@@ -224,7 +218,7 @@ namespace Yu.Service.WebAdmin.Rule
                              var ruleIds = claims.Where(c => c.Type == CustomClaimTypes.Rule).Select(c => c.Value);
                              foreach (var ruleGroup in _ruleGroupRepository.GetByWhereNoTracking(rg => ruleIds.Contains(rg.Id.ToString())).ToList())
                              {
-                                 ruleGroups.Add(ruleGroup.DbContext + '|' + ruleGroup.Entity + '|' + GetExpressionStr(ruleGroup.Id, user.UserName, user.GroupId.ToString()));
+                                 ruleGroups.Add(ruleGroup.DbContext + '|' + ruleGroup.Entity + '|' + GetExpressionStr(ruleGroup.Id, user.UserName, user.UserGroupId));
                              }
                          }
 
@@ -301,14 +295,17 @@ namespace Yu.Service.WebAdmin.Rule
                 }
                 if ("${UserGroupId}".Equals(condition.Value))
                 {
-                    var groupId = Guid.Parse(keyValuePairs.GetValueOrDefault("GroupId"));
-                    if (groupId != new Guid())
+                    var groupId = keyValuePairs.GetValueOrDefault("GroupId");
+                    if (!string.IsNullOrEmpty(groupId))
                     {
-                        var groupTrees = _groupTreeRepository.GetByWhereNoTracking(gt => gt.Ancestor == groupId);
-                        var treenodes = groupTrees.Select(g => g.Descendant.ToString()).ToList();
-                        expressionGroup.TupleList.Add((condition.Field, treenodes, ExpressionType.ListContain));
+                        if (Guid.TryParse(groupId, out Guid gid))
+                        {
+                            var groupTrees = _groupTreeRepository.GetByWhereNoTracking(gt => gt.Ancestor == gid);
+                            var treenodes = groupTrees.Select(g => g.Descendant.ToString()).ToList();
+                            expressionGroup.TupleList.Add((condition.Field, treenodes, ExpressionType.ListContain));
+                        }
+                        continue;
                     }
-                    continue;
                 }
                 expressionGroup.TupleList.Add((condition.Field, condition.Value, (ExpressionType)int.Parse(condition.OperateType)));
             }

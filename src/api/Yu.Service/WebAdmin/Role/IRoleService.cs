@@ -26,37 +26,37 @@ namespace Yu.Service.WebAdmin.Role
         /// 添加角色
         /// </summary>
         /// <param name="role">角色</param>
-        Task<bool> AddRole(RoleDetail role);
+        Task<bool> AddRoleAsync(RoleDetail role);
 
         /// <summary>
         /// 取得角色
         /// </summary>
         /// <param name="id">角色id</param>
-        Task<RoleDetail> GetRole(Guid id);
+        Task<RoleDetail> GetRoleAsync(Guid id);
 
         /// <summary>
         /// 删除角色
         /// </summary>
         /// <param name="id">角色id</param>
-        Task DeleteRole(Guid id);
+        Task DeleteRoleAsync(Guid id);
 
         /// <summary>
         /// 更新角色
         /// </summary>
         /// <param name="role">角色</param>
-        Task UpdateRole(RoleDetail role);
+        Task UpdateRoleAsync(RoleDetail role);
 
 
         /// <summary>
         /// 取得角色拥有的所有权限
         /// </summary>
         /// <param name="roleName">角色名称</param>
-        Task<Dictionary<string, string>> GetRolePermission(string roleName);
+        Task<Dictionary<string, string>> GetRolePermissionAsync(string roleName);
 
         /// <summary>
         /// 更新角色拥有的所有权限的缓存
         /// </summary>
         /// <param name="roleName">角色名称</param>
-        Task<Dictionary<string, string>> UpdateRolePermissionCache(string roleName);
+        Task<Dictionary<string, string>> UpdateRolePermissionCacheAsync(string roleName);
     }
 }

@@ -16,6 +16,7 @@ namespace Yu.Data.Infrasturctures
 
         #endregion
 
+        // todo 未来分表
         #region 用户信息字段
 
         // 姓名
@@ -41,11 +42,9 @@ namespace Yu.Data.Infrasturctures
 
         #endregion
 
-        #region 权限管理冗余字段
-
-        public string Roles { get; set; }
-
-        public Guid? GroupId { get; set; }
+        #region 权限管理模块字段
+        
+        public string UserGroupId { get; set; }
 
         #endregion
     }

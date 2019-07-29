@@ -164,7 +164,6 @@ namespace Yu.Data.Infrasturctures
                 {
                     UserName = $"admin{i}",
                     NormalizedUserName = $"ADMIN{i}",
-                    Roles = "系统管理员"
                 };
                 userManager.CreateAsync(user, CommonConstants.Password).Wait();
                 userManager.AddToRoleAsync(user, "系统管理员").Wait();

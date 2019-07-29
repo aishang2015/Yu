@@ -28,7 +28,7 @@ namespace Yu.Service.WebAdmin.Entity
         /// <summary>
         /// 删除实体
         /// </summary>
-        public async Task DeleteEntity(Guid entityId)
+        public async Task DeleteEntityAsync(Guid entityId)
         {
             _entityRepository.DeleteRange(e => e.Id == entityId);
             await _unitOfWork.CommitAsync();
@@ -70,7 +70,7 @@ namespace Yu.Service.WebAdmin.Entity
         /// <summary>
         /// 插入实体
         /// </summary>
-        public async Task InsertEntity(EntityData entity)
+        public async Task InsertEntityAsync(EntityData entity)
         {
             await _entityRepository.InsertAsync(entity);
             await _unitOfWork.CommitAsync();
@@ -79,7 +79,7 @@ namespace Yu.Service.WebAdmin.Entity
         /// <summary>
         /// 更新实体
         /// </summary>
-        public async Task UpdateEntity(EntityData entity)
+        public async Task UpdateEntityAsync(EntityData entity)
         {
             _entityRepository.Update(entity);
             await _unitOfWork.CommitAsync();

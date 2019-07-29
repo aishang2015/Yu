@@ -18,19 +18,19 @@ namespace Yu.Service.WebAdmin.Element
         /// 删除元素
         /// </summary>
         /// <param name="elementId">元素ID</param>
-        Task DeleteElement(Guid elementId);
+        Task DeleteElementAsync(Guid elementId);
 
         /// <summary>
         /// 创建新元素
         /// </summary>
         /// <param name="elementDetail">元素内容</param>
-        Task CreateElement(ElementDetail elementDetail);
+        Task CreateElementAsync(ElementDetail elementDetail);
 
         /// <summary>
         /// 更新元素
         /// </summary>
         /// <param name="elementDetail">元素内容</param>
-        Task UpdateElement(ElementDetail elementDetail);
+        Task UpdateElementAsync(ElementDetail elementDetail);
 
 
         /// <summary>

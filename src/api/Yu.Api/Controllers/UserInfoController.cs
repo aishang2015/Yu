@@ -37,7 +37,7 @@ namespace Yu.Api.Controllers
         public async Task<IActionResult> SetUserAvatar([FromForm]IFormFile file)
         {
             var userName = User.GetUserName();
-            var avatarUri = await _userService.UpdateUserAvatar(userName, Request.Form.Files[0]);
+            var avatarUri = await _userService.UpdateUserAvatarAsync(userName, Request.Form.Files[0]);
             return Ok(new { avatar = avatarUri });
         }
 
@@ -46,7 +46,7 @@ namespace Yu.Api.Controllers
         public async Task<IActionResult> GetUserDetail()
         {
             var userName = User.GetUserName();
-            var userDetail = await _userService.GetUserDetail(userName);
+            var userDetail = await _userService.GetUserDetailAsync(userName);
             return Ok(userDetail);
         }
 
@@ -58,7 +58,7 @@ namespace Yu.Api.Controllers
         public async Task<IActionResult> ChangePwd([FromBody]ChangePwdModel model)
         {
             var userName = User.GetUserName();
-            var result = await _accountService.ChangePassword(userName, model.OldPassword, model.NewPassword);
+            var result = await _accountService.ChangePasswordAsync(userName, model.OldPassword, model.NewPassword);
             if (!result)
             {
                 ModelState.AddModelError("Password", ErrorMessages.Account_E008);

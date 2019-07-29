@@ -29,7 +29,7 @@ namespace Yu.Service.Account
 
 
         // 根据旧密码修改新密码
-        public async Task<bool> ChangePassword(string userName, string oldPassword, string newPassword)
+        public async Task<bool> ChangePasswordAsync(string userName, string oldPassword, string newPassword)
         {
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
@@ -41,7 +41,7 @@ namespace Yu.Service.Account
         }
 
         // 验证用户密码
-        public async Task<BaseIdentityUser> FindUser(string userName, string password)
+        public async Task<BaseIdentityUser> FindUserAsync(string userName, string password)
         {
             // 查找用户
             var user = await _userManager.FindByNameAsync(userName);
@@ -67,7 +67,7 @@ namespace Yu.Service.Account
         /// </summary>
         /// <param name="userName">用户名</param>
         /// <returns></returns>
-        public Task<BaseIdentityUser> FindUser(string userName)
+        public Task<BaseIdentityUser> FindUserAsync(string userName)
         {
             // 查找用户
             var user = _userManager.FindByNameAsync(userName);
@@ -82,28 +82,11 @@ namespace Yu.Service.Account
         }
 
         /// <summary>
-        /// 取得用户所在组织
-        /// </summary>
-        /// <param name="userId">用户id</param>
-        /// <returns>组织id</returns>
-        public async Task<Group> FindUserGroup(BaseIdentityUser user)
-        {
-            var userclaims = await _userManager.GetClaimsAsync(user);
-            var groupClaim = userclaims.Where(c => c.Type == CustomClaimTypes.Group).FirstOrDefault();
-            if (groupClaim != null)
-            {
-                var group = _groupRepository.GetById(Guid.Parse(groupClaim.Value));
-                return group;
-            }
-            return null;
-        }
-
-        /// <summary>
         /// 查找用户的角色
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<string> FindUserRole(BaseIdentityUser user)
+        public async Task<string> FindUserRoleAsync(BaseIdentityUser user)
         {
             var roles = await _userManager.GetRolesAsync(user);
             return string.Join(',', roles);
@@ -115,7 +98,7 @@ namespace Yu.Service.Account
         /// <param name="userName">用户名</param>
         /// <param name="phoneNumber">电话号码</param>
         /// <returns></returns>
-        public async Task<bool> VerifyPhoneNumber(string userName, string phoneNumber)
+        public async Task<bool> VerifyPhoneNumberAsync(string userName, string phoneNumber)
         {
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
@@ -135,7 +118,7 @@ namespace Yu.Service.Account
         /// </summary>
         /// <param name="userName">用户名</param>
         /// <param name="code">验证码</param>
-        public async Task<bool> VerifyPhoneNumber(string userName, string phoneNumber, string code)
+        public async Task<bool> VerifyPhoneNumberAsync(string userName, string phoneNumber, string code)
         {
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)

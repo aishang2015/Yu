@@ -60,7 +60,7 @@ namespace Yu.Service.WebAdmin.Element
         /// 创建新元素
         /// </summary>
         /// <param name="elementDetail">元素内容</param>
-        public async Task CreateElement(ElementDetail elementDetail)
+        public async Task CreateElementAsync(ElementDetail elementDetail)
         {
             var ele = await _elementRepository.InsertAsync(Mapper.Map<Ele>(elementDetail));
 
@@ -106,7 +106,7 @@ namespace Yu.Service.WebAdmin.Element
         /// 删除元素
         /// </summary>
         /// <param name="elementId">元素ID</param>
-        public async Task DeleteElement(Guid elementId)
+        public async Task DeleteElementAsync(Guid elementId)
         {
             var eleIds = _elementTreeRepository.GetByWhere(et => et.Ancestor == elementId).Select(et => et.Descendant);
             _elementRepository.DeleteRange(e => eleIds.Contains(e.Id));
@@ -150,7 +150,7 @@ namespace Yu.Service.WebAdmin.Element
         /// 更新元素
         /// </summary>
         /// <param name="elementDetail">元素内容</param>
-        public async Task UpdateElement(ElementDetail elementDetail)
+        public async Task UpdateElementAsync(ElementDetail elementDetail)
         {
             _elementRepository.Update(Mapper.Map<Ele>(elementDetail));
 

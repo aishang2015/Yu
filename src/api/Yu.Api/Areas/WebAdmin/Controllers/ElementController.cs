@@ -52,7 +52,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _elementService.CreateElement(elementDetail);
+            await _elementService.CreateElementAsync(elementDetail);
             return Ok();
         }
 
@@ -63,7 +63,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [HttpDelete("element")]
         public async Task<IActionResult> DeleteElement([FromQuery]IdQuery elementQuery)
         {
-            await _elementService.DeleteElement(elementQuery.Id);
+            await _elementService.DeleteElementAsync(elementQuery.Id);
             return Ok();
         }
 
@@ -83,7 +83,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _elementService.UpdateElement(elementDetail);
+            await _elementService.UpdateElementAsync(elementDetail);
             return Ok();
         }
     }

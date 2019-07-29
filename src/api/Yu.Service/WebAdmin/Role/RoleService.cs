@@ -53,7 +53,7 @@ namespace Yu.Service.WebAdmin.Role
         /// 添加角色
         /// </summary>
         /// <param name="role">角色</param>
-        public async Task<bool> AddRole(RoleDetail role)
+        public async Task<bool> AddRoleAsync(RoleDetail role)
         {
             var identityRole = new BaseIdentityRole
             {
@@ -110,7 +110,7 @@ namespace Yu.Service.WebAdmin.Role
         /// 删除角色
         /// </summary>
         /// <param name="id">角色id</param>
-        public async Task DeleteRole(Guid id)
+        public async Task DeleteRoleAsync(Guid id)
         {
             var role = await _roleManager.FindByIdAsync(id.ToString());
             var claims = await _roleManager.GetClaimsAsync(role);
@@ -168,7 +168,7 @@ namespace Yu.Service.WebAdmin.Role
         /// 取得角色
         /// </summary>
         /// <param name="id">角色id</param>
-        public async Task<RoleDetail> GetRole(Guid id)
+        public async Task<RoleDetail> GetRoleAsync(Guid id)
         {
             var role = await _roleManager.FindByIdAsync(id.ToString());
             var roleDetail = Mapper.Map<RoleDetail>(role);
@@ -182,7 +182,7 @@ namespace Yu.Service.WebAdmin.Role
         /// 更新角色
         /// </summary>
         /// <param name="role">角色</param>
-        public async Task UpdateRole(RoleDetail role)
+        public async Task UpdateRoleAsync(RoleDetail role)
         {
             // 更新角色
             var identityRole = await _roleManager.FindByIdAsync(role.Id.ToString());
@@ -202,12 +202,12 @@ namespace Yu.Service.WebAdmin.Role
             elements = elements.Distinct().ToList();
 
             // 更新声明
-            await UpdateRoleClaim(identityRole, elements.ToArray(), CustomClaimTypes.Element);
-            await UpdateRoleClaim(identityRole, role.Elements.ToArray(), CustomClaimTypes.DisPlayElement);
-            await UpdateRoleClaim(identityRole, role.DataRules, CustomClaimTypes.Rule);
+            await UpdateRoleClaimAsync(identityRole, elements.ToArray(), CustomClaimTypes.Element);
+            await UpdateRoleClaimAsync(identityRole, role.Elements.ToArray(), CustomClaimTypes.DisPlayElement);
+            await UpdateRoleClaimAsync(identityRole, role.DataRules, CustomClaimTypes.Rule);
 
             // 更新缓存
-            await UpdateRolePermissionCache(identityRole.Name);
+            await UpdateRolePermissionCacheAsync(identityRole.Name);
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace Yu.Service.WebAdmin.Role
         /// <param name="claimValues"></param>
         /// <param name="claimType"></param>
         /// <returns></returns>
-        private async Task UpdateRoleClaim(BaseIdentityRole identityRole, string[] claimValues, string claimType)
+        private async Task UpdateRoleClaimAsync(BaseIdentityRole identityRole, string[] claimValues, string claimType)
         {
             // 取得全部声明
             var claims = await _roleManager.GetClaimsAsync(identityRole);
@@ -247,7 +247,7 @@ namespace Yu.Service.WebAdmin.Role
         /// 取得角色拥有的所有权限
         /// </summary>
         /// <param name="roleName">角色名称</param>
-        public async Task<Dictionary<string, string>> GetRolePermission(string roleName)
+        public async Task<Dictionary<string, string>> GetRolePermissionAsync(string roleName)
         {
             if (!CommonConstants.SystemManagerRole.Equals(roleName))
             {
@@ -320,10 +320,10 @@ namespace Yu.Service.WebAdmin.Role
         /// 更新角色拥有的所有权限的缓存
         /// </summary>
         /// <param name="roleName">角色名称</param>
-        public async Task<Dictionary<string, string>> UpdateRolePermissionCache(string roleName)
+        public async Task<Dictionary<string, string>> UpdateRolePermissionCacheAsync(string roleName)
         {
             _memoryCache.Remove(CommonConstants.RoleMemoryCacheKey + roleName);
-            return await GetRolePermission(roleName);
+            return await GetRolePermissionAsync(roleName);
         }
     }
 }

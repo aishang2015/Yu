@@ -23,19 +23,19 @@ namespace Yu.Service.WebAdmin.Api
         /// 删除api数据
         /// </summary>
         /// <param name="apiId">api的id</param>
-        Task DeleteApi(Guid apiId);
+        Task DeleteApiAsync(Guid apiId);
 
         /// <summary>
         /// 添加api数据
         /// </summary>
         /// <param name="api">api数据</param>
-        Task AddApi(Data.Entities.Right.Api api);
+        Task AddApiAsync(Data.Entities.Right.Api api);
 
         /// <summary>
         /// 更新api数据
         /// </summary>
         /// <param name="api">api数据</param>
-        Task UpdateApi(Data.Entities.Right.Api api);
+        Task UpdateApiAsync(Data.Entities.Right.Api api);
 
         /// <summary>
         /// 全部api

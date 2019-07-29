@@ -17,17 +17,17 @@ namespace Yu.Service.WebAdmin.Group
         /// <summary>
         /// 删除组织
         /// </summary>
-        Task DeleteGroup(Guid groupId);
+        Task DeleteGroupAsync(Guid groupId);
 
         /// <summary>
         /// 创建新组织
         /// </summary>
-        Task CreateGroup(GroupDetail groupDetail);
+        Task CreateGroupAsync(GroupDetail groupDetail);
 
         /// <summary>
         /// 更新组织
         /// </summary>
-        Task UpdateGroup(GroupDetail groupDetail);
+        Task UpdateGroupAsync(GroupDetail groupDetail);
 
         /// <summary>
         /// 获取后代子树Id

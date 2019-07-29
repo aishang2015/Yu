@@ -30,7 +30,7 @@ namespace Yu.Service.WebAdmin.Group
         /// <summary>
         /// 创建新组织
         /// </summary>
-        public async Task CreateGroup(GroupDetail groupDetail)
+        public async Task CreateGroupAsync(GroupDetail groupDetail)
         {
             // 插入组织
             var group = await _groupRepository.InsertAsync(Mapper.Map<G>(groupDetail));
@@ -65,7 +65,7 @@ namespace Yu.Service.WebAdmin.Group
         /// <summary>
         /// 删除组织
         /// </summary>
-        public async Task DeleteGroup(Guid groupId)
+        public async Task DeleteGroupAsync(Guid groupId)
         {
             // 检索自身和所有子元素的ID
             var groupIds = _groupTreeRepository.GetByWhereNoTracking(gt => gt.Ancestor == groupId).Select(gt => gt.Descendant);
@@ -85,10 +85,11 @@ namespace Yu.Service.WebAdmin.Group
         public IEnumerable<GroupResult> GetAllGroups()
         {
             var result = new List<GroupResult>();
-            var groups = _groupRepository.GetAll();
+            var groups = _groupRepository.GetAllNoTracking();
+            var groupTree = _groupTreeRepository.GetAllNoTracking().ToList();
             foreach (var group in groups)
             {
-                var treeNode = _groupTreeRepository.GetByWhere(gt => gt.Descendant == group.Id && gt.Length == 1).FirstOrDefault();
+                var treeNode = groupTree.Where(gt => gt.Descendant == group.Id && gt.Length == 1).FirstOrDefault();
                 result.Add(new GroupResult
                 {
                     Id = group.Id.ToString(),
@@ -113,7 +114,7 @@ namespace Yu.Service.WebAdmin.Group
         /// <summary>
         /// 更新组织
         /// </summary>
-        public async Task UpdateGroup(GroupDetail groupDetail)
+        public async Task UpdateGroupAsync(GroupDetail groupDetail)
         {
             // 更新
             _groupRepository.Update(Mapper.Map<G>(groupDetail));

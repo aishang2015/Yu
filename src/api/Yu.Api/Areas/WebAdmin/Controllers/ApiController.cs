@@ -47,7 +47,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("添加API数据")]
         public async Task<IActionResult> AddApi([FromBody]Yu.Data.Entities.Right.Api api)
         {
-            await _apiService.AddApi(api);
+            await _apiService.AddApiAsync(api);
             return Ok();
         }
 
@@ -59,7 +59,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("更新api数据")]
         public async Task<IActionResult> UpdateApi([FromBody]Data.Entities.Right.Api api)
         {
-            await _apiService.UpdateApi(api);
+            await _apiService.UpdateApiAsync(api);
             return Ok();
         }
 
@@ -71,7 +71,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("删除api数据")]
         public async Task<IActionResult> DeleteApi([FromQuery]IdQuery query)
         {
-            await _apiService.DeleteApi(query.Id);
+            await _apiService.DeleteApiAsync(query.Id);
             return Ok();
         }
 

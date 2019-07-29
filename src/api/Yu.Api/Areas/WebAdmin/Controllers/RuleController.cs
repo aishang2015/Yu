@@ -41,7 +41,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("删除规则组")]
         public async Task<IActionResult> DeleteRuleGroup([FromQuery]IdQuery query)
         {
-            await _ruleService.DeleteRuleGroup(query.Id);
+            await _ruleService.DeleteRuleGroupAsync(query.Id);
             return Ok();
         }
 
@@ -51,7 +51,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         //    [FromBody]IEnumerable<RuleCondition> ruleConditions, [FromBody]RuleGroup ruleGroup)
         public async Task<IActionResult> AddOrUpdateRule([FromBody]RuleResult result)
         {
-            var taskResult = await _ruleService.AddOrUpdateRule(result.Rules, result.RuleConditions, result.RuleGroup);
+            var taskResult = await _ruleService.AddOrUpdateRuleAsync(result.Rules, result.RuleConditions, result.RuleGroup);
             if (!taskResult)
             {
                 ModelState.AddModelError("field", ErrorMessages.WebAdmin_Rule_E001);
