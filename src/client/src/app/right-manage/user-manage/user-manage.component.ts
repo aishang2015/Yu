@@ -219,7 +219,7 @@ export class UserManageComponent implements OnInit {
   // 编辑用户头像
   editAvatar(userOutline) {
     this.avatarUrl = new ImageUriPipe().transform(userOutline.avatar);
-    this.uploadUrl = UriConstant.UserAvatarUri + `?userId=${userOutline.id}`
+    this.uploadUrl = UriConstant.ManageAvatarUri + `?userId=${userOutline.id}`;
     this.editModal = this._modalService.create({
       nzContent: this.avatarEditTpl, // 模板
       nzFooter: null,

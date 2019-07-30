@@ -27,6 +27,9 @@ export class UriConstant {
     static readonly UserDetailUri = UriConstant.BaseApiUri + 'userDetail';
 
     // 用户头像上传地址
+    static readonly ManageAvatarUri = UriConstant.BaseApiUri + 'userAvatar';
+	
+    // 用户头像上传地址
     static readonly UserAvatarUri = UriConstant.BaseApiUri + 'userInfo/avatar';
 
     // API数据地址

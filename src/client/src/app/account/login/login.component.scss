@@ -7,8 +7,17 @@
   .login-card {
     width: 400px;
     text-align: center;
-  }
-  // background:url('https://bing.ioliu.cn/v1?w=1920&h=1080') no-repeat center fixed;
+  }  
+  margin: 0;
+  padding: 0;
+  background: url(/assets/images/background.jpg) no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  font-family: "Muli", sans-serif;
 }
 
 .systitle{
