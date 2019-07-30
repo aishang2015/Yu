@@ -65,15 +65,15 @@ export class UserManageComponent implements OnInit {
   isLoading = false;
 
   // 编辑模板
-  @ViewChild('editContentTpl')
+  @ViewChild('editContentTpl', { static: true })
   editContentTpl;
 
   // 设置头像
-  @ViewChild('avatarEdit')
+  @ViewChild('avatarEdit', { static: true })
   avatarEditTpl;
 
   // 浏览内容模板
-  @ViewChild('viewContentTpl')
+  @ViewChild('viewContentTpl', { static: true })
   viewContentTpl;
 
   constructor(private _userService: UserService,

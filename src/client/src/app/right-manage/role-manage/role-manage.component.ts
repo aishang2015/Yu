@@ -34,7 +34,7 @@ export class RoleManageComponent implements OnInit {
   isLoading = false;
 
   // 编辑模板
-  @ViewChild("editTpl")
+  @ViewChild("editTpl", { static: true })
   editTpl;
 
   // 页面元素选择数据

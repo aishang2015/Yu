@@ -34,7 +34,7 @@ export class ApiManageComponent implements OnInit {
   isLoading = false;
 
   // 模态对话框模板
-  @ViewChild('editTpl')
+  @ViewChild('editTpl', { static: true })
   editTpl;
 
   constructor(private _apiService: ApiService,

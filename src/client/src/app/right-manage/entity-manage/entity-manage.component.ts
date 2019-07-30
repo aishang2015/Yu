@@ -29,7 +29,7 @@ export class EntityManageComponent implements OnInit {
   // 是否等待
   isLoading = false;
 
-  @ViewChild('editTpl')
+  @ViewChild('editTpl', { static: true })
   editTpl;
 
   // 分页
