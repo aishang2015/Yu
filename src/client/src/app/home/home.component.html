@@ -40,15 +40,17 @@
         <nz-header style="background: #fff; padding:0;">
             <div style="line-height: 64px;float: right;padding:0 16px;">
 
-                <nz-avatar nzIcon="user" [nzSrc]="avatarUrl"></nz-avatar>
-                <nz-dropdown [nzTrigger]="'click'">
-                    <a nz-dropdown>{{ userName }}<i nz-icon type="down"></i> </a>
+                <a nz-dropdown [nzTrigger]="'click'" [nzDropdownMenu]="menu">
+                    <nz-avatar nzIcon="user" [nzSrc]="avatarUrl"></nz-avatar>
+                    {{ userName }}<i nz-icon type="down"></i>
+                </a>
+                <nz-dropdown-menu #menu="nzDropdownMenu">
                     <ul nz-menu>
                         <li nz-menu-item [routerLink]="[ '/account/userInfo' ]" (click)="setBreadCrumb('我的信息')">我的信息
                         </li>
                         <li nz-menu-item (click)="logout()">注销</li>
                     </ul>
-                </nz-dropdown>
+                </nz-dropdown-menu>
 
             </div>
         </nz-header>

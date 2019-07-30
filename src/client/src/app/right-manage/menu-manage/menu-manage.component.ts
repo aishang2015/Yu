@@ -3,7 +3,6 @@ import { Element } from '../models/element';
 import { EnumConstant } from 'src/app/core/constants/enum-constant';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { NzTreeComponent, NzTreeNodeOptions, NzModalService, NzMessageService } from 'ng-zorro-antd';
-import { element } from '@angular/core/src/render3';
 import { ElementService } from 'src/app/core/services/element.service';
 import { resource } from 'selenium-webdriver/http';
 import { ApiService } from 'src/app/core/services/api.service';

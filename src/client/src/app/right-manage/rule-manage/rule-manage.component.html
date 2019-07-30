@@ -2,7 +2,7 @@
 
   <div nz-col nzSpan="6" class="tree">
     <button nz-button (click)="addRuleGroup()" *canOperate="'addrulegroupbtn'">添加新规则组</button>
-    <nz-table #basicTable [nzData]="ruleGroups" nzShowPagination="false">
+    <!-- <nz-table #basicTable [nzData]="ruleGroups" nzShowPagination="false" class="mt-5">
       <tbody>
         <tr *ngFor="let data of basicTable.data">
           <td>{{data.name}}</td>
@@ -12,7 +12,17 @@
           </td>
         </tr>
       </tbody>
-    </nz-table>
+    </nz-table> -->
+    <nz-list [nzDataSource]="ruleGroups" [nzRenderItem]="item" [nzItemLayout]="'horizontal'">
+      <ng-template #item let-item>
+        <nz-list-item [nzActions]="isEditMode?[]:[editAction, moreAction]">
+          <ng-template #editAction><a (click)="edit(item)" *canOperate="'editrulegroup'">编辑</a></ng-template>
+          <ng-template #moreAction><a (click)="delete(item)" *canOperate="'deleterulegrouplink'">删除</a></ng-template>
+          <nz-list-item-meta [nzTitle]="nzTitle" [nzDescription]="item.name">
+          </nz-list-item-meta>
+        </nz-list-item>
+      </ng-template>
+    </nz-list>
   </div>
 
 
@@ -22,8 +32,8 @@
       <input nz-input style="width: 250px;" [(ngModel)]="ruleGroup.name" name="groupname" placeholder="请输入规则组名"
         autocomplete="off">
 
-      <a nz-popover style="margin-left: 15px" [nzContent]="contentTemplate" nzTrigger="click"><i nz-icon nzType="info-circle"
-          nzTheme="outline"></i></a>
+      <a nz-popover style="margin-left: 15px" [nzContent]="contentTemplate" nzTrigger="click"><i nz-icon
+          nzType="info-circle" nzTheme="outline"></i></a>
       <ng-template #contentTemplate>
         <div>
           <p *ngFor="let tip of tips">{{ tip }}</p>
