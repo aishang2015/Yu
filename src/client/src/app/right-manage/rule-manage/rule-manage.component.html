@@ -2,23 +2,15 @@
 
   <div nz-col nzSpan="6" class="tree">
     <button nz-button (click)="addRuleGroup()" *canOperate="'addrulegroupbtn'">添加新规则组</button>
-    <!-- <nz-table #basicTable [nzData]="ruleGroups" nzShowPagination="false" class="mt-5">
-      <tbody>
-        <tr *ngFor="let data of basicTable.data">
-          <td>{{data.name}}</td>
-          <td style="width:70px;" *ngIf="!isEditMode">
-            <a (click)="edit(data)" *canOperate="'editrulegroup'">编辑</a>
-            <a (click)="delete(data)" *canOperate="'deleterulegrouplink'">删除</a>
-          </td>
-        </tr>
-      </tbody>
-    </nz-table> -->
     <nz-list [nzDataSource]="ruleGroups" [nzRenderItem]="item" [nzItemLayout]="'horizontal'">
       <ng-template #item let-item>
         <nz-list-item [nzActions]="isEditMode?[]:[editAction, moreAction]">
           <ng-template #editAction><a (click)="edit(item)" *canOperate="'editrulegroup'">编辑</a></ng-template>
           <ng-template #moreAction><a (click)="delete(item)" *canOperate="'deleterulegrouplink'">删除</a></ng-template>
-          <nz-list-item-meta [nzTitle]="nzTitle" [nzDescription]="item.name">
+          <nz-list-item-meta [nzTitle]="nzTitle" [nzTitle]="nzTitle">
+            <ng-template #nzTitle>
+              <div>{{ item.name }}</div>
+            </ng-template>
           </nz-list-item-meta>
         </nz-list-item>
       </ng-template>
