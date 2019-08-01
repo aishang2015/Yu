@@ -78,7 +78,7 @@
         <nz-form-item>
           <nz-form-label [nzSpan]="5">关联api</nz-form-label>
           <nz-form-control [nzSpan]="12">
-            <nz-select class="w500 cb" [(ngModel)]="editedElement.apis" name="apis" [nzSize]="size" nzMode="multiple" [nzDisabled]="!isEditMode"
+            <nz-select class="w500 cb" [(ngModel)]="editedElement.apis" name="apis" nzMode="multiple" [nzDisabled]="!isEditMode"
               nzPlaceHolder="请选择关联的api">
               <nz-option *ngFor="let api of apis" [nzLabel]="combineApiLabel(api.name,api.address,api.type)"
                 [nzValue]="api.id">

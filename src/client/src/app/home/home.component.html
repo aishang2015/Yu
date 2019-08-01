@@ -46,7 +46,7 @@
                 </a>
                 <nz-dropdown-menu #menu="nzDropdownMenu">
                     <ul nz-menu>
-                        <li nz-menu-item [routerLink]="[ '/account/userInfo' ]" (click)="setBreadCrumb('我的信息')">我的信息
+                        <li nz-menu-item [routerLink]="[ '/account/userInfo' ]" (click)="setBreadCrumb('我的信息','')">我的信息
                         </li>
                         <li nz-menu-item (click)="logout()">注销</li>
                     </ul>

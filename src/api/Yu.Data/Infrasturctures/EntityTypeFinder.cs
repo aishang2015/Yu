@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Yu.Core.Extensions;
 using Yu.Data.Entities;
 
@@ -90,6 +91,18 @@ namespace Yu.Data.Infrasturctures
                 return attribute != null;
             });
             return result.ToList();
+        }
+
+        /// <summary>
+        /// 根据属性名取得排序表达式
+        /// </summary>
+        /// <typeparam name="TEntity">实体类型</typeparam>
+        /// <param name="propertyName">属性名</param>
+        /// <returns></returns>
+        public static Expression<Func<TEntity, object>> GetOrder<TEntity>(string propertyName)
+        {
+            var property = typeof(TEntity).GetProperty(propertyName);
+            return e => property.GetValue(e);
         }
 
     }

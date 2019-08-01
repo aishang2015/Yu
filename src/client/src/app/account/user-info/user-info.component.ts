@@ -7,6 +7,7 @@ import { ImageUriPipe } from 'src/app/core/pipes/image-uri.pipe';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { ChangePwd } from '../models/change-pwd';
 import { AccountService } from 'src/app/core/services/account.service';
+import { UserDetail } from 'src/app/right-manage/models/user-detail';
 
 @Component({
   selector: 'app-user-info',
@@ -25,10 +26,12 @@ export class UserInfoComponent implements OnInit {
   loading: boolean = false;
 
   // 用户数据
-  userInfo = new Object();
+  userInfo:UserDetail = new UserDetail();
 
   // 是否提交
   isSubmit = false;
+
+  isLoading = false;
 
   // 密码修改模型
   changePwdModel: ChangePwd = new ChangePwd();

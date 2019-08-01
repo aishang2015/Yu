@@ -16,4 +16,5 @@
 /src/api/Yu.Service/obj
 /src/api/Yu.Service/bin
 /src/client/node_modules
-src/client/ws.code-workspace
+/src/client/dist
+/src/client/ws.code-workspace
