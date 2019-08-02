@@ -13,5 +13,24 @@
     <ProjectReference Include="..\Yu.Data\Yu.Data.csproj" />
     <ProjectReference Include="..\Yu.Model\Yu.Model.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="Template\Controller.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Controller.cs</LastGenOutput>
+    </None>
+    <None Update="Template\IService.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IService.cs</LastGenOutput>
+    </None>
+    <None Update="Template\Service.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Service.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
 
 </Project>

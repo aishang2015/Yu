@@ -1,0 +1,36 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<# var EntityName = "Element"; #>
+<# var KeyTypeName = "Guid";#>
+<# var ApiNamespace = "Yu.Service"; #>
+using System;
+using System.Threading.Tasks;
+using Yu.Data.Entities;
+using Yu.Data.Entities.Right;
+ 
+namespace <#=ApiNamespace#>
+{
+
+	public interface I<#=EntityName#>Service
+	{
+        /// <summary>
+        /// 取得数据
+        /// </summary>
+		PagedData<<#=EntityName#>> Get<#=EntityName#>s(int pageIndex, int pageSize, string searchText);
+		
+        /// <summary>
+        /// 删除数据
+        /// </summary>
+        Task Delete<#=EntityName#>Async(<#=KeyTypeName#> id);
+
+        /// <summary>
+        /// 添加数据
+        /// </summary>
+        Task Add<#=EntityName#>Async(<#=EntityName#> entity);
+
+        /// <summary>
+        /// 更新数据
+        /// </summary>
+        Task Update<#=EntityName#>Async(<#=EntityName#> entity);
+	}
+}

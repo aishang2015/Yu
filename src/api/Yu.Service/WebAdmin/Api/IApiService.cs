@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Yu.Data.Entities;
-using Yu.Data.Infrasturctures;
-using Yu.Data.Repositories;
 
 namespace Yu.Service.WebAdmin.Api
 {
     public interface IApiService
-    {        
+    {
 
         /// <summary>
         /// 取得API数据
