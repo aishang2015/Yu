@@ -6,8 +6,10 @@
   display: flex;
   .login-card {
     width: 400px;
-    text-align: center;
-  }  
+    h1 {
+      text-align: center;
+    }
+  }
   margin: 0;
   padding: 0;
   background: url(/assets/images/background.jpg) no-repeat;
@@ -20,14 +22,26 @@
   font-family: "Muli", sans-serif;
 }
 
-.systitle{
+.systitle {
   position: absolute;
-  left: calc(50% - 214px);;
+  left: calc(50% - 214px);
   color: #fff;
   padding: 50px 0;
   font-size: 45px;
 }
 
-.pull-left{
+.pull-left {
   float: left;
+}
+
+.txt-center{
+  text-align: center;
+}
+
+.txt-right{
+  text-align: right;
+}
+
+.m-0{
+  margin: 0;
 }

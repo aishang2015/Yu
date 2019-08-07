@@ -2,13 +2,13 @@
 <#@ output extension=".cs" #>
 <# var EntityName = "Element"; #>
 <# var KeyTypeName = "Guid";#>
-<# var ApiNamespace = "Yu.Service"; #>
+<# var Namespace = "Yu.Service"; #>
 using System;
 using System.Threading.Tasks;
 using Yu.Data.Entities;
 using Yu.Data.Entities.Right;
  
-namespace <#=ApiNamespace#>
+namespace <#=Namespace#>
 {
 
 	public interface I<#=EntityName#>Service

@@ -15,17 +15,21 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Update="Template\Controller.tt">
+    <None Update="Template\api\Controller.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Controller.cs</LastGenOutput>
     </None>
-    <None Update="Template\IService.tt">
+    <None Update="Template\api\IService.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IService.cs</LastGenOutput>
     </None>
-    <None Update="Template\Service.tt">
+    <None Update="Template\api\Service.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Service.cs</LastGenOutput>
+    </None>
+    <None Update="Template\web\service.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>service.service.ts</LastGenOutput>
     </None>
   </ItemGroup>
   

@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { JwtHelperService } from "@auth0/angular-jwt"
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { PhonePwd } from '../models/phone-pwd';
 
 @Component({
   selector: 'app-login',
@@ -15,11 +16,18 @@ import { LocalStorageService } from 'src/app/core/services/local-storage.service
 })
 export class LoginComponent implements OnInit {
 
+  // 准备登录
+  islogin = true;
+  isResetPwd = false;
+
   // 验证码图片地址
   imagesrc: SafeUrl = "";
 
   // 编辑模型
   loginModel: LoginModel = new LoginModel();
+
+  // 根据手机号修改密码
+  phonePwdModel: PhonePwd = new PhonePwd();
 
   // 是否等待
   isLoading = false;
@@ -95,4 +103,30 @@ export class LoginComponent implements OnInit {
       )
   }
 
+  // 修改密码
+  changePwd() {
+    this.islogin = false;
+    this.isResetPwd = true;
+    this.loginModel = new LoginModel();
+    this.refresh();
+  }
+
+  // 返回登录
+  returnLogin() {
+    this.islogin = true;
+    this.isResetPwd = false;
+    this.phonePwdModel = new PhonePwd();
+  }
+
+  sameCheck(form) {
+    if (form.controls.confirmPassword) {
+      if (form.controls.confirmPassword.dirty) {
+        if (form.errors) {
+          return 'error';
+        } else {
+          return 'success';
+        }
+      }
+    }
+  }
 }
