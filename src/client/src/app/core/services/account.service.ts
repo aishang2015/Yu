@@ -29,4 +29,16 @@ export class AccountService extends BaseService {
     let uri = UriConstant.UserChangePwdUri;
     return this.SafeRequest(this.http.post(uri, model));
   }
+
+  // 根据手机修改密码
+  changePwdByPhone(phone) {
+    let uri = UriConstant.ResetUserPwdByPhone + `?phoneNumber=${phone}`;
+    return this.http.get(uri);
+  }
+
+  // 根据手机修改密码
+  submitPwdByPhone(data) {
+    let uri = UriConstant.ResetUserPwdByPhone;
+    return this.http.post(uri, data);
+  }
 }

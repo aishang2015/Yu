@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
@@ -122,23 +121,38 @@ namespace Yu.Api.Controllers
         }
 
         /// <summary>
-        /// 修改密码
+        /// 重置密码
         /// </summary>
-        [HttpPost]
-        [Description("修改密码")]
-        [Authorize]
-        public async Task<IActionResult> ChangePwd([FromBody]ChangePwdModel model)
+        [HttpGet()]
+        [Description("手机号重置密码")]
+        public async Task<IActionResult> ResetPwdByPhone([FromQuery]string phoneNumber)
         {
             var userName = User.GetUserName();
-            var result = await _accountService.ChangePasswordAsync(userName, model.OldPassword, model.NewPassword);
+            var result = await _accountService.ResetUserPasswordByPhone(phoneNumber);
             if (!result)
             {
-                ModelState.AddModelError("Password", ErrorMessages.Account_E008);
+                ModelState.AddModelError("Password", ErrorMessages.Account_E009);
                 return BadRequest(ModelState);
             }
             return Ok();
         }
 
+        /// <summary>
+        /// 重置密码
+        /// </summary>
+        [HttpPost()]
+        [Description("手机号重置密码")]
+        public async Task<IActionResult> ResetPwdByPhone([FromBody]PhoneChangePwdModel model)
+        {
+            var userName = User.GetUserName();
+            var result = await _accountService.ResetUserPasswordByPhone(model.PhoneNumber, model.NewPassword, model.ValidCode);
+            if (!result)
+            {
+                ModelState.AddModelError("Password", ErrorMessages.Account_E010);
+                return BadRequest(ModelState);
+            }
+            return Ok();
+        }
         /// <summary>
         /// 获取token，加载权限到缓存,生成response结果
         /// </summary>

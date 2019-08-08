@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Yu.Data.Entities.Right;
+﻿using System.Threading.Tasks;
 using Yu.Data.Infrasturctures;
 
 namespace Yu.Service.Account
@@ -53,5 +51,19 @@ namespace Yu.Service.Account
         /// <param name="user">用户</param>
         /// <returns></returns>
         Task<string> FindUserRoleAsync(BaseIdentityUser user);
+
+        /// <summary>
+        /// 手机重置用户密码
+        /// </summary>
+        /// <param name="phoneNumber">电话号码</param>
+        /// <param name="newPassword">新密码</param>
+        Task<bool> ResetUserPasswordByPhone(string phoneNumber);
+
+        /// <summary>
+        /// 手机重置用户密码
+        /// </summary>
+        /// <param name="phoneNumber">电话号码</param>
+        /// <param name="newPassword">新密码</param>
+        Task<bool> ResetUserPasswordByPhone(string phoneNumber, string newPassword, string code);
     }
 }

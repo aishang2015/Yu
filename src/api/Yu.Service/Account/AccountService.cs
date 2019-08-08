@@ -2,7 +2,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Yu.Core.Constants;
 using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
@@ -93,6 +92,45 @@ namespace Yu.Service.Account
         }
 
         /// <summary>
+        /// 手机重置用户密码
+        /// </summary>
+        /// <param name="phoneNumber">电话号码</param>
+        /// <param name="newPassword">新密码</param>
+        public async Task<bool> ResetUserPasswordByPhone(string phoneNumber)
+        {
+            var user = _userManager.Users.FirstOrDefault(u => u.PhoneNumber == phoneNumber);
+            if (user == null)
+            {
+                return false;
+            }
+
+            //var token  = await _userManager.GeneratePasswordResetTokenAsync(user);
+            // todo 生成token
+            // todo 通过短信运营商SDK发送token
+
+            return true;
+        }
+
+        /// <summary>
+        /// 手机重置用户密码
+        /// </summary>
+        /// <param name="phoneNumber">电话号码</param>
+        /// <param name="newPassword">新密码</param>
+        public async Task<bool> ResetUserPasswordByPhone(string phoneNumber, string newPassword, string token)
+        {
+            var user = _userManager.Users.FirstOrDefault(u => u.PhoneNumber == phoneNumber);
+            if (user == null)
+            {
+                return false;
+            }
+			
+            // todo 验证token
+			// todo 修改密码
+            //var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+            return result.Succeeded;
+        }
+
+        /// <summary>
         /// 账号绑定手机，发送验证码
         /// </summary>
         /// <param name="userName">用户名</param>
@@ -128,12 +166,8 @@ namespace Yu.Service.Account
 
             // 验证验证码
             var result = await _userManager.ChangePhoneNumberAsync(user, code, phoneNumber);
-            if (!result.Succeeded)
-            {
-                return false;
-            }
 
-            return true;
+            return result.Succeeded;
         }
     }
 }

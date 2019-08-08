@@ -32,6 +32,10 @@ export class LoginComponent implements OnInit {
   // 是否等待
   isLoading = false;
 
+  // 是否发送验证码
+  isLoadingSendCode = false;
+  sendCodeContent = '发送验证码';
+
   constructor(private accountService: AccountService,
     private messageService: NzMessageService,
     private router: Router,
@@ -128,5 +132,29 @@ export class LoginComponent implements OnInit {
         }
       }
     }
+  }
+
+  // 发送验证码
+  sendCode() {
+    this.accountService.changePwdByPhone(this.phonePwdModel.phoneNumber).subscribe(
+      result => {
+        this.messageService.success('验证码发送成功，请在手机上确认！');
+
+        let time = 60;
+        this.isLoadingSendCode = true;
+        this.sendCodeContent = `请等待${time}秒`;
+        let interval = setInterval(() => {
+          time = time - 1;
+          this.sendCodeContent = `请等待${time}秒`;
+        }, 1000);
+        setTimeout(() => {
+          clearInterval(interval);
+          this.sendCodeContent = '发送验证码';
+          this.isLoadingSendCode = false;
+        }, 60000);
+        
+      }
+    );
+
   }
 }

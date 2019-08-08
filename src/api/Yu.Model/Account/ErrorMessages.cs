@@ -17,5 +17,7 @@ namespace Yu.Model.Message
         public static readonly string Account_E007 = "Token刷新失败!";
 
         public static readonly string Account_E008 = "密码修改失败!请确认旧密码是否正确，新密码强度是否足够。";
+        public static readonly string Account_E009 = "找不到此用户，请确认手机号码是否正确。";
+        public static readonly string Account_E010 = "密码重置失败，请确认新密码强度是否足够。";
     }
 }

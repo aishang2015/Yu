@@ -72,7 +72,7 @@
               nzValidateStatus="validCode" [(ngModel)]="phonePwdModel.validCode" #validCode="ngModel" required />
           </nz-form-control>
           <nz-form-control nzSpan="12" class="txt-center">
-            <button nz-button [disabled]="cpwbphone.errors">发送验证码</button>
+            <button nz-button [disabled]="cpwbphone.errors" [nzLoading]="isLoadingSendCode" (click)="sendCode()">{{sendCodeContent}}</button>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>

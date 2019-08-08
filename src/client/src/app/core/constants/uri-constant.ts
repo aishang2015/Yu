@@ -28,7 +28,7 @@ export class UriConstant {
 
     // 用户头像上传地址
     static readonly ManageAvatarUri = UriConstant.BaseApiUri + 'userAvatar';
-	
+
     // 用户头像上传地址
     static readonly UserAvatarUri = UriConstant.BaseApiUri + 'userInfo/avatar';
 
@@ -70,4 +70,7 @@ export class UriConstant {
 
     // 修改当前用户密码
     static readonly UserChangePwdUri = UriConstant.BaseApiUri + 'userInfo/password';
+
+    // 重置密码
+    static readonly ResetUserPwdByPhone = UriConstant.BaseApiUri + 'account/resetPwdByPhone';
 }
