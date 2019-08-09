@@ -11,6 +11,12 @@
 
         public const string RoleMemoryCacheKey = "RoleCache:";
 
+        // roleClaim缓存key
+        public const string RoleClaimsMemoryCacheKey = "RoleClaimsCache:";
+
+        // roleapi缓存key
+        public const string RoleApisMemoryCacheKey = "RoleApisCache:";
+
         public const string RuleMemoryCacheKey = "RoleCache:";
 
         public const string SystemManagerRole = "系统管理员";

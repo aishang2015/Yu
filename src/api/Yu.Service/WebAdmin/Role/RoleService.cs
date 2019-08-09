@@ -14,7 +14,6 @@ using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Role.InputOuputModels;
 using Yu.Model.WebAdmin.Role.OutputModels;
-using Yu.Service.WebAdmin.Rule;
 using ApiEntity = Yu.Data.Entities.Right.Api;
 using ElementEntity = Yu.Data.Entities.Right.Element;
 
@@ -80,23 +79,15 @@ namespace Yu.Service.WebAdmin.Role
                         elements.AddRange(descendantElemnts.Select(e => e.Descendant.ToString()));
                     }
                     elements = elements.Distinct().ToList();
-                    foreach (var element in elements)
-                    {
-                        await _roleManager.AddClaimAsync(identityRole, new Claim(CustomClaimTypes.Element, element));
-                    }
-                    foreach (var element in role.Elements)
-                    {
-                        await _roleManager.AddClaimAsync(identityRole, new Claim(CustomClaimTypes.DisPlayElement, element));
-                    }
+
+                    await UpdateRoleClaimAsync(identityRole, elements.ToArray(), CustomClaimTypes.Element);
+                    await UpdateRoleClaimAsync(identityRole, role.Elements.ToArray(), CustomClaimTypes.DisPlayElement);
                 }
 
                 // 保存关联数据规则
                 if (role.DataRules != null)
                 {
-                    foreach (var rule in role.DataRules)
-                    {
-                        await _roleManager.AddClaimAsync(identityRole, new Claim(CustomClaimTypes.Rule, rule));
-                    }
+                    await UpdateRoleClaimAsync(identityRole, role.DataRules, CustomClaimTypes.Rule);
                 }
                 return true;
             }
@@ -104,6 +95,38 @@ namespace Yu.Service.WebAdmin.Role
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// 更新角色
+        /// </summary>
+        /// <param name="role">角色</param>
+        public async Task UpdateRoleAsync(RoleDetail role)
+        {
+            // 更新角色
+            var identityRole = await _roleManager.FindByIdAsync(role.Id.ToString());
+            identityRole.Name = role.Name;
+            identityRole.Describe = role.Describe;
+            await _roleManager.UpdateAsync(identityRole);
+
+            // 找到关联元素
+            var elements = new List<string>();
+            foreach (var element in role.Elements)
+            {
+                var ancestorElements = _elementTreeRepository.GetByWhereNoTracking(e => e.Descendant == Guid.Parse(element));
+                elements.AddRange(ancestorElements.Select(e => e.Ancestor.ToString()));
+                var descendantElemnts = _elementTreeRepository.GetByWhereNoTracking(e => e.Ancestor == Guid.Parse(element));
+                elements.AddRange(descendantElemnts.Select(e => e.Descendant.ToString()));
+            }
+            elements = elements.Distinct().ToList();
+
+            // 更新声明
+            await UpdateRoleClaimAsync(identityRole, elements.ToArray(), CustomClaimTypes.Element);
+            await UpdateRoleClaimAsync(identityRole, role.Elements.ToArray(), CustomClaimTypes.DisPlayElement);
+            await UpdateRoleClaimAsync(identityRole, role.DataRules, CustomClaimTypes.Rule);
+
+            // 更新缓存
+            await UpdateRolePermissionCacheAsync(identityRole.Name);
         }
 
         /// <summary>
@@ -179,38 +202,6 @@ namespace Yu.Service.WebAdmin.Role
         }
 
         /// <summary>
-        /// 更新角色
-        /// </summary>
-        /// <param name="role">角色</param>
-        public async Task UpdateRoleAsync(RoleDetail role)
-        {
-            // 更新角色
-            var identityRole = await _roleManager.FindByIdAsync(role.Id.ToString());
-            identityRole.Name = role.Name;
-            identityRole.Describe = role.Describe;
-            await _roleManager.UpdateAsync(identityRole);
-
-            // 找到关联元素
-            var elements = new List<string>();
-            foreach (var element in role.Elements)
-            {
-                var ancestorElements = _elementTreeRepository.GetByWhereNoTracking(e => e.Descendant == Guid.Parse(element));
-                elements.AddRange(ancestorElements.Select(e => e.Ancestor.ToString()));
-                var descendantElemnts = _elementTreeRepository.GetByWhereNoTracking(e => e.Ancestor == Guid.Parse(element));
-                elements.AddRange(descendantElemnts.Select(e => e.Descendant.ToString()));
-            }
-            elements = elements.Distinct().ToList();
-
-            // 更新声明
-            await UpdateRoleClaimAsync(identityRole, elements.ToArray(), CustomClaimTypes.Element);
-            await UpdateRoleClaimAsync(identityRole, role.Elements.ToArray(), CustomClaimTypes.DisPlayElement);
-            await UpdateRoleClaimAsync(identityRole, role.DataRules, CustomClaimTypes.Rule);
-
-            // 更新缓存
-            await UpdateRolePermissionCacheAsync(identityRole.Name);
-        }
-
-        /// <summary>
         /// 更新声明
         /// </summary>
         /// <param name="identityRole"></param>
@@ -242,6 +233,41 @@ namespace Yu.Service.WebAdmin.Role
             }
         }
 
+        public async Task<List<Claim>> GetRoleClaimAsync(string roleName)
+        {
+            return await _memoryCache.GetOrCreateAsync(CommonConstants.RoleClaimsMemoryCacheKey + roleName, async entity =>
+            {
+                var role = await _roleManager.FindByNameAsync(roleName);
+                var claims = await _roleManager.GetClaimsAsync(role);
+                return claims.ToList();
+            });
+        }
+
+        public async Task<List<string>> GetRoleClaimAsync(string roleName, string claimType)
+        {
+            var claims = await GetRoleClaimAsync(roleName);
+            return claims.Where(c => c.Type == claimType).Select(c => c.Value).ToList();
+        }
+
+        /// <summary>
+        /// 把角色包含的api权限进行缓存
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> GetRoleApiAsync(string roleName)
+        {
+            // 取得元素
+            return await _memoryCache.GetOrCreateAsync(CommonConstants.RoleApisMemoryCacheKey + roleName, async entity =>
+            {
+                var elementIds = await GetRoleClaimAsync(roleName, CustomClaimTypes.Element);
+                var apiIds = new List<Guid>();
+                var apis = from ea in _elementApiRepository.GetAllNoTracking()
+                           join a in _apiRepository.GetAllNoTracking()
+                           on ea.ApiId equals a.Id
+                           where elementIds.Contains(ea.Id.ToString())
+                           select a.Address + '|' + a.Type;
+                return string.Join(CommonConstants.StringConnectChar, apis);
+            });
+        }
 
         /// <summary>
         /// 取得角色拥有的所有权限
