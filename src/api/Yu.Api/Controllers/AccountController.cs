@@ -123,7 +123,7 @@ namespace Yu.Api.Controllers
         /// <summary>
         /// 重置密码
         /// </summary>
-        [HttpGet()]
+        [HttpGet]
         [Description("手机号重置密码")]
         public async Task<IActionResult> ResetPwdByPhone([FromQuery]string phoneNumber)
         {
@@ -140,7 +140,7 @@ namespace Yu.Api.Controllers
         /// <summary>
         /// 重置密码
         /// </summary>
-        [HttpPost()]
+        [HttpPost]
         [Description("手机号重置密码")]
         public async Task<IActionResult> ResetPwdByPhone([FromBody]PhoneChangePwdModel model)
         {

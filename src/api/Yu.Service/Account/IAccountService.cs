@@ -56,7 +56,6 @@ namespace Yu.Service.Account
         /// 手机重置用户密码
         /// </summary>
         /// <param name="phoneNumber">电话号码</param>
-        /// <param name="newPassword">新密码</param>
         Task<bool> ResetUserPasswordByPhone(string phoneNumber);
 
         /// <summary>
@@ -64,6 +63,21 @@ namespace Yu.Service.Account
         /// </summary>
         /// <param name="phoneNumber">电话号码</param>
         /// <param name="newPassword">新密码</param>
+        /// <param name="newPassword">验证码</param>
         Task<bool> ResetUserPasswordByPhone(string phoneNumber, string newPassword, string code);
+
+        /// <summary>
+        /// 邮箱重置用户密码
+        /// </summary>
+        /// <param name="phoneNumber">邮箱地址</param>
+        Task<bool> ResetUserPasswordByEmail(string email);
+
+        /// <summary>
+        /// 邮箱重置用户密码
+        /// </summary>
+        /// <param name="phoneNumber">邮箱地址</param>
+        /// <param name="newPassword">新密码</param>
+        /// <param name="newPassword">验证码</param>
+        Task<bool> ResetUserPasswordByEmail(string email, string newPassword, string code);
     }
 }

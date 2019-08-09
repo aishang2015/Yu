@@ -152,9 +152,26 @@ export class LoginComponent implements OnInit {
           this.sendCodeContent = '发送验证码';
           this.isLoadingSendCode = false;
         }, 60000);
-        
+
       }
     );
+  }
+
+  resetPwdByPhone(form) {
+
+    if (form.valid) {
+      this.accountService.submitPwdByPhone(this.phonePwdModel).subscribe(
+        result => {
+          this.messageService.success("密码重置成功！");
+          form.reset();
+        },
+        error => {          
+          form.reset();
+        }
+      );
+    }
 
   }
+
+
 }

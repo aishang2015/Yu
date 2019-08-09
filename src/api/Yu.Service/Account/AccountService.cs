@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,16 +17,18 @@ namespace Yu.Service.Account
 
         private readonly IRepository<Group, Guid> _groupRepository;
 
+        private readonly IMemoryCache _memoryCache;
+
         public AccountService(UserManager<BaseIdentityUser> userManager,
             RoleManager<BaseIdentityRole> roleManager,
-            IRepository<Group, Guid> groupRepository)
+            IRepository<Group, Guid> groupRepository,
+            IMemoryCache memoryCache)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _groupRepository = groupRepository;
+            _memoryCache = memoryCache;
         }
-
-
 
         // 根据旧密码修改新密码
         public async Task<bool> ChangePasswordAsync(string userName, string oldPassword, string newPassword)
@@ -92,10 +95,46 @@ namespace Yu.Service.Account
         }
 
         /// <summary>
+        /// 邮箱重置用户密码
+        /// </summary>
+        /// <param name="phoneNumber">邮箱地址</param>
+        public async Task<bool> ResetUserPasswordByEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return false;
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            // todo通过邮箱发送重置链接
+
+            return true;
+        }
+
+        /// <summary>
+        /// 邮箱重置用户密码
+        /// </summary>
+        /// <param name="phoneNumber">邮箱地址</param>
+        /// <param name="newPassword">新密码</param>
+        /// <param name="newPassword">验证码</param>
+        public async Task<bool> ResetUserPasswordByEmail(string email, string newPassword, string code)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return false;
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, code, newPassword);
+            return result.Succeeded;
+        }
+
+        /// <summary>
         /// 手机重置用户密码
         /// </summary>
         /// <param name="phoneNumber">电话号码</param>
-        /// <param name="newPassword">新密码</param>
         public async Task<bool> ResetUserPasswordByPhone(string phoneNumber)
         {
             var user = _userManager.Users.FirstOrDefault(u => u.PhoneNumber == phoneNumber);
@@ -104,8 +143,15 @@ namespace Yu.Service.Account
                 return false;
             }
 
-            //var token  = await _userManager.GeneratePasswordResetTokenAsync(user);
-            // todo 生成token
+            var code = _memoryCache.GetOrCreate(phoneNumber, entity =>
+           {
+               entity.SetAbsoluteExpiration(TimeSpan.FromSeconds(55));
+               byte[] buffer = Guid.NewGuid().ToByteArray();
+               var iRoot = BitConverter.ToInt32(buffer, 0);
+               var random = new Random(iRoot);
+               return random.Next(100000, 999999);
+           });
+
             // todo 通过短信运营商SDK发送token
 
             return true;
@@ -116,17 +162,31 @@ namespace Yu.Service.Account
         /// </summary>
         /// <param name="phoneNumber">电话号码</param>
         /// <param name="newPassword">新密码</param>
-        public async Task<bool> ResetUserPasswordByPhone(string phoneNumber, string newPassword, string token)
+        /// <param name="newPassword">验证码</param>        
+        public async Task<bool> ResetUserPasswordByPhone(string phoneNumber, string newPassword, string code)
         {
             var user = _userManager.Users.FirstOrDefault(u => u.PhoneNumber == phoneNumber);
             if (user == null)
             {
                 return false;
             }
-			
-            // todo 验证token
-			// todo 修改密码
-            //var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            var memoryResult = _memoryCache.TryGetValue(phoneNumber, out int memoryCode);
+            if (!memoryResult)
+            {
+                return false;
+            }
+            else
+            {
+                if (code != memoryCode.ToString())
+                {
+                    return false;
+                }
+            }
+
+            // todo 修改密码
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
             return result.Succeeded;
         }
 

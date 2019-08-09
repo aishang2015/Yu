@@ -48,7 +48,7 @@
   <div *ngIf="isResetPwd">
     <nz-card class="login-card" [nzBordered]="true">
       <h1>重置密码</h1>
-      <form #loginForm="ngForm" (ngSubmit)="submit(loginForm)" appConfirmPassword>
+      <form #resetForm="ngForm" (ngSubmit)="resetPwdByPhone(resetForm)" appConfirmPassword>
         <nz-form-item>
           <nz-form-control [nzErrorTip]="phoneErrorTpl">
             <nz-input-group [nzPrefix]="phonePrefix" nzValidateStatus="phoneNumber">
@@ -72,7 +72,7 @@
               nzValidateStatus="validCode" [(ngModel)]="phonePwdModel.validCode" #validCode="ngModel" required />
           </nz-form-control>
           <nz-form-control nzSpan="12" class="txt-center">
-            <button nz-button [disabled]="cpwbphone.errors" [nzLoading]="isLoadingSendCode" (click)="sendCode()">{{sendCodeContent}}</button>
+            <button nz-button type="button" [disabled]="cpwbphone.errors" [nzLoading]="isLoadingSendCode" (click)="sendCode()">{{sendCodeContent}}</button>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
@@ -85,13 +85,13 @@
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
-          <nz-form-control [nzErrorTip]="passwordErrorTpl" [nzValidateStatus]="sameCheck(loginForm)">
+          <nz-form-control [nzErrorTip]="passwordErrorTpl" [nzValidateStatus]="sameCheck(resetForm)">
             <nz-input-group [nzPrefix]="passwordPrefix" nzValidateStatus="confirmNewPassword">
               <input type="password" nz-input placeholder="请确认新密码" autocomplete="off" name="confirmPassword"
                 [(ngModel)]="phonePwdModel.confirmNewPassword" #confirmPassword="ngModel" required />
               <ng-template #passwordPrefix><i nz-icon type="lock"></i></ng-template>
               <ng-template #passwordErrorTpl let-control style="float:left;display:block">
-                <ng-container *ngIf="loginForm.errors?.isNotSame">
+                <ng-container *ngIf="resetForm.errors?.isNotSame">
                     确认密码不一致
                 </ng-container>
                 <ng-container *ngIf="confirmPassword.errors?.required">
@@ -104,7 +104,7 @@
         </nz-form-item>
         <nz-form-item class="m-0">
           <nz-form-control>
-            <button nz-button nzType="primary" nzBlock [disabled]="!loginForm.valid"
+            <button nz-button nzType="primary" nzBlock [disabled]="!resetForm.valid"
               [nzLoading]="isLoading">修改密码</button>
           </nz-form-control>
         </nz-form-item>
