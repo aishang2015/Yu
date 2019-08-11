@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace Yu.Core.Mvc
+namespace Yu.Data.Infrasturctures.Mvc
 {
     public class ApiAuthorizationRequirement : IAuthorizationRequirement
     {

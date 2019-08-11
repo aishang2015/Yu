@@ -10,6 +10,7 @@ using Yu.Core.Extensions;
 using Yu.Core.Jwt;
 using Yu.Core.Mvc;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.Pemission;
 using Yu.Model.Account.InputModels;
 using Yu.Model.Account.OutputModels;
 using Yu.Model.Message;
@@ -33,6 +34,8 @@ namespace Yu.Api.Controllers
 
         private readonly IRuleService _ruleService;
 
+        private readonly IPermissionCacheService _permissionCacheService;
+
         private readonly IMemoryCache _memoryCache;
 
         public AccountController(IJwtFactory jwtFactory,
@@ -40,6 +43,7 @@ namespace Yu.Api.Controllers
             IUserService userService,
             IRoleService roleService,
             IRuleService ruleService,
+            IPermissionCacheService permissionCacheService,
             IMemoryCache memoryCache)
         {
             _jwtFactory = jwtFactory;
@@ -47,6 +51,7 @@ namespace Yu.Api.Controllers
             _userService = userService;
             _roleService = roleService;
             _ruleService = ruleService;
+            _permissionCacheService = permissionCacheService;
             _memoryCache = memoryCache;
         }
 
@@ -166,13 +171,10 @@ namespace Yu.Api.Controllers
 
             foreach (var role in userRoles)
             {
-                // 更新并取得用户角色的权限
-                var permissions = await _roleService.UpdateRolePermissionCacheAsync(role);
+                var identificationStr = await _permissionCacheService.GetRoleIdentificationAsync(role);
+                identities.AddRange(identificationStr.Split(CommonConstants.StringConnectChar, StringSplitOptions.RemoveEmptyEntries));
 
-                // 整合页面需要的权限数据
-                permissions.TryGetValue(PermissionTypes.Identities, out string identityStr);
-                permissions.TryGetValue(PermissionTypes.Routes, out string routeStr);
-                identities.AddRange(identityStr.Split(CommonConstants.StringConnectChar, StringSplitOptions.RemoveEmptyEntries));
+                var routeStr = await _permissionCacheService.GetRoleRoutesAsync(role);
                 routes.AddRange(routeStr.Split(CommonConstants.StringConnectChar, StringSplitOptions.RemoveEmptyEntries));
             }
 
@@ -184,9 +186,6 @@ namespace Yu.Api.Controllers
 
             // 保存jwtToken到缓存
             _jwtFactory.StoreToken(user.UserName, token);
-
-            // 用户所有的数据权限缓存化
-            await _ruleService.UpdateRulePermissionCacheAsync(user, userRoles);
 
             // 返回结果
             return new LoginResult

@@ -37,9 +37,6 @@ namespace Yu.Service.WebAdmin.Rule
         /// <returns></returns>
         RuleResult GetRuleResult(Guid ruleGroupId);
 
-        /// <summary>
-        /// 更新角色拥有的所有权限的缓存
-        /// </summary>
-        Task UpdateRulePermissionCacheAsync(BaseIdentityUser user, List<string> userRoles);
+
     }
 }

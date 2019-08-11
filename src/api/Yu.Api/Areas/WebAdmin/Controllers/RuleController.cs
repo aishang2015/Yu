@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
+using Yu.Data.Infrasturctures.Mvc;
 using Yu.Model.Common.InputModels;
 using Yu.Model.Message;
 using Yu.Model.WebAdmin.Rule.OutputModels;
@@ -11,7 +12,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
 {
     [Route("api")]
     [Description("规则管理")]
-    public class RuleController : AnonymousController
+    public class RuleController : ApiAuthorizeController
     {
 
         private readonly IRuleService _ruleService;

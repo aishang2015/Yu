@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
+using Yu.Data.Infrasturctures.Mvc;
 using Yu.Model.Common.InputModels;
 using Yu.Service.WebAdmin.Api;
 
@@ -9,7 +10,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
 {
     [Route("api")]
     [Description("接口管理")]
-    public class ApiController : AuthorizeController
+    public class ApiController : ApiAuthorizeController
     {
         private readonly IApiService _apiService;
 

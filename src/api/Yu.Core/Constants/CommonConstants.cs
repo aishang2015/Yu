@@ -23,7 +23,7 @@
         // roleroute缓存key
         public const string RoleRouteMemoryCacheKey = "RoleRouteCache:";
 
-        public const string RuleMemoryCacheKey = "RoleCache:";
+        public const string RuleMemoryCacheKey = "RuleCache:";
 
         public const string SystemManagerRole = "系统管理员";
 

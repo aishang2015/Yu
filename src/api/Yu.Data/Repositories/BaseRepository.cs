@@ -10,7 +10,9 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Yu.Core.Constants;
 using Yu.Core.Expressions;
+using Yu.Core.Extensions;
 using Yu.Data.Entities;
+using Yu.Data.Infrasturctures.Pemission;
 
 namespace Yu.Data.Repositories
 {
@@ -30,20 +32,21 @@ namespace Yu.Data.Repositories
 
         private readonly Expression<Func<TEntity, bool>> _condition;
 
-        public BaseRepository(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache)
+        public BaseRepository(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache, IPermissionCacheService permissionCacheService)
         {
             _context = httpContextAccessor.HttpContext.RequestServices.GetService<TDbContext>();
 
             _dataSet = _context.Set<TEntity>();
 
             var userName = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == CustomClaimTypes.UserName)?.Value;
+            var userRoles = httpContextAccessor.HttpContext.User.GetClaimValue(CustomClaimTypes.Role).Split(',', StringSplitOptions.RemoveEmptyEntries);
             if (!string.IsNullOrEmpty(userName))
             {
                 // 表达式合集
                 var expressionList = new List<LambdaExpression>();
 
                 // 取得用户的数据规则
-                var result = memoryCache.TryGetValue(CommonConstants.RoleMemoryCacheKey + userName, out List<string> permissions);
+                var permissions = permissionCacheService.GetUserRuleAsync(userName, userRoles).Result;
 
                 // 所有规则组
                 foreach (var group in permissions)

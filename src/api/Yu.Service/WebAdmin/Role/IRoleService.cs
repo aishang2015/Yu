@@ -47,48 +47,5 @@ namespace Yu.Service.WebAdmin.Role
         /// <param name="role">角色</param>
         Task UpdateRoleAsync(RoleDetail role);
 
-
-        /// <summary>
-        /// 取得角色拥有的所有权限
-        /// </summary>
-        /// <param name="roleName">角色名称</param>
-        Task<Dictionary<string, string>> GetRolePermissionAsync(string roleName);
-
-        /// <summary>
-        /// 更新角色拥有的所有权限的缓存
-        /// </summary>
-        /// <param name="roleName">角色名称</param>
-        Task<Dictionary<string, string>> UpdateRolePermissionCacheAsync(string roleName);
-
-        /// <summary>
-        /// 获取角色的Claim
-        /// </summary>
-        /// <param name="roleName">角色名</param>
-        Task<List<Claim>> GetRoleClaimAsync(string roleName);
-
-        /// <summary>
-        /// 获取角色的Claim
-        /// </summary>
-        /// <param name="roleName">角色名</param>
-        /// <param name="roleName">Claim类型</param>
-        Task<List<string>> GetRoleClaimAsync(string roleName, string claimType);
-
-        /// <summary>
-        /// 取得角色的api权限
-        /// </summary>
-        /// <returns></returns>
-        Task<string> GetRoleApiAsync(string roleName);
-
-        /// <summary>
-        /// 取得角色拥有的前端识别
-        /// </summary>
-        /// <param name="roleName">角色名称</param>
-        Task<string> GetRoleIdentificationAsync(string roleName);
-
-        /// <summary>
-        /// 取得角色拥有的前端路由
-        /// </summary>
-        /// <param name="roleName">角色名称</param>
-        Task<string> GetRoleRoutesAsync(string roleName);
     }
 }

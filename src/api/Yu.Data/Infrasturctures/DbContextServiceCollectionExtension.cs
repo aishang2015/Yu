@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Yu.Data.Infrasturctures.Mvc;
 using Yu.Data.Infrasturctures.MySql;
+using Yu.Data.Infrasturctures.Pemission;
 using Yu.Data.Infrasturctures.PostgreSql;
 using Yu.Data.Infrasturctures.SqlLite;
 using Yu.Data.Infrasturctures.SqlServer;
+using Yu.Data.Repositories;
 
 namespace Yu.Data.Infrasturctures
 {
@@ -50,6 +53,12 @@ namespace Yu.Data.Infrasturctures
             .AddIdentity<TUser, TRole>(setupAction)     // 使用user和role 进行认证
             .AddEntityFrameworkStores<TDbContext>()       // 使用dbcontext存储
             .AddDefaultTokenProviders();    // 添加默认token生成工具，用其生成的token用来进行密码重置。
+
+            services.AddApiAuthorization(); // 添加api认证Handler
+
+            services.AddScoped<IPermissionCacheService, PermissionCacheService>(); // 权限缓存服务
+
+            services.AddRepositories<TDbContext>(); // 批量注入数据仓储
         }
 
 

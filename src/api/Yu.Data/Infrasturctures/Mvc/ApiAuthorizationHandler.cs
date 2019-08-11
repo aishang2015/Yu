@@ -2,13 +2,15 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Yu.Core.Constants;
 using Yu.Core.Extensions;
+using Yu.Data.Infrasturctures.Pemission;
 
-namespace Yu.Core.Mvc
+namespace Yu.Data.Infrasturctures.Mvc
 {
 
     // 由于要访问roleservice临时将文件放在这里
@@ -16,12 +18,16 @@ namespace Yu.Core.Mvc
     {
         private readonly IMemoryCache _memoryCache;
 
-        public ApiAuthorizationHandler(IMemoryCache memoryCache)
+        private readonly IPermissionCacheService _permissionCacheService;
+
+        public ApiAuthorizationHandler(IMemoryCache memoryCache,
+            IPermissionCacheService permissionCacheService)
         {
             _memoryCache = memoryCache;
+            _permissionCacheService = permissionCacheService;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ApiAuthorizationRequirement requirement)
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ApiAuthorizationRequirement requirement)
         {
             // 转化为HTTPCONTEXT
             AuthorizationFilterContext filterContext = context.Resource as AuthorizationFilterContext;
@@ -31,38 +37,29 @@ namespace Yu.Core.Mvc
             var requestPath = httpContext.Request.Path.Value;
             var requestMethod = httpContext.Request.Method;
 
-            var roles = context.User.GetClaimValue(CustomClaimTypes.Role).Split(',');
+            var roles = context.User.GetClaimValue(CustomClaimTypes.Role).Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             if (roles.Contains("系统管理员"))
             {
                 context.Succeed(requirement);
-                return Task.CompletedTask;
+                return;
             }
             else
             {
                 var api = requestPath + '|' + requestMethod;
                 foreach (var role in roles)
                 {
-                    var result = _memoryCache.TryGetValue(CommonConstants.RoleMemoryCacheKey + role, out List<(string, string)> permissions);
-
-                    // 无法获取则直接处理失败
-                    if (result)
+                    var apis = (await _permissionCacheService.GetRoleApiAsync(role)).Split(CommonConstants.StringConnectChar);
+                    if (apis.Contains(api))
                     {
-
-                        var apis = permissions.Where(tuple => tuple.Item1 == PermissionTypes.Apis).Select(tuple => tuple.Item2).FirstOrDefault().Split(',');
-                        if (apis.Contains(api))
-                        {
-                            context.Succeed(requirement);
-                            return Task.CompletedTask;
-                        }
+                        context.Succeed(requirement);
+                        return;
                     }
-
                 }
 
             }
 
             context.Fail();
-            return Task.CompletedTask;
         }
     }
 }

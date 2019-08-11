@@ -15,6 +15,7 @@ using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Rule.OutputModels;
+using Yu.Service.WebAdmin.Role;
 using ExpressionType = Yu.Core.Expressions.ExpressionType;
 using RuleEntity = Yu.Data.Entities.Right.Rule;
 
@@ -34,6 +35,8 @@ namespace Yu.Service.WebAdmin.Rule
 
         private readonly RoleManager<BaseIdentityRole> _roleManager;
 
+        private readonly IRoleService _roleService;
+
         private readonly IMemoryCache _memoryCache;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -45,6 +48,7 @@ namespace Yu.Service.WebAdmin.Rule
             IRepository<GroupTree, Guid> groupTreeRepository,
             IUnitOfWork<BaseIdentityDbContext> unitOfWork,
             RoleManager<BaseIdentityRole> roleManager,
+            IRoleService roleService,
             IMemoryCache memoryCache,
             IHttpContextAccessor httpContextAccessor)
         {
@@ -54,6 +58,7 @@ namespace Yu.Service.WebAdmin.Rule
             _groupTreeRepository = groupTreeRepository;
             _unitOfWork = unitOfWork;
             _roleManager = roleManager;
+            _roleService = roleService;
             _memoryCache = memoryCache;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -189,77 +194,6 @@ namespace Yu.Service.WebAdmin.Rule
             };
         }
 
-        /// <summary>
-        /// 更新角色拥有的所有数据权限的缓存
-        /// </summary>
-        public async Task UpdateRulePermissionCacheAsync(BaseIdentityUser user, List<string> userRoles)
-        {
-            // 清除此用户的缓存
-            _memoryCache.Remove(CommonConstants.RuleMemoryCacheKey + user.UserName);
-
-            // 系统管理员可以访问任何数据
-            if (userRoles.Contains(CommonConstants.SystemManagerRole))
-            {
-                _memoryCache.GetOrCreate(CommonConstants.RuleMemoryCacheKey + user.UserName, entity => new List<string>());
-            }
-            else
-            {
-                await _memoryCache.GetOrCreateAsync(CommonConstants.RuleMemoryCacheKey + user.UserName,
-                     async entity =>
-                     {
-                         var ruleGroups = new List<string> { };
-                         foreach (var roleName in userRoles)
-                         {
-                             // 查找用户所有的规则
-                             var role = await _roleManager.FindByNameAsync(roleName);
-                             var claims = await _roleManager.GetClaimsAsync(role);
-
-                             // 关联的数据规则
-                             var ruleIds = claims.Where(c => c.Type == CustomClaimTypes.Rule).Select(c => c.Value);
-                             foreach (var ruleGroup in _ruleGroupRepository.GetByWhereNoTracking(rg => ruleIds.Contains(rg.Id.ToString())).ToList())
-                             {
-                                 ruleGroups.Add(ruleGroup.DbContext + '|' + ruleGroup.Entity + '|' + GetExpressionStr(ruleGroup.Id, user.UserName, user.UserGroupId));
-                             }
-                         }
-
-                         return ruleGroups;
-                     });
-            }
-
-        }
-
-        /// <summary>
-        /// 取得规则组的表达式
-        /// </summary>
-        /// <param name="ruleGroupId">规则组ID</param>
-        /// <returns></returns>
-        private string GetExpressionStr(Guid ruleGroupId, string userName, string groupId)
-        {
-            // 规则信息
-            var ruleGroup = _ruleGroupRepository.GetById(ruleGroupId);
-            var rules = Mapper.Map<IEnumerable<RuleEntityResult>>(_ruleRepository.GetByWhereNoTracking(rule => rule.RuleGroupId == ruleGroupId));
-            var ruleConditions = Mapper.Map<IEnumerable<RuleConditionResult>>(_ruleConditionRepository.GetByWhereNoTracking(condition => condition.RuleGroupId == ruleGroupId));
-
-            // 生成表达式
-            var topRule = rules.Where(rule => string.IsNullOrEmpty(rule.UpRuleId)).FirstOrDefault();
-            var entityType = EntityTypeFinder.FindEntityType(ruleGroup.DbContext, ruleGroup.Entity);
-            var expressionGroup = new ExpressionGroup(entityType);
-            var keyValuePairs = new Dictionary<string, string> { };
-            keyValuePairs.Add("UserName", userName);
-            keyValuePairs.Add("GroupId", groupId);
-            MakeExpressionGroup(topRule, rules, ruleConditions, entityType, keyValuePairs, ref expressionGroup);
-
-            // 生成过滤表达式
-            Expression lambda = expressionGroup.GetLambda();
-
-            // 表达式序列化
-            var serializer = new ExpressionSerializer(new JsonSerializer())
-            {
-                AutoAddKnownTypesAsListTypes = true
-            };
-            serializer.AddKnownType(typeof(ExpressionType));
-            return serializer.SerializeText(lambda);
-        }
 
         private void MakeExpressionGroup(RuleEntityResult upRule, IEnumerable<RuleEntityResult> rules,
             IEnumerable<RuleConditionResult> ruleConditions, Type entityType, Dictionary<string, string> keyValuePairs,

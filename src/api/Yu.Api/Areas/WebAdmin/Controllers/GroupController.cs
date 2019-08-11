@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
+using Yu.Data.Infrasturctures.Mvc;
 using Yu.Model.Common.InputModels;
 using Yu.Model.WebAdmin.Group.InputModels;
 using Yu.Service.WebAdmin.Group;
@@ -10,7 +11,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
 {
     [Route("api")]
     [Description("组织结构管理")]
-    public class GroupController : AuthorizeController
+    public class GroupController : ApiAuthorizeController
     {
         private IGroupService _groupService;
 

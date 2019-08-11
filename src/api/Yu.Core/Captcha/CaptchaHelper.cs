@@ -99,7 +99,7 @@ namespace Yu.Core.Captcha
             }
 
             // 绘制混淆内容
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 2; i++)
             {
                 // 线段随机颜色和宽度
                 var fontColor = fontColors[random.Next(0, fontColors.Length)];

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
+using Yu.Data.Infrasturctures.Mvc;
 using Yu.Model.Common.InputModels;
 using Yu.Model.Message;
 using Yu.Model.WebAdmin.Role.InputOuputModels;
@@ -11,7 +12,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
 {
     [Route("api")]
     [Description("角色管理")]
-    public class RoleController : AuthorizeController
+    public class RoleController : ApiAuthorizeController
     {
         private readonly IRoleService _roleService;
 

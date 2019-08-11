@@ -11,6 +11,7 @@ using Yu.Core.Expressions;
 using Yu.Data.Entities;
 using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.Pemission;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Role.InputOuputModels;
 using Yu.Model.WebAdmin.Role.OutputModels;
@@ -31,13 +32,16 @@ namespace Yu.Service.WebAdmin.Role
 
         private readonly IRepository<ApiEntity, Guid> _apiRepository;
 
+        private readonly IPermissionCacheService _permissionCacheService;
+
         private readonly IMemoryCache _memoryCache;
 
         public RoleService(RoleManager<BaseIdentityRole> roleManager,
-            IRepository<ElementEntity, Guid> elementRepository,
+            IRepository<ElementEntity, Guid> elementRepository, 
             IRepository<ElementTree, Guid> elementTreeRepository,
             IRepository<ElementApi, Guid> elementApiRepository,
-            IRepository<ApiEntity, Guid> apiRepository,
+            IRepository<ApiEntity, Guid> apiRepository, 
+            IPermissionCacheService permissionCacheService, 
             IMemoryCache memoryCache)
         {
             _roleManager = roleManager;
@@ -45,8 +49,10 @@ namespace Yu.Service.WebAdmin.Role
             _elementTreeRepository = elementTreeRepository;
             _elementApiRepository = elementApiRepository;
             _apiRepository = apiRepository;
+            _permissionCacheService = permissionCacheService;
             _memoryCache = memoryCache;
         }
+
 
         /// <summary>
         /// 添加角色
@@ -125,8 +131,8 @@ namespace Yu.Service.WebAdmin.Role
             await UpdateRoleClaimAsync(identityRole, role.Elements.ToArray(), CustomClaimTypes.DisPlayElement);
             await UpdateRoleClaimAsync(identityRole, role.DataRules, CustomClaimTypes.Rule);
 
-            // 更新缓存
-            await UpdateRolePermissionCacheAsync(identityRole.Name);
+            // 清理当前角色的权限缓存
+            await _permissionCacheService.ClearRolePermissionCache(identityRole.Name);
         }
 
         /// <summary>
@@ -195,9 +201,8 @@ namespace Yu.Service.WebAdmin.Role
         {
             var role = await _roleManager.FindByIdAsync(id.ToString());
             var roleDetail = Mapper.Map<RoleDetail>(role);
-            var claims = await _roleManager.GetClaimsAsync(role);
-            roleDetail.Elements = claims.Where(c => c.Type == CustomClaimTypes.DisPlayElement).Select(c => c.Value).ToArray();
-            roleDetail.DataRules = claims.Where(c => c.Type == CustomClaimTypes.Rule).Select(c => c.Value).ToArray();
+            roleDetail.Elements = (await _permissionCacheService.GetRoleClaimValuesAsync(role.Name, CustomClaimTypes.DisPlayElement)).ToArray();
+            roleDetail.DataRules = (await _permissionCacheService.GetRoleClaimValuesAsync(role.Name, CustomClaimTypes.Rule)).ToArray();
             return roleDetail;
         }
 
@@ -233,198 +238,8 @@ namespace Yu.Service.WebAdmin.Role
             }
         }
 
-        /// <summary>
-        /// 获取角色的Claim
-        /// </summary>
-        /// <param name="roleName">角色名</param>
-        public async Task<List<Claim>> GetRoleClaimAsync(string roleName)
-        {
-            return await _memoryCache.GetOrCreateAsync(CommonConstants.RoleClaimsMemoryCacheKey + roleName, async entity =>
-            {
-                var role = await _roleManager.FindByNameAsync(roleName);
-                var claims = await _roleManager.GetClaimsAsync(role);
-                return claims.ToList();
-            });
-        }
+        
 
-        /// <summary>
-        /// 获取角色的Claim
-        /// </summary>
-        /// <param name="roleName">角色名</param>
-        /// <param name="roleName">Claim类型</param>
-        public async Task<List<string>> GetRoleClaimAsync(string roleName, string claimType)
-        {
-            var claims = await GetRoleClaimAsync(roleName);
-            return claims.Where(c => c.Type == claimType).Select(c => c.Value).ToList();
-        }
 
-        /// <summary>
-        /// 取得角色的api权限
-        /// </summary>
-        /// <returns></returns>
-        public async Task<string> GetRoleApiAsync(string roleName)
-        {
-            // 系统管理员拥有全部权限
-            if (CommonConstants.SystemManagerRole.Equals(roleName))
-            {
-                return await _memoryCache.GetOrCreateAsync(CommonConstants.RoleApisMemoryCacheKey + roleName, async entity =>
-                {
-                    var elementIds = await GetRoleClaimAsync(roleName, CustomClaimTypes.Element);
-                    var apis = from a in _apiRepository.GetAllNoTracking()
-                               select a.Address + '|' + a.Type;
-                    return string.Join(CommonConstants.StringConnectChar, apis);
-                });
-            }
-            
-            return await _memoryCache.GetOrCreateAsync(CommonConstants.RoleApisMemoryCacheKey + roleName, async entity =>
-            {
-                var elementIds = await GetRoleClaimAsync(roleName, CustomClaimTypes.Element);
-                var apis = from ea in _elementApiRepository.GetAllNoTracking()
-                           join a in _apiRepository.GetAllNoTracking()
-                           on ea.ApiId equals a.Id
-                           where elementIds.Contains(ea.Id.ToString())
-                           select a.Address + '|' + a.Type;
-                return string.Join(CommonConstants.StringConnectChar, apis);
-            });
-        }
-
-        /// <summary>
-        /// 取得角色拥有的前端识别
-        /// </summary>
-        /// <param name="roleName">角色名称</param>
-        public async Task<string> GetRoleIdentificationAsync(string roleName)
-        {
-            // 系统管理员拥有全部权限
-            if (CommonConstants.SystemManagerRole.Equals(roleName))
-            {
-                return await _memoryCache.GetOrCreateAsync(CommonConstants.RoleIdentificationMemoryCacheKey + roleName, async entity =>
-                {
-                    var elementIds = await GetRoleClaimAsync(roleName, CustomClaimTypes.Element);
-                    var identifications = from e in _elementRepository.GetAllNoTracking()
-                                          select e.Identification;
-                    return string.Join(CommonConstants.StringConnectChar, identifications);
-                });
-            }
-
-            return await _memoryCache.GetOrCreateAsync(CommonConstants.RoleIdentificationMemoryCacheKey + roleName, async entity =>
-            {
-                var elementIds = await GetRoleClaimAsync(roleName, CustomClaimTypes.Element);
-                var identifications = from e in _elementRepository.GetAllNoTracking()
-                                      where elementIds.Contains(e.ToString())
-                                      select e.Identification;
-                return string.Join(CommonConstants.StringConnectChar, identifications);
-            });
-        }
-
-        /// <summary>
-        /// 取得角色拥有的前端路由
-        /// </summary>
-        /// <param name="roleName">角色名称</param>
-        public async Task<string> GetRoleRoutesAsync(string roleName)
-        {
-            // 系统管理员拥有全部权限
-            if (CommonConstants.SystemManagerRole.Equals(roleName))
-            {
-                return await _memoryCache.GetOrCreateAsync(CommonConstants.RoleRouteMemoryCacheKey + roleName, async entity =>
-                {
-                    var elementIds = await GetRoleClaimAsync(roleName, CustomClaimTypes.Element);
-                    var routes = from e in _elementRepository.GetAllNoTracking()
-                                 select e.Route;
-                    return string.Join(CommonConstants.StringConnectChar, routes);
-                });
-            }
-
-            return await _memoryCache.GetOrCreateAsync(CommonConstants.RoleRouteMemoryCacheKey + roleName, async entity =>
-            {
-                var elementIds = await GetRoleClaimAsync(roleName, CustomClaimTypes.Element);
-                var routes = from e in _elementRepository.GetAllNoTracking()
-                             where elementIds.Contains(e.ToString())
-                             select e.Route;
-                return string.Join(CommonConstants.StringConnectChar, routes);
-            });
-        }
-
-        /// <summary>
-        /// 取得角色拥有的所有权限
-        /// </summary>
-        /// <param name="roleName">角色名称</param>
-        public async Task<Dictionary<string, string>> GetRolePermissionAsync(string roleName)
-        {
-            if (!CommonConstants.SystemManagerRole.Equals(roleName))
-            {
-                // 判断是否在缓存中
-                return await _memoryCache.GetOrCreateAsync(
-                    CommonConstants.RoleMemoryCacheKey + roleName,
-                    async entity =>
-                    {
-
-                        var result = new Dictionary<string, string>();
-
-                        // 获取所有claim
-                        var role = await _roleManager.FindByNameAsync(roleName);
-                        var claims = await _roleManager.GetClaimsAsync(role);
-
-                        // 关联的元素
-                        var elementIds = claims.Where(c => c.Type == CustomClaimTypes.Element).Select(c => c.Value);
-                        var elements = _elementRepository.GetByWhereNoTracking(e => elementIds.Contains(e.Id.ToString()));
-
-                        // 角色拥有的识别
-                        result.Add(PermissionTypes.Identities, string.Join(CommonConstants.StringConnectChar, elements?.Select(e => e.Identification)));
-
-                        // 角色拥有路由
-                        result.Add(PermissionTypes.Routes, string.Join(CommonConstants.StringConnectChar, elements.Select(e => e.Route)));
-
-                        // 获取所有关联的Api
-                        var apiIds = new List<Guid>();
-                        elementIds.ToList().ForEach(id =>
-                        {
-                            var apiids = _elementApiRepository.GetByWhereNoTracking(ea => ea.ElementId == Guid.Parse(id)).Select(ea => ea.ApiId);
-                            apiIds.AddRange(apiids);
-                        });
-                        var apis = _apiRepository.GetByWhereNoTracking(a => apiIds.Contains(a.Id)).Select(a => a.Address + '|' + a.Type);
-
-                        // 角色可访问的API
-                        result.Add(PermissionTypes.Apis, string.Join(CommonConstants.StringConnectChar, apis));
-
-                        return result;
-                    }
-                );
-            }
-            else
-            {
-                // 系统管理员的情况
-                return _memoryCache.GetOrCreate(
-                    CommonConstants.RoleMemoryCacheKey + roleName,
-                    entity =>
-                    {
-                        // 结果
-                        var result = new Dictionary<string, string>();
-
-                        // 关联的元素
-                        var elements = _elementRepository.GetAllNoTracking();
-
-                        // 角色拥有的识别
-                        result.Add(PermissionTypes.Identities, string.Join(CommonConstants.StringConnectChar, elements?.Select(e => e.Identification)));
-
-                        // 角色拥有路由
-                        result.Add(PermissionTypes.Routes, string.Join(CommonConstants.StringConnectChar, elements.Select(e => e.Route)));
-
-                        // Api权限
-                        result.Add(PermissionTypes.Apis, string.Join(CommonConstants.StringConnectChar, _apiRepository.GetAllNoTracking().Select(a => a.Address + '|' + a.Type)));
-
-                        return result;
-                    });
-            }
-        }
-
-        /// <summary>
-        /// 更新角色拥有的所有权限的缓存
-        /// </summary>
-        /// <param name="roleName">角色名称</param>
-        public async Task<Dictionary<string, string>> UpdateRolePermissionCacheAsync(string roleName)
-        {
-            _memoryCache.Remove(CommonConstants.RoleMemoryCacheKey + roleName);
-            return await GetRolePermissionAsync(roleName);
-        }
     }
 }

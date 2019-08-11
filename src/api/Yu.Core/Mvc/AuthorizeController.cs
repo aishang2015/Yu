@@ -9,7 +9,6 @@ namespace Yu.Core.Mvc
     [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize]
-    [Authorize("ApiPermission")]
     public abstract class AuthorizeController : ControllerBase
     {
     }

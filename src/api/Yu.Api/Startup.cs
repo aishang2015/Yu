@@ -16,6 +16,7 @@ using Yu.Core.Quartznet;
 using Yu.Core.Swagger;
 using Yu.Core.Validators;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.Mvc;
 using Yu.Data.Repositories;
 
 namespace Yu.Api
@@ -43,15 +44,6 @@ namespace Yu.Api
 
             services.AddJwtAuthentication(Configuration); // 配置jwt认证
 
-            services.AddApiAuthorization(); // 添加api认证Handler
-
-            services.AddRepositories<BaseIdentityDbContext>(); // 批量注入仓储
-
-            services.AddCommonDbContext<BaseDbContext>
-                (Configuration.GetConnectionString("SqlServerConnection2"), DatabaseType.SqlServer); // 添加多个数据库
-
-            services.AddRepositories<BaseDbContext>(); // 批量注入仓储
-
             services.AddScopedBatch("Yu.Service.dll"); // 批量注入service
 
             services.AddMvc(ops =>
@@ -59,7 +51,7 @@ namespace Yu.Api
                 ops.ModelBindingMessageProvider.SetAttemptedValueIsInvalidAccessor((value, name) => $"值'{value}'不是合法的'{name}'(SYSTEM)");
             }).AddFluentValidators(); // 添加fluentvalidation支持
 
-            services.ConfigureFluentValidationModelErrors(); // 统一模型验证结果的一致性
+            services.ConfigureFluentValidationModelErrors(); // 统一模型验证结果
 
             services.AddSwaggerConfiguration(); // 配置swagger
 
@@ -84,8 +76,6 @@ namespace Yu.Api
             app.UseCustomCors();    // 使用自定义跨域策略
 
             app.SeedIdentityDbData<BaseIdentityDbContext>();   // 初始化BaseIdentityDbContext数据
-
-            app.SeedDbData<BaseDbContext>(context => { }); // 初始化BaseDbContext数据
 
             app.UseAuthentication(); // 使用认证策略
 

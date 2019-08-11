@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
+using Yu.Data.Infrasturctures.Mvc;
 using Yu.Model.Common.InputModels;
 using Yu.Model.Message;
 using Yu.Model.WebAdmin.Element;
@@ -16,7 +17,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
 {
     [Route("api")]
     [Description("页面元素管理")]
-    public class ElementController : AuthorizeController
+    public class ElementController : ApiAuthorizeController
     {
         private readonly IElementService _elementService;
 
