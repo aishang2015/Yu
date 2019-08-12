@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Yu.Core.Constants;
 using Yu.Core.Expressions;
+using Yu.Core.Extensions;
 using Yu.Core.Utils;
 using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
@@ -78,8 +79,8 @@ namespace Yu.Service.WebAdmin.Rule
             var entityType = EntityTypeFinder.FindEntityType(ruleGroup.DbContext, ruleGroup.Entity);
             var expressionGroup = new ExpressionGroup(entityType);
             var keyValuePairs = new Dictionary<string, string> { };
-            keyValuePairs.Add("UserName", _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == CustomClaimTypes.UserName).Value);
-            keyValuePairs.Add("GroupId", _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == CustomClaimTypes.Group).Value ?? string.Empty);
+            keyValuePairs.Add("UserName", _httpContextAccessor.HttpContext.User.GetClaimValue(CustomClaimTypes.UserName));
+            keyValuePairs.Add("GroupId", _httpContextAccessor.HttpContext.User.GetClaimValue(CustomClaimTypes.Group));
             MakeExpressionGroup(topRule, rules, ruleConditions, entityType, keyValuePairs, ref expressionGroup);
 
             // 用当前用户数据检查表达式是否正确

@@ -59,7 +59,7 @@ namespace Yu.Core.Mvc
                     // 这里约定两种情况“api/[controller]/[action]”即带action，httpattribute不带参数使用默认的方法名
                     // 和不带action但是httpattribute必须带参数。
                     var finnalPath = routeAttribute.Template.Replace("[controller]", controllerName).Replace("[action]", methodInfo.Name);
-                    finnalPath = string.IsNullOrEmpty(httpAttribute.Template) ? finnalPath : finnalPath + '/' + httpAttribute.Template;
+                    finnalPath = '/' + (string.IsNullOrEmpty(httpAttribute.Template) ? finnalPath : finnalPath) + '/' + httpAttribute.Template;
 
                     result.Add((descriptionAttribute?.Description + '-' + methoddescriptionAttribute?.Description, controllerName, httpAttribute.HttpMethods.First(), finnalPath));
                 }
