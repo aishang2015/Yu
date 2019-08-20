@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Linq;
@@ -137,7 +138,7 @@ namespace Yu.Service.Account
         /// <param name="phoneNumber">电话号码</param>
         public async Task<bool> ResetUserPasswordByPhone(string phoneNumber)
         {
-            var user = _userManager.Users.FirstOrDefault(u => u.PhoneNumber == phoneNumber);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
             if (user == null)
             {
                 return false;

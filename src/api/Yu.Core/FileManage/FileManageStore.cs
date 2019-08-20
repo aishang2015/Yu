@@ -7,10 +7,7 @@ using System.Threading.Tasks;
 namespace Yu.Core.FileManage
 {
     public class FileManageStore : IFileStore
-    {
-
-        // 文件访问的服务器路径
-        private readonly string _requestPath;
+    {     
 
         /// <summary>
         /// 取得文件信息

@@ -20,6 +20,10 @@
   - Expression序列化和反序列化：Serialize.Linq 1.8.1 
   - API文档：Swashbuckle.AspNetCore 4.0.1
   - 作业调度：Quartz.Net 3.0.7
+  - PostgreSQL支持：Npgsql.EntityFrameworkCore.PostgreSQL 2.2.4
+  - MySQL支持：Pomelo.EntityFrameworkCore.MySql 2.2.0
+  - SQLite支持：Microsoft.EntityFrameworkCore.Sqlite 2.2.6
+  - Redis：StackExchange.Redis 2.0.601
 - web
   - 核心框架：angular 8.1.3
   - UI框架：ng-zorro-antd 8.1.2
@@ -62,6 +66,11 @@ src
 	├───Yu.Model 模型层，所有的验证数据映射放在这里
 	├───Yu.Service 业务处理层，所有的业务处理放在这里
 	├───Yu.Data 实体层，包含实体定义，仓储实现等
+		├───Configurations 实体配置
+		├───Entities 实体定义
+		├───Infrasturctures 基础设施
+		├───Redis Redis处理类
+		└───Repositories 仓储类
 	└───Yu.Core 核心层，netcore功能和第三方功能的封装
 		├───AutoMapper automapper配置
 		├───Captcha 验证码功能

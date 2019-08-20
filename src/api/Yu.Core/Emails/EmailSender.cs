@@ -32,9 +32,9 @@ namespace Yu.Core.Emails
             message.IsBodyHtml = true;
             try
             {
-                _smtpClient.Send(message);
+                await _smtpClient.SendMailAsync(message);
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }

@@ -17,6 +17,7 @@ using Yu.Core.Swagger;
 using Yu.Core.Validators;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Infrasturctures.Mvc;
+using Yu.Data.Redis;
 using Yu.Data.Repositories;
 
 namespace Yu.Api
@@ -58,6 +59,8 @@ namespace Yu.Api
             services.AddFileManage(); // 静态文件操作类
 
             services.AddQuartzNet(); // 添加作业调度
+
+            services.AddStatckExchangeRedis(Configuration); // 添加redis支持
         }
 
         // 构建管道
