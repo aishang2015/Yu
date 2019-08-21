@@ -17,6 +17,7 @@ using Yu.Core.Swagger;
 using Yu.Core.Validators;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Infrasturctures.Mvc;
+using Yu.Data.MongoDB;
 using Yu.Data.Redis;
 using Yu.Data.Repositories;
 
@@ -61,6 +62,8 @@ namespace Yu.Api
             services.AddQuartzNet(); // 添加作业调度
 
             services.AddStatckExchangeRedis(Configuration); // 添加redis支持
+
+            services.AddMongoDb(Configuration); // 添加mongodb支持
         }
 
         // 构建管道
