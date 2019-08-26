@@ -24,6 +24,7 @@
   - MySQL支持：Pomelo.EntityFrameworkCore.MySql 2.2.0
   - SQLite支持：Microsoft.EntityFrameworkCore.Sqlite 2.2.6
   - Redis：StackExchange.Redis 2.0.601
+  - MongoDB：MongoDB.Driver 2.9.0
 - web
   - 核心框架：angular 8.1.3
   - UI框架：ng-zorro-antd 8.1.2
