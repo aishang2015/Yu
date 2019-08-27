@@ -18,7 +18,9 @@ namespace Yu.Core.AutoMapper
             {
                 mapperConfigurationExpression.AddProfile(profile);
             }
-            Mapper.Initialize(mapperConfigurationExpression);
+            var mapperConfig = new MapperConfiguration(mapperConfigurationExpression);
+            var mapper = new Mapper(mapperConfig);
+            serviceCollection.AddSingleton<IMapper>(mapper);
         }
 
         private class AutoMapperProfile : Profile

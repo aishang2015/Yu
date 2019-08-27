@@ -42,6 +42,7 @@ namespace Yu.Service.WebAdmin.Rule
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        private readonly IMapper _mapper;
 
         public RuleService(IRepository<RuleEntity, Guid> ruleEntityRepository,
             IRepository<RuleCondition, Guid> ruleConditionRepository,
@@ -51,7 +52,8 @@ namespace Yu.Service.WebAdmin.Rule
             RoleManager<BaseIdentityRole> roleManager,
             IRoleService roleService,
             IMemoryCache memoryCache,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IMapper mapper)
         {
             _ruleRepository = ruleEntityRepository;
             _ruleConditionRepository = ruleConditionRepository;
@@ -62,6 +64,7 @@ namespace Yu.Service.WebAdmin.Rule
             _roleService = roleService;
             _memoryCache = memoryCache;
             _httpContextAccessor = httpContextAccessor;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -138,8 +141,8 @@ namespace Yu.Service.WebAdmin.Rule
             ruleConditions.ToList().ForEach(condition => condition.Id = GuidUtil.NewSquentialGuid().ToString());
 
             // 保存全部数据
-            await _ruleRepository.InsertRangeAsync(Mapper.Map<IEnumerable<RuleEntity>>(rules));
-            await _ruleConditionRepository.InsertRangeAsync(Mapper.Map<IEnumerable<RuleCondition>>(ruleConditions));
+            await _ruleRepository.InsertRangeAsync(_mapper.Map<IEnumerable<RuleEntity>>(rules));
+            await _ruleConditionRepository.InsertRangeAsync(_mapper.Map<IEnumerable<RuleCondition>>(ruleConditions));
 
             // 更新或添加规则组
             if (group == null)
@@ -190,8 +193,8 @@ namespace Yu.Service.WebAdmin.Rule
             return new RuleResult
             {
                 RuleGroup = _ruleGroupRepository.GetById(ruleGroupId),
-                Rules = Mapper.Map<IEnumerable<RuleEntityResult>>(_ruleRepository.GetByWhereNoTracking(rule => rule.RuleGroupId == ruleGroupId)),
-                RuleConditions = Mapper.Map<IEnumerable<RuleConditionResult>>(_ruleConditionRepository.GetByWhereNoTracking(condition => condition.RuleGroupId == ruleGroupId))
+                Rules = _mapper.Map<IEnumerable<RuleEntityResult>>(_ruleRepository.GetByWhereNoTracking(rule => rule.RuleGroupId == ruleGroupId)),
+                RuleConditions = _mapper.Map<IEnumerable<RuleConditionResult>>(_ruleConditionRepository.GetByWhereNoTracking(condition => condition.RuleGroupId == ruleGroupId))
             };
         }
 

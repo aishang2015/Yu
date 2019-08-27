@@ -11,6 +11,7 @@ using Yu.Core.Cors;
 using Yu.Core.Extensions;
 using Yu.Core.FileManage;
 using Yu.Core.Jwt;
+using Yu.Core.MQTT;
 using Yu.Core.Mvc;
 using Yu.Core.Quartznet;
 using Yu.Core.Swagger;
@@ -64,6 +65,8 @@ namespace Yu.Api
             services.AddStatckExchangeRedis(Configuration); // 添加redis支持
 
             services.AddMongoDb(Configuration); // 添加mongodb支持
+
+            services.AddMqtt(Configuration); // 添加MQTT支持
         }
 
         // 构建管道
@@ -78,6 +81,8 @@ namespace Yu.Api
             {
                 app.UseHsts(); // 严格http传输
             }
+
+            app.UseMqtt(); // 解析mqtt请求。
 
             app.UseCustomCors();    // 使用自定义跨域策略
 

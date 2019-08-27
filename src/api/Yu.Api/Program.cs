@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
+using MQTTnet.AspNetCore;
 using NLog.Web;
 using System;
 
@@ -31,6 +32,12 @@ namespace Yu.Api
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseKestrel(o =>
+                {
+                    o.ListenAnyIP(1883, l => l.UseMqtt());
+                    o.ListenAnyIP(5001, l => l.UseHttps());
+                    o.ListenAnyIP(5000);
+                })
                 .UseStartup<Startup>()
                 .ConfigureLogging(logging =>
                 {

@@ -36,13 +36,16 @@ namespace Yu.Service.WebAdmin.Role
 
         private readonly IMemoryCache _memoryCache;
 
+        private readonly IMapper _mapper;
+
         public RoleService(RoleManager<BaseIdentityRole> roleManager,
             IRepository<ElementEntity, Guid> elementRepository, 
             IRepository<ElementTree, Guid> elementTreeRepository,
             IRepository<ElementApi, Guid> elementApiRepository,
             IRepository<ApiEntity, Guid> apiRepository, 
             IPermissionCacheService permissionCacheService, 
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            IMapper mapper)
         {
             _roleManager = roleManager;
             _elementRepository = elementRepository;
@@ -51,6 +54,7 @@ namespace Yu.Service.WebAdmin.Role
             _apiRepository = apiRepository;
             _permissionCacheService = permissionCacheService;
             _memoryCache = memoryCache;
+            _mapper = mapper;
         }
 
 
@@ -189,7 +193,7 @@ namespace Yu.Service.WebAdmin.Role
             return new PagedData<RoleOutline>
             {
                 Total = _roleManager.Roles.Where(filter).Count(),
-                Data = Mapper.Map<List<RoleOutline>>(roles)
+                Data = _mapper.Map<List<RoleOutline>>(roles)
             };
         }
 
@@ -200,7 +204,7 @@ namespace Yu.Service.WebAdmin.Role
         public async Task<RoleDetail> GetRoleAsync(Guid id)
         {
             var role = await _roleManager.FindByIdAsync(id.ToString());
-            var roleDetail = Mapper.Map<RoleDetail>(role);
+            var roleDetail = _mapper.Map<RoleDetail>(role);
             roleDetail.Elements = (await _permissionCacheService.GetRoleClaimValuesAsync(role.Name, CustomClaimTypes.DisPlayElement)).ToArray();
             roleDetail.DataRules = (await _permissionCacheService.GetRoleClaimValuesAsync(role.Name, CustomClaimTypes.Rule)).ToArray();
             return roleDetail;

@@ -33,13 +33,16 @@ namespace Yu.Service.WebAdmin.User
 
         private string _serverFileRootPath;
 
+        private readonly IMapper _mapper;
+
         public UserService(
             UserManager<BaseIdentityUser> userManager,
             RoleManager<BaseIdentityRole> roleManager,
             IRepository<GroupEntity, Guid> groupRepository,
             IJwtFactory jwtFactory,
             IFileStore fileStore,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IMapper mapper)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -47,6 +50,7 @@ namespace Yu.Service.WebAdmin.User
             _jwtFactory = jwtFactory;
             _fileStore = fileStore;
             _serverFileRootPath = configuration["AvatarFileOption:ServerFileStorePath"];
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -54,7 +58,7 @@ namespace Yu.Service.WebAdmin.User
         /// </summary>
         public async Task<bool> AddUserAsync(UserDetail userDetail)
         {
-            var user = Mapper.Map<BaseIdentityUser>(userDetail);
+            var user = _mapper.Map<BaseIdentityUser>(userDetail);
             var result = await _userManager.CreateAsync(user, CommonConstants.Password);
 
             if (!result.Succeeded)
@@ -94,7 +98,7 @@ namespace Yu.Service.WebAdmin.User
         public async Task<UserDetail> GetUserDetailAsync(Guid userId)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            var result = Mapper.Map<UserDetail>(user);
+            var result = _mapper.Map<UserDetail>(user);
 
             // 组织名称
             if (!string.IsNullOrEmpty(user.UserGroupId))
@@ -151,7 +155,7 @@ namespace Yu.Service.WebAdmin.User
             var users = _userManager.Users.Where(filter).Skip(skip).Take(pageSize).ToList();
 
             // 结果数据
-            var userOutlines = Mapper.Map<List<UserOutline>>(users);
+            var userOutlines = _mapper.Map<List<UserOutline>>(users);
 
             // 设定组织名称
             var groups = _groupRepository.GetAllNoTracking().ToList();
@@ -217,7 +221,7 @@ namespace Yu.Service.WebAdmin.User
         public async Task<bool> UpdateUserDetailAsync(UserDetail userDetail)
         {
             var user = await _userManager.FindByIdAsync(userDetail.Id.ToString());
-            Mapper.Map(userDetail, user);
+            _mapper.Map(userDetail, user);
 
             // 先删除再添加角色
             var roles = await _userManager.GetRolesAsync(user);

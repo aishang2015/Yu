@@ -17,11 +17,15 @@ namespace Yu.Service.WebAdmin.Entity
 
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
+        private readonly IMapper _mapper;
+
         public EntityService(IRepository<EntityData, Guid> entityRepository,
-            IUnitOfWork<BaseIdentityDbContext> unitOfWork)
+            IUnitOfWork<BaseIdentityDbContext> unitOfWork,
+            IMapper mapper)
         {
             _entityRepository = entityRepository;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
 
@@ -41,7 +45,7 @@ namespace Yu.Service.WebAdmin.Entity
         public IEnumerable<EntityOutline> GetAllEntityOutline()
         {
             var entities = _entityRepository.GetAllNoTracking();
-            return Mapper.Map<List<EntityOutline>>(entities);
+            return _mapper.Map<List<EntityOutline>>(entities);
         }
 
         /// <summary>

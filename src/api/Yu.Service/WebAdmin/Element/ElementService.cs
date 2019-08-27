@@ -27,15 +27,19 @@ namespace Yu.Service.WebAdmin.Element
         // 工作单元
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
+        private readonly IMapper _mapper;
+
         public ElementService(IRepository<Ele, Guid> elementRepository,
             IRepository<EleTree, Guid> elementTreeRepository,
             IRepository<ElementApi, Guid> elementApiRepository,
-            IUnitOfWork<BaseIdentityDbContext> unitOfWork)
+            IUnitOfWork<BaseIdentityDbContext> unitOfWork,
+            IMapper mapper)
         {
             _elementRepository = elementRepository;
             _elementTreeRepository = elementTreeRepository;
             _elementApiRepository = elementApiRepository;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -62,7 +66,7 @@ namespace Yu.Service.WebAdmin.Element
         /// <param name="elementDetail">元素内容</param>
         public async Task CreateElementAsync(ElementDetail elementDetail)
         {
-            var ele = await _elementRepository.InsertAsync(Mapper.Map<Ele>(elementDetail));
+            var ele = await _elementRepository.InsertAsync(_mapper.Map<Ele>(elementDetail));
 
             // 如果没有上级id则为根节点
             if (!string.IsNullOrEmpty(elementDetail.UpId))
@@ -152,7 +156,7 @@ namespace Yu.Service.WebAdmin.Element
         /// <param name="elementDetail">元素内容</param>
         public async Task UpdateElementAsync(ElementDetail elementDetail)
         {
-            _elementRepository.Update(Mapper.Map<Ele>(elementDetail));
+            _elementRepository.Update(_mapper.Map<Ele>(elementDetail));
 
             // 更新api关联
             _elementApiRepository.DeleteRange(ea => Guid.Parse(elementDetail.Id) == ea.ElementId);

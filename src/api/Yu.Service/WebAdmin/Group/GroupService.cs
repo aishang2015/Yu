@@ -17,14 +17,17 @@ namespace Yu.Service.WebAdmin.Group
         private IRepository<G, Guid> _groupRepository;
         private IRepository<GroupTree, Guid> _groupTreeRepository;
         private IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
+        private readonly IMapper _mapper;
 
         public GroupService(IRepository<G, Guid> groupRepository,
             IRepository<GroupTree, Guid> groupTreeRepository,
-            IUnitOfWork<BaseIdentityDbContext> unitOfWork)
+            IUnitOfWork<BaseIdentityDbContext> unitOfWork,
+            IMapper mapper)
         {
             _groupRepository = groupRepository;
             _groupTreeRepository = groupTreeRepository;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -33,7 +36,7 @@ namespace Yu.Service.WebAdmin.Group
         public async Task CreateGroupAsync(GroupDetail groupDetail)
         {
             // 插入组织
-            var group = await _groupRepository.InsertAsync(Mapper.Map<G>(groupDetail));
+            var group = await _groupRepository.InsertAsync(_mapper.Map<G>(groupDetail));
 
             // 上级组织树节点
             if (!string.IsNullOrEmpty(groupDetail.UpId))
@@ -117,7 +120,7 @@ namespace Yu.Service.WebAdmin.Group
         public async Task UpdateGroupAsync(GroupDetail groupDetail)
         {
             // 更新
-            _groupRepository.Update(Mapper.Map<G>(groupDetail));
+            _groupRepository.Update(_mapper.Map<G>(groupDetail));
             await _unitOfWork.CommitAsync();
         }
     }
