@@ -3,10 +3,10 @@
 export class UriConstant {
 
     // 服务应用地址
-    static readonly ServerUri: string = 'https://localhost:44334/';
+    static readonly ServerUri: string = 'https://localhost:5001/';
 
     // api地址
-    static readonly BaseApiUri: string = 'https://localhost:44334/api/';
+    static readonly BaseApiUri: string = 'https://localhost:5001/api/';
 
     // 头像地址
     static readonly AvatarBaseUri: string = UriConstant.ServerUri + 'avatar/';

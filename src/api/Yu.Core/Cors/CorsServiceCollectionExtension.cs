@@ -36,7 +36,7 @@ namespace Yu.Core.Cors
                 // 设置Origin
                 if (string.IsNullOrEmpty(origin))
                 {
-                    builder.AllowAnyOrigin();
+                    builder.SetIsOriginAllowed(o=>true);
                 }
                 else
                 {
@@ -69,6 +69,8 @@ namespace Yu.Core.Cors
                     builder.WithExposedHeaders(exposedHeaders.Split(','));
                 }
 
+                // 允许处理cookie
+                builder.AllowCredentials();
             };
 
             // 设置

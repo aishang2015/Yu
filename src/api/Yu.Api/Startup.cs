@@ -12,15 +12,13 @@ using Yu.Core.Extensions;
 using Yu.Core.FileManage;
 using Yu.Core.Jwt;
 using Yu.Core.MQTT;
-using Yu.Core.Mvc;
 using Yu.Core.Quartznet;
+using Yu.Core.SignalR;
 using Yu.Core.Swagger;
 using Yu.Core.Validators;
 using Yu.Data.Infrasturctures;
-using Yu.Data.Infrasturctures.Mvc;
 using Yu.Data.MongoDB;
 using Yu.Data.Redis;
-using Yu.Data.Repositories;
 
 namespace Yu.Api
 {
@@ -45,7 +43,7 @@ namespace Yu.Api
             services.AddIdentityDbContext<BaseIdentityDbContext, BaseIdentityUser, BaseIdentityRole, Guid>
                 (Configuration.GetConnectionString("SqlServerConnection1"), DatabaseType.SqlServer); // 认证数据库上下文
 
-            services.AddJwtAuthentication(Configuration); // 配置jwt认证
+            services.AddJwtAuthentication(Configuration, true); // 配置jwt认证
 
             services.AddScopedBatch("Yu.Service.dll"); // 批量注入service
 
@@ -67,6 +65,8 @@ namespace Yu.Api
             services.AddMongoDb(Configuration); // 添加mongodb支持
 
             services.AddMqtt(Configuration); // 添加MQTT支持
+
+            services.AddSignalR(); // 添加signalr
         }
 
         // 构建管道
@@ -83,12 +83,14 @@ namespace Yu.Api
             }
 
             app.UseMqtt(); // 解析mqtt请求。
-
+                       
             app.UseCustomCors();    // 使用自定义跨域策略
 
             app.SeedIdentityDbData<BaseIdentityDbContext>();   // 初始化BaseIdentityDbContext数据
 
             app.UseAuthentication(); // 使用认证策略
+
+            app.UseSignalR(); // 使用signalr
 
             app.UseStaticFiles(Configuration, "AvatarFileOption"); // 配置静态文件访问路径和服务器目录
 

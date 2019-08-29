@@ -19,6 +19,7 @@ namespace Yu.Core.MQTT
             // 访问配置文件
             var mqttOption = services.BuildServiceProvider().GetRequiredService<IOptions<MqttOption>>().Value;
 
+            // mqtt配置构建
             var option = new MqttServerOptionsBuilder()
                 .WithDefaultEndpointBoundIPAddress(IPAddress.Parse(mqttOption.IpAddress))
                 .WithDefaultEndpointPort(mqttOption.Port)
@@ -32,6 +33,7 @@ namespace Yu.Core.MQTT
                     context.ReasonCode = MqttConnectReasonCode.Success;
                 }).Build();
 
+            // IMqttServer被注册到容器，可以取得并用其发布消息
             services.AddHostedMqttServer(option)
                 .AddMqttConnectionHandler()
                 .AddConnections();

@@ -25,6 +25,8 @@
   - SQLite支持：Microsoft.EntityFrameworkCore.Sqlite 2.2.6
   - Redis：StackExchange.Redis 2.0.601
   - MongoDB：MongoDB.Driver 2.9.0
+  - MQTT：MQTTNet.AspNetCore 3.0.8
+  - SignalR: Microsoft.AspNet.SignalR 2.4.1
 - web
   - 核心框架：angular 8.1.3
   - UI框架：ng-zorro-antd 8.1.2
@@ -81,8 +83,10 @@ src
 		├───Extensions 一些基本类的功能扩展
 		├───FileManage 文件操作
 		├───Jwt jwt配置
+		├───MQTT MQTTNet扩展
 		├───Mvc controller基类和认证过滤器
 		├───Quartznet 
+		├───SignalR SignalR配置
 		├───Swagger
 		├───Utils 
 		├───Validators fluentvalidtion配置

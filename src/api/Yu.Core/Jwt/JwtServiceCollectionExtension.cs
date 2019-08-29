@@ -11,7 +11,7 @@ namespace Yu.Core.Jwt
 {
     public static class JwtServiceCollectionExtension
     {
-        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration, bool useSignalR = false)
         {
             // 使用缓存
             services.AddMemoryCache();
@@ -43,9 +43,25 @@ namespace Yu.Core.Jwt
                 // 自定义事件
                 ops.Events = new JwtBearerEvents()
                 {
-                    OnMessageReceived = context => { return Task.CompletedTask; },
+                    OnMessageReceived = context =>
+                    {
+                        if (useSignalR)
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            // 如果请求来自Hub
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub"))
+                            {
+                                // 设置token
+                                context.Token = accessToken;
+                            }
+                        }
+                        return Task.CompletedTask;
+                    },
                     OnTokenValidated = context =>
                      {
+
                          // 取得当前请求下的memorycache
                          var memoryCache = context.HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
 
@@ -56,6 +72,21 @@ namespace Yu.Core.Jwt
                          {
                              // 验证缓存的token和当前访问的token是否是同一个
                              var bearerToken = context.Request.Headers["Authorization"].ToString();
+
+                             // 使用signalr的情况从query中取得token
+                             if (useSignalR)
+                             {
+                                 if (context.Request.Path == "/hub")
+                                 {
+                                     bearerToken = context.Request.Query["access_token"];
+                                 }
+                                 else
+                                 {
+                                     // /hub/negotiate
+                                     return Task.CompletedTask;
+                                 }
+                             }
+
                              if (!bearerToken.Contains(token))
                              {
                                  context.Fail("TokenNoExist");
@@ -70,7 +101,7 @@ namespace Yu.Core.Jwt
                      },
                     OnChallenge = context =>
                     {
-                        if (context.AuthenticateFailure.Message == "TokenNoExist")
+                        if (context.AuthenticateFailure?.Message == "TokenNoExist")
                         {
                             context.HandleResponse();
                             context.Response.StatusCode = 470;
