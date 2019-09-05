@@ -1,0 +1,35 @@
+<h3 nz-title>流程图1</h3>
+<div id="operateBar">
+    <button nz-button nzType="primary" (click)="addNode()">添加节点</button>
+    <button nz-button nzType="primary">重置</button>
+    <button nz-button nzType="primary">保存</button>
+</div>
+<nz-divider></nz-divider>
+<div id="flowContainer">
+    <div id="flowContainer">
+        <button nz-button nzType="link" nzShape="circle" nzGhost (click)="zoomInClick()"><i nz-icon nzType="zoom-in"
+                nzTheme="outline"></i></button>
+        <button nz-button nzType="link" nzShape="circle" nzGhost (click)="zoomOutClick()"><i nz-icon nzType="zoom-out"
+                nzTheme="outline"></i></button>
+        <button nz-button nzType="link" nzShape="circle" nzGhost (click)="fitClick()"><i nz-icon nzType="redo"
+                nzTheme="outline"></i></button>
+        <div id="zoomContainer" #zoomContainer>
+            <div id="diagramContainer" #diagram>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #nodeSelectModal>
+    <app-node-select #nodeSelector></app-node-select>
+    <nz-divider></nz-divider>
+    <button class="mr-5" nz-button (click)="confirm(nodeSelector.checkedValue)">确定</button>
+    <button class="mr-5" nz-button (click)="cancel()">取消</button>
+</ng-template>
+
+<nz-dropdown-menu #menu="nzDropdownMenu">
+    <ul nz-menu>
+        <li nz-menu-item (click)="editNode()"><i nz-icon nzType="edit" nzTheme="outline"></i>编辑</li>
+        <li nz-menu-item (click)="deleteNode()"><i nz-icon nzType="delete" nzTheme="outline"></i>删除</li>
+    </ul>
+</nz-dropdown-menu>

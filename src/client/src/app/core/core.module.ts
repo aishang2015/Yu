@@ -15,7 +15,11 @@ import { CanOperateDirective } from './directives/can-operate.directive';
 /** 配置 angular i18n **/
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
+import { DragDirective } from './directives/drag.directive';
 registerLocaleData(zh);
+
+import { DragDropModule } from '@angular/cdk/drag-drop'; 
+import { NodeSelectComponent } from './components/node-select/node-select.component';
 
 @NgModule({
   imports: [
@@ -25,6 +29,7 @@ registerLocaleData(zh);
   ],
   declarations: [
     AppRuleComponent, // 规则编辑组件
+    NodeSelectComponent, // 流程图节点选择组件
 
     GenderPipe, // 性别转换管道
     ImageUriPipe, // 图片地址转换
@@ -41,6 +46,7 @@ registerLocaleData(zh);
     FormsModule,
     NgZorroAntdModule,
     AppRuleComponent,
+    NodeSelectComponent,
     GenderPipe,
     ImageUriPipe,
     TelephoneValidatorDirective,
@@ -49,6 +55,7 @@ registerLocaleData(zh);
     CanOperateDirective,
     DebounceClickDirective,
     ThrottleClickDirective,
+    DragDropModule,
   ],
   /** 配置 ng-zorro-antd 国际化（文案 及 日期） **/
   providers: [
