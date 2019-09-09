@@ -60,7 +60,7 @@ namespace Yu.Api
 
             services.AddQuartzNet(); // 添加作业调度
 
-            services.AddStatckExchangeRedis(Configuration); // 添加redis支持
+            services.AddDistributedRedisCache(Configuration); // 使用Redis分布式缓存
 
             services.AddMongoDb(Configuration); // 添加mongodb支持
 
