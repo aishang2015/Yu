@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -15,21 +15,13 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Update="Template\api\Controller.tt">
+    <None Update="Template\CodeTemplate.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Controller.cs</LastGenOutput>
+      <LastGenOutput>CodeTemplate.cs</LastGenOutput>
     </None>
-    <None Update="Template\api\IService.tt">
+    <None Update="Template\ModelAuto.ttinclude">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IService.cs</LastGenOutput>
-    </None>
-    <None Update="Template\api\Service.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Service.cs</LastGenOutput>
-    </None>
-    <None Update="Template\web\service.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>service.service.ts</LastGenOutput>
+      <LastGenOutput>ModelAuto.cs</LastGenOutput>
     </None>
   </ItemGroup>
   

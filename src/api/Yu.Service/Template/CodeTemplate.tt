@@ -1,0 +1,313 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO"#>
+<#@ import namespace="Microsoft.VisualStudio.TextTemplating"#>
+
+<#@ include file="ModelAuto.ttinclude"#>
+<# var manager2 = new Manager(Host, GenerationEnvironment, true) { OutputPath = Path.GetDirectoryName(Host.TemplateFile)}; #>
+
+
+<# var EntityName = "ABC"; #>
+<# var EntityKeyType = "Guid"; #>
+<# var EntityDescribe = "this is abc"; #>
+<# var ModuleName = "abcMange"; #>
+<# var ControllerDescribe = "abc管理"; #>
+<# var Route = "abc"; #>
+<# var DbContextName = "BaseIdentityDbContext";#>
+<# var otherRepository = new System.Collections.Generic.List<string[]>()
+	{
+		// {"元素名"，"主键名"，"元素实例名"}
+	    // new string[]{"ElementTree","Guid","elementTree"}
+	};	
+#>
+<# var entityProperties = new System.Collections.Generic.List<string[]>()
+	{
+		// {"Name"，"Type"，"Describe"}
+	    // new string[]{"","",""}
+	};	
+#>
+
+<# var EntityNamespace = "Yu.Data.Entities." + ModuleName; #>
+<# var ServiceNamespace = "Yu.Service." + ModuleName + "." + EntityName + "s"; #>
+<# var ControllerNamespace = "Yu.Api.Areas." + ModuleName + "." + "Controllers"; #>
+
+
+<# 
+	manager2.StartBlock(EntityName + ".cs");
+#>
+
+using System;
+using Yu.Data.Infrasturctures;
+
+namespace <#=EntityNamespace#>
+{
+    [BelongTo(typeof(<#=DbContextName#>))]
+    public class <#=EntityName#> : BaseEntity<<#=EntityKeyType#>>
+    {
+		<# for(int i= 0; i< entityProperties.Count; i++){ #>		
+	    // <#=entityProperties[i][2]#>
+		public <#=entityProperties[i][1]#> <#=entityProperties[i][0]#> { get; set; }
+		<# }#>
+    }
+}
+
+<# 
+	manager2.EndBlock(); 
+#>
+
+<# 
+	manager2.StartBlock(EntityName + "Service.cs");
+#>
+
+using System;
+using System.Threading.Tasks;
+using Yu.Data.Entities;
+using Yu.Data.Infrasturctures;
+using Yu.Data.Repositories;
+using <#=EntityNamespace#>;
+
+namespace <#=ServiceNamespace#>
+{
+    public class <#=EntityName#>Service : I<#=EntityName#>Service
+    {
+
+	    // 仓储类
+        private IRepository<<#=EntityName#>, <#=EntityKeyType#>> _repository;
+
+		<# for(int i= 0; i< otherRepository.Count; i++){ #>		
+	    // 仓储类
+		private IRepository<<#=otherRepository[i][0]#>, <#=otherRepository[i][1]#>> _<#=otherRepository[i][2]#>Repository;			 
+		<# }#>
+
+        // 工作单元
+        private readonly IUnitOfWork<<#=DbContextName#>> _unitOfWork;
+
+
+        public <#=EntityName#>Service(IRepository<<#=EntityName#>, Guid> repository, <# for(int i= 0; i< otherRepository.Count; i++){ #>		
+					IRepository<<#=otherRepository[i][0]#>, <#=otherRepository[i][1]#>> <#=otherRepository[i][2]#>Repository, 		 
+					<# }#>IUnitOfWork<BaseIdentityDbContext> unitOfWork)
+        {
+            _repository = repository;
+			<# for(int i= 0; i< otherRepository.Count; i++){#>
+					_<#=otherRepository[i][2]#>Repository = <#=otherRepository[i][2]#>Repository;	 
+			<# }#>
+			_unitOfWork = unitOfWork;
+        }
+
+		/// <summary>
+        /// 添加数据
+        /// </summary>
+        public async Task Add<#=EntityName#>Async(<#=EntityName#> entity)
+        {
+            await _repository.InsertAsync(entity);
+            await _unitOfWork.CommitAsync();
+        }
+
+        /// <summary>
+        /// 删除数据
+        /// </summary>
+        public async Task Delete<#=EntityName#>Async(<#=EntityKeyType#> id)
+        {
+            _repository.DeleteRange(e => e.Id == id);
+            await _unitOfWork.CommitAsync();
+        }
+
+        /// <summary>
+        /// 取得数据
+        /// </summary>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">页面大小</param>
+        public PagedData<<#=EntityName#>> Get<#=EntityName#>s(int pageIndex, int pageSize, string searchText = "")
+        {
+            // 查询过滤
+            var query = _repository.GetAllNoTracking();
+
+            // 生成结果
+            return _repository.GetByPage(query, pageIndex, pageSize);
+        }
+
+        /// <summary>
+        /// 更新数据
+        /// </summary>
+        public async Task Update<#=EntityName#>Async(<#=EntityName#> entity)
+        {
+            _repository.Update(entity);
+            await _unitOfWork.CommitAsync();
+        }
+	}
+}
+
+<# 
+	manager2.EndBlock(); 
+#>
+
+
+<# 
+	manager2.StartBlock("I" + EntityName + "Service.cs");
+#>
+
+using System;
+using System.Threading.Tasks;
+using Yu.Data.Entities;
+using <#=EntityNamespace#>;
+ 
+namespace <#=ServiceNamespace#>
+{
+
+	public interface I<#=EntityName#>Service
+	{
+        /// <summary>
+        /// 取得数据
+        /// </summary>
+		PagedData<<#=EntityName#>> Get<#=EntityName#>s(int pageIndex, int pageSize, string searchText);
+		
+        /// <summary>
+        /// 删除数据
+        /// </summary>
+        Task Delete<#=EntityName#>Async(<#=EntityKeyType#> id);
+
+        /// <summary>
+        /// 添加数据
+        /// </summary>
+        Task Add<#=EntityName#>Async(<#=EntityName#> entity);
+
+        /// <summary>
+        /// 更新数据
+        /// </summary>
+        Task Update<#=EntityName#>Async(<#=EntityName#> entity);
+	}
+}
+
+<# 
+	manager2.EndBlock(); 
+#>
+
+<# 
+	manager2.StartBlock(EntityName+"Controller.cs");
+#>
+
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
+using System.Threading.Tasks;
+using Yu.Core.Mvc;
+using Yu.Data.Entities;
+using Yu.Data.Entities.Right;
+using Yu.Model.Common.InputModels;
+using <#=EntityNamespace#>;
+using <#=ServiceNamespace#>;
+
+namespace <#=ControllerNamespace#>
+{
+    [Route("api")]
+    [Description("<#=ControllerDescribe#>")]
+    public class <#=EntityName#>Controller : AuthorizeController
+    {
+        private readonly I<#=EntityName#>Service _service;
+
+        public <#=EntityName#>Controller(I<#=EntityName#>Service service)
+        {
+            _service = service;
+        }
+
+		/// <summary>
+        /// 取得数据
+        /// </summary>
+        [HttpGet("<#=Route#>")]
+        [Description("取得<#=EntityDescribe#>数据")]
+        public IActionResult Get<#=EntityName#>s([FromQuery] PagedQuery query)
+        {
+            var result = _service.Get<#=EntityName#>s(query.PageIndex, query.PageSize, query.SearchText);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 创建数据
+        /// </summary>
+        [HttpPost("<#=Route#>")]
+        [Description("添加<#=EntityDescribe#>数据")]
+        public async Task<IActionResult> Add<#=EntityName#>([FromBody]<#=EntityName#> entity)
+        {
+            await _service.Add<#=EntityName#>Async(entity);
+            return Ok();
+        }
+
+        /// <summary>
+        /// 更新数据
+        /// </summary>
+        [HttpPut("<#=Route#>")]
+        [Description("更新<#=EntityDescribe#>数据")]
+        public async Task<IActionResult> Update<#=EntityName#>([FromBody]<#=EntityName#> entity)
+        {
+            await _service.Update<#=EntityName#>Async(entity);
+            return Ok();
+        }
+
+        /// <summary>
+        /// 删除数据
+        /// </summary>
+        [HttpDelete("<#=Route#>")]
+        [Description("删除<#=EntityDescribe#>数据")]
+        public async Task<IActionResult> Delete<#=EntityName#>([FromQuery]IdQuery query)
+        {
+            await _service.Delete<#=EntityName#>Async(query.Id);
+            return Ok();
+        }
+	}
+}
+
+<# 
+	manager2.EndBlock(); 
+#>
+
+<# 
+	manager2.StartBlock(EntityName+"Service.tt");
+#>
+
+import { Injectable, Injector } from '@angular/core';
+import { BaseService } from './base.service';
+import { HttpClient } from '@angular/common/http';
+import { UriConstant } from '../constants/uri-constant';
+
+export class <#=EntityName#>Service extends BaseService {
+
+	// 构造函数
+	constructor(private injector: Injector,
+		private http: HttpClient) { super(injector); }
+
+	// 取得数据
+	get(pageIndex, pageSize, searchText) {
+	  const uri = UriConstant.<#=EntityName#>Uri + `?pageIndex=${pageIndex}&pageSize=${pageSize}&searchText=${searchText}`;
+	  return this.SafeRequest(this.http.get(uri));
+	}
+
+	// 添加数据
+	add(data) {
+	  const uri = UriConstant.<#=EntityName#>Uri;
+	  return this.SafeRequest(this.http.post(uri, data));
+	}
+
+	// 更新数据
+	update(data) {
+	  const uri = UriConstant.<#=EntityName#>Uri;
+	  return this.SafeRequest(this.http.put(uri, data));
+	}
+
+	// 删除数据
+	delete(id) {
+	  const uri = UriConstant.<#=EntityName#>Uri + `?id=${id}`;
+	  return this.SafeRequest(this.http.delete(uri));
+	}
+}
+
+<# 
+	manager2.EndBlock(); 
+#>
+
+
+<#
+	manager2.Process(true);
+#>   
