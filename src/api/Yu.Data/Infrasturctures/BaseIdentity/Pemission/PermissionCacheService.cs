@@ -14,7 +14,7 @@ using Yu.Core.Expressions;
 using Yu.Data.Entities.Right;
 using Yu.Data.Repositories;
 
-namespace Yu.Data.Infrasturctures.Pemission
+namespace Yu.Data.Infrasturctures.BaseIdentity.Pemission
 {
     public class PermissionCacheService : IPermissionCacheService
     {

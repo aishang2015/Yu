@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 
-namespace Yu.Data.Infrasturctures.SqlLite
+namespace Yu.Data.Infrasturctures.SqlBuilder.SqlLite
 {
     // 相关依赖
     // Microsoft.EntityFrameworkCore.Sqlite

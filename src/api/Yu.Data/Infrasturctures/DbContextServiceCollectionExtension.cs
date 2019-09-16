@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using Yu.Data.Infrasturctures.Mvc;
-using Yu.Data.Infrasturctures.MySql;
-using Yu.Data.Infrasturctures.Pemission;
-using Yu.Data.Infrasturctures.PostgreSql;
-using Yu.Data.Infrasturctures.SqlLite;
-using Yu.Data.Infrasturctures.SqlServer;
+using Yu.Data.Infrasturctures.BaseIdentity;
+using Yu.Data.Infrasturctures.BaseIdentity.Mvc;
+using Yu.Data.Infrasturctures.BaseIdentity.Pemission;
+using Yu.Data.Infrasturctures.SqlBuilder.MySql;
+using Yu.Data.Infrasturctures.SqlBuilder.PostgreSql;
+using Yu.Data.Infrasturctures.SqlBuilder.SqlLite;
+using Yu.Data.Infrasturctures.SqlBuilder.SqlServer;
 using Yu.Data.Repositories;
 
 namespace Yu.Data.Infrasturctures
@@ -51,14 +52,19 @@ namespace Yu.Data.Infrasturctures
                 }
             })
             .AddIdentity<TUser, TRole>(setupAction)     // 使用user和role 进行认证
-            .AddEntityFrameworkStores<TDbContext>()       // 使用dbcontext存储
+            .AddEntityFrameworkStores<TDbContext>()       // 使用默认的EF的Store
             .AddDefaultTokenProviders();    // 添加默认token生成工具，用其生成的token用来进行密码重置。
+
+            //services.AddTransient<IUserStore<BaseIdentityUser>, BaseIdentityUserStore>(); // 使用自定义userstore
+            //services.AddTransient<IRoleStore<BaseIdentityRole>, BaseIdentityRoleStore>(); // 使用自定义rolestore
 
             services.AddApiAuthorization(); // 添加api认证Handler
 
             services.AddScoped<IPermissionCacheService, PermissionCacheService>(); // 权限缓存服务
 
             services.AddRepositories<TDbContext>(); // 批量注入数据仓储
+
+            services.AddScoped<BaseIdentityUnitOfWork>();
         }
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using Yu.Core.Expressions;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.BaseIdentity;
 
 namespace Yu.Data.Entities.Right
 {

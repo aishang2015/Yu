@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using Yu.Core.Mvc;
-using Yu.Data.Infrasturctures.Mvc;
+using Yu.Data.Infrasturctures.BaseIdentity.Mvc;
 using Yu.Model.Common.InputModels;
 using Yu.Service.WebAdmin.Api;
 

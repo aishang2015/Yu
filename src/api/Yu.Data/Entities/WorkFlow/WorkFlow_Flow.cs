@@ -1,5 +1,6 @@
 ﻿using System;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.BaseIdentity;
 
 namespace Yu.Data.Entities.WorkFlow
 {

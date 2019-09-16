@@ -2,7 +2,7 @@
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using System;
 
-namespace Yu.Data.Infrasturctures.PostgreSql
+namespace Yu.Data.Infrasturctures.SqlBuilder.PostgreSql
 {
     // 相关依赖
     // Npgsql.EntityFrameworkCore.PostgreSQL            PostgreSQL数据提供的支持EF Core的基础类库

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Yu.Core.Expressions;
 using Yu.Data.Entities;
-using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.BaseIdentity;
 using Yu.Data.Repositories;
 using ApiEntity = Yu.Data.Entities.Right.Api;
 

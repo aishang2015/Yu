@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.BaseIdentity;
 using Yu.Data.Repositories;
 
 namespace Yu.Service.Account

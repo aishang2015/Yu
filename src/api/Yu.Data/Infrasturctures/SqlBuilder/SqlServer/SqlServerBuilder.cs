@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 
-namespace Yu.Data.Infrasturctures.SqlServer
+namespace Yu.Data.Infrasturctures.SqlBuilder.SqlServer
 {
     public static class SqlServerBuilder
     {

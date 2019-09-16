@@ -14,6 +14,7 @@ using Yu.Core.Extensions;
 using Yu.Core.Utils;
 using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.BaseIdentity;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Rule.OutputModels;
 using Yu.Service.WebAdmin.Role;

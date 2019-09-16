@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Yu.Core.Expressions;
 using Yu.Data.Entities;
-using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.BaseIdentity;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Entity.OutputModels;
 using EntityData = Yu.Data.Entities.Right.Entity;

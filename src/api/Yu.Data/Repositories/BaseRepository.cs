@@ -12,7 +12,7 @@ using Yu.Core.Constants;
 using Yu.Core.Expressions;
 using Yu.Core.Extensions;
 using Yu.Data.Entities;
-using Yu.Data.Infrasturctures.Pemission;
+using Yu.Data.Infrasturctures.BaseIdentity.Pemission;
 
 namespace Yu.Data.Repositories
 {
@@ -38,7 +38,7 @@ namespace Yu.Data.Repositories
 
             _dataSet = _context.Set<TEntity>();
 
-            var userName = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == CustomClaimTypes.UserName)?.Value;
+            var userName = httpContextAccessor.HttpContext.User.GetClaimValue(CustomClaimTypes.UserName);
             var userRoles = httpContextAccessor.HttpContext.User.GetClaimValue(CustomClaimTypes.Role).Split(',', StringSplitOptions.RemoveEmptyEntries);
             if (!string.IsNullOrEmpty(userName))
             {

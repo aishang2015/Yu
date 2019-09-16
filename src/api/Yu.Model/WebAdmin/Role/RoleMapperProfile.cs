@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.BaseIdentity;
 using Yu.Model.WebAdmin.Role.InputOuputModels;
 using Yu.Model.WebAdmin.Role.OutputModels;
 

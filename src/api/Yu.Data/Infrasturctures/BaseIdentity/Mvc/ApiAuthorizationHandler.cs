@@ -8,9 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Yu.Core.Constants;
 using Yu.Core.Extensions;
-using Yu.Data.Infrasturctures.Pemission;
+using Yu.Data.Infrasturctures.BaseIdentity.Pemission;
 
-namespace Yu.Data.Infrasturctures.Mvc
+namespace Yu.Data.Infrasturctures.BaseIdentity.Mvc
 {
 
     // 由于要访问roleservice临时将文件放在这里

@@ -17,6 +17,7 @@ using Yu.Core.SignalR;
 using Yu.Core.Swagger;
 using Yu.Core.Validators;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.BaseIdentity;
 using Yu.Data.MongoDB;
 using Yu.Data.Redis;
 

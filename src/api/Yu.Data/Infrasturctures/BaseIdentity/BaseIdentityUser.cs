@@ -2,7 +2,7 @@
 using System;
 using Yu.Data.Entities.Enums;
 
-namespace Yu.Data.Infrasturctures
+namespace Yu.Data.Infrasturctures.BaseIdentity
 {
     public partial class BaseIdentityUser : IdentityUser<Guid>
     {
@@ -16,7 +16,6 @@ namespace Yu.Data.Infrasturctures
 
         #endregion
 
-        // todo 未来分表
         #region 用户信息字段
 
         // 姓名
@@ -45,6 +44,10 @@ namespace Yu.Data.Infrasturctures
         #region 权限管理模块字段
         
         public string UserGroupId { get; set; }
+
+        public string GroupName { get; set; }
+
+        public string Roles { get; set; }
 
         #endregion
     }

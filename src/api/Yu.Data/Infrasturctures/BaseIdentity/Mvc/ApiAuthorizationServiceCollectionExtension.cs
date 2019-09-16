@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Yu.Data.Infrasturctures.Mvc
+namespace Yu.Data.Infrasturctures.BaseIdentity.Mvc
 {
     public static class ApiAuthorizationServiceCollectionExtension
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Yu.Data.Infrasturctures
+namespace Yu.Data.Infrasturctures.BaseIdentity
 {
     public class BaseIdentityRole : IdentityRole<Guid>
     {

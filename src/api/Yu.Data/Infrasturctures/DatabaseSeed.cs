@@ -9,6 +9,7 @@ using System.Linq;
 using Yu.Core.Constants;
 using Yu.Core.Mvc;
 using Yu.Data.Entities.Right;
+using Yu.Data.Infrasturctures.BaseIdentity;
 
 namespace Yu.Data.Infrasturctures
 {
@@ -43,7 +44,7 @@ namespace Yu.Data.Infrasturctures
                     InitMember(userManager, roleManager);
 
                     // 初始化其他数据
-                    InitOtherData(dbContext);                   
+                    InitOtherData(dbContext);
 
                     // 自定义初始方法
                     dataSeed?.Invoke(dbContext);
@@ -140,19 +141,23 @@ namespace Yu.Data.Infrasturctures
         // 初始化成员
         private static void InitMember(UserManager<BaseIdentityUser> userManager, RoleManager<BaseIdentityRole> roleManager)
         {
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    var user = new BaseIdentityUser
-            //    {
-            //        UserName = $"admin{i}",
-            //        NormalizedUserName = $"ADMIN{i}",
-            //        SecurityStamp = Guid.NewGuid().ToString()
-            //    };
-            //    user.PasswordHash = new PasswordHasher<BaseIdentityUser>().HashPassword(user, CommonConstants.Password);
-            //    dbContext.Set<BaseIdentityUser>().Add(user);
-            //}
-            //dbContext.SaveChanges();     
-
+            var xing = new List<string>() {"赵", "钱", "孙", "李", "周", "吴", "郑", "王", "冯", "陈", "楮", "卫", "蒋", "沈", "韩", "杨",
+        "朱", "秦", "尤", "许", "何", "吕", "施", "张", "孔", "曹", "严", "华", "金", "魏", "陶", "姜",
+        "戚", "谢", "邹", "喻", "柏", "水", "窦", "章", "云", "苏", "潘", "葛", "奚", "范", "彭", "郎",
+        "鲁", "韦", "昌", "马", "苗", "凤", "花", "方", "俞", "任", "袁", "柳", "酆", "鲍", "史", "唐",
+        "费", "廉", "岑", "薛", "雷", "贺", "倪", "汤", "滕", "殷", "罗", "毕", "郝", "邬", "安", "常",
+        "乐", "于", "时", "傅", "皮", "卞", "齐", "康", "伍", "余", "元", "卜", "顾", "孟", "平", "黄",
+        "和", "穆", "萧", "尹", "姚", "邵", "湛", "汪", "祁", "毛", "禹", "狄", "米", "贝", "明", "臧",
+        "计", "伏", "成", "戴", "谈", "宋", "茅", "庞", "熊", "纪", "舒", "屈", "项", "祝", "董", "梁",
+        "杜", "阮", "蓝", "闽", "席", "季", "麻", "强", "贾", "路", "娄", "危", "江", "童", "颜", "郭",
+        "梅", "盛", "林", "刁", "锺", "徐", "丘", "骆", "高", "夏", "蔡", "田", "樊", "胡", "凌", "霍",
+        "虞", "万", "支", "柯", "昝", "管", "卢", "莫", "经", "房", "裘", "缪", "干", "解", "应", "宗",
+        "丁", "宣", "贲", "邓", "郁", "单", "杭", "洪", "包", "诸", "左", "石", "崔", "吉", "钮", "龚",
+        "程", "嵇", "邢", "滑", "裴", "陆", "荣", "翁", "荀", "羊", "於", "惠", "甄", "麹", "家", "封",
+        "芮", "羿", "储", "靳", "汲", "邴", "糜", "松", "井", "段", "富", "巫", "乌", "焦", "巴", "弓",
+        "牧", "隗", "山", "谷", "车", "侯", "宓", "蓬", "全", "郗", "班", "仰", "秋", "仲", "伊", "宫",
+        "宁", "仇", "栾", "暴", "甘", "斜", "厉", "戎", "祖", "武", "符", "刘", "景", "詹", "束", "龙" };
+            var random = new Random(DateTime.Now.Millisecond);
             roleManager.CreateAsync(new BaseIdentityRole
             {
                 Name = "系统管理员",
@@ -164,14 +169,12 @@ namespace Yu.Data.Infrasturctures
                 {
                     UserName = $"admin{i}",
                     NormalizedUserName = $"ADMIN{i}",
+                    Roles = "系统管理员",
+                    FullName = xing[random.Next(0, xing.Count)] + xing[random.Next(0, xing.Count)]
                 };
                 userManager.CreateAsync(user, CommonConstants.Password).Wait();
                 userManager.AddToRoleAsync(user, "系统管理员").Wait();
             }
-
-            
-
-
         }
 
         // 初始化其他数据

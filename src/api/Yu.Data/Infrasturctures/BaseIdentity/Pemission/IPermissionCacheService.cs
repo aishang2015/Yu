@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yu.Data.Infrasturctures.Pemission
+namespace Yu.Data.Infrasturctures.BaseIdentity.Pemission
 {
     public interface IPermissionCacheService
     {

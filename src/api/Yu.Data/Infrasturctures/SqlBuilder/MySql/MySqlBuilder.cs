@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 
-namespace Yu.Data.Infrasturctures.MySql
+namespace Yu.Data.Infrasturctures.SqlBuilder.MySql
 {
     // 添加依赖
     // Pomelo.EntityFrameworkCore.MySql

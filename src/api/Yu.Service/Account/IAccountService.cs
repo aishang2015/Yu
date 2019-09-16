@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.BaseIdentity;
 
 namespace Yu.Service.Account
 {

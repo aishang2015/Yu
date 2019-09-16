@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ using Yu.Core.Expressions;
 using Yu.Core.FileManage;
 using Yu.Core.Jwt;
 using Yu.Data.Entities;
-using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.BaseIdentity;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.User.OutputModels;
 using GroupEntity = Yu.Data.Entities.Right.Group;
@@ -152,25 +153,11 @@ namespace Yu.Service.WebAdmin.User
 
             // 分页取得用户
             var skip = pageSize * (pageIndex - 1);
-            var users = _userManager.Users.Where(filter).Skip(skip).Take(pageSize).ToList();
+            var users = await _userManager.Users.Where(filter).Skip(skip).Take(pageSize).ToListAsync();
 
             // 结果数据
             var userOutlines = _mapper.Map<List<UserOutline>>(users);
-
-            // 设定组织名称
-            var groups = _groupRepository.GetAllNoTracking().ToList();
-            foreach (var user in users)
-            {
-                if (!string.IsNullOrEmpty(user.UserGroupId))
-                {
-                    userOutlines.FirstOrDefault(u => u.UserName == user.UserName).GroupName =
-                        groups.FirstOrDefault(g => g.Id == Guid.Parse(user.UserGroupId))?.GroupName;
-                }
-
-                userOutlines.FirstOrDefault(u => u.UserName == user.UserName).Roles =
-                   (await _userManager.GetRolesAsync(user)).ToArray();
-            }
-
+ 
             // 生成结果
             return new PagedData<UserOutline>
             {
@@ -223,16 +210,14 @@ namespace Yu.Service.WebAdmin.User
             var user = await _userManager.FindByIdAsync(userDetail.Id.ToString());
             _mapper.Map(userDetail, user);
 
-            // 先删除再添加角色
+            // 先删除再添加角色 
+            // RemoveFromRolesAsync和AddToRolesAsync内部会保存用户信息
             var roles = await _userManager.GetRolesAsync(user);
             await _userManager.RemoveFromRolesAsync(user, roles);
             if (userDetail.Roles.Length > 0)
             {
                 await _userManager.AddToRolesAsync(user, userDetail.Roles);
             }
-
-            // 保存用户信息
-            await _userManager.UpdateAsync(user);
 
             // 清除用户登录缓存，强制用户下线
             _jwtFactory.RemoveToken(user.UserName);

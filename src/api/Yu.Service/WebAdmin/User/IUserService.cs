@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Yu.Data.Entities;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.BaseIdentity;
 using Yu.Model.WebAdmin.User.OutputModels;
 
 namespace Yu.Service.WebAdmin.User

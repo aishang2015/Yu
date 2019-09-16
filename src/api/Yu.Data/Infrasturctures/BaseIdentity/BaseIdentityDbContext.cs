@@ -7,7 +7,7 @@ using Yu.Core.Extensions;
 using Yu.Data.Entities;
 using Yu.Data.Entities.Enums;
 
-namespace Yu.Data.Infrasturctures
+namespace Yu.Data.Infrasturctures.BaseIdentity
 {
     /// <summary>
     /// 认证数据库上下文
