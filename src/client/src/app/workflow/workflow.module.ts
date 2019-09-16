@@ -3,17 +3,19 @@ import { CommonModule } from '@angular/common';
 import { CoreModule } from '../core/core.module';
 import { FlowComponent } from './flow/flow.component';
 import { RouterModule } from '@angular/router';
-import { SubPathGuard } from '../core/services/sub-path-guard.service';
+import { WfdefinitionComponent } from './wfdefinition/wfdefinition.component';
 
 
 @NgModule({
   declarations: [
-    FlowComponent
+    FlowComponent,
+    WfdefinitionComponent
   ],
   imports: [
     CommonModule,
     CoreModule,
     RouterModule.forChild([
+      { path: 'definition', component: WfdefinitionComponent },
       { path: 'flow', component: FlowComponent },
     ])
   ]

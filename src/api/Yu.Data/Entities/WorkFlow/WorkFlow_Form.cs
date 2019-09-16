@@ -7,7 +7,6 @@ namespace Yu.Data.Entities.WorkFlow
     /// <summary>
     /// 表单
     /// </summary>
-    [BelongTo(typeof(BaseIdentityDbContext))]
     public class WorkFlow_Form : BaseEntity<Guid>
     {
         // 表单名称

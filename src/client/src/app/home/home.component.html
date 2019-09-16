@@ -3,43 +3,36 @@
         <div class="logo"><a style="color:white" [routerLink]="[ '/dashboard']"
                 (click)="setDashboardBreadCrumb()">Yu</a></div>
         <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
-            <li nz-submenu routerLinkActive #rla="routerLinkActive" [(nzOpen)]="rla.isActive"
-                *ngIf="isCanOperate('rightmanage')">
-                <span title><i nz-icon nzType="idcard" nzTheme="outline"></i><span class="nav-text">权限管理</span></span>
+            <li nz-submenu *ngIf="isCanOperate('rightmanage')" nzTitle="权限管理" nzIcon="idcard">
                 <ul>
-                    <li nz-menu-item routerLinkActive #rla="routerLinkActive" [nzSelected]="rla.isActive"
-                        *ngIf="isCanOperate('usermanage')" [routerLink]="[ '/right/user' ]"
+                    <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('usermanage')" [routerLink]="[ '/right/user' ]"
                         (click)="setBreadCrumb('权限管理','用户管理')"><i nz-icon nzType="user" nzTheme="outline"></i>用户管理</li>
-                    <li nz-menu-item routerLinkActive #rla="routerLinkActive" [nzSelected]="rla.isActive"
-                        *ngIf="isCanOperate('rolemanage')" [routerLink]="[ '/right/role' ]"
+                    <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('rolemanage')" [routerLink]="[ '/right/role' ]"
                         (click)="setBreadCrumb('权限管理','角色管理')"><i nz-icon nzType="audit" nzTheme="outline"></i>角色管理</li>
-                    <li nz-menu-item routerLinkActive #rla="routerLinkActive" [nzSelected]="rla.isActive"
-                        *ngIf="isCanOperate('groupmanage')" [routerLink]="[ '/right/group' ]"
+                    <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('groupmanage')" [routerLink]="[ '/right/group' ]"
                         (click)="setBreadCrumb('权限管理','组织管理')"><i nz-icon nzType="team" nzTheme="outline"></i>组织管理</li>
-                    <li nz-menu-item routerLinkActive #rla="routerLinkActive" [nzSelected]="rla.isActive"
-                        *ngIf="isCanOperate('elementmanage')" [routerLink]="[ '/right/menu' ]"
-                        (click)="setBreadCrumb('权限管理','页面元素管理')"><i nz-icon nzType="ordered-list"
-                            nzTheme="outline"></i>页面元素管理</li>
-                    <li nz-menu-item routerLinkActive #rla="routerLinkActive" [nzSelected]="rla.isActive"
-                        *ngIf="isCanOperate('apimanage')" [routerLink]="[ '/right/api' ]"
+                    <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('elementmanage')"
+                        [routerLink]="[ '/right/menu' ]" (click)="setBreadCrumb('权限管理','页面元素管理')"><i nz-icon
+                            nzType="ordered-list" nzTheme="outline"></i>页面元素管理</li>
+                    <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('apimanage')" [routerLink]="[ '/right/api' ]"
                         (click)="setBreadCrumb('权限管理','API数据管理')"><i nz-icon nzType="api" nzTheme="outline"></i>API数据管理
                     </li>
-                    <li nz-menu-item routerLinkActive #rla="routerLinkActive" [nzSelected]="rla.isActive"
-                        *ngIf="isCanOperate('rulemanage')" [routerLink]="[ '/right/rule' ]"
+                    <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('rulemanage')" [routerLink]="[ '/right/rule' ]"
                         (click)="setBreadCrumb('权限管理','规则管理')"><i nz-icon nzType="filter" nzTheme="outline"></i>规则管理
                     </li>
-                    <li nz-menu-item routerLinkActive #rla="routerLinkActive" [nzSelected]="rla.isActive"
-                        *ngIf="isCanOperate('entitymanage')" [routerLink]="[ '/right/entity' ]"
-                        (click)="setBreadCrumb('权限管理','实体数据管理')"><i nz-icon nzType="profile"
-                            nzTheme="outline"></i>实体数据管理</li>
+                    <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('entitymanage')"
+                        [routerLink]="[ '/right/entity' ]" (click)="setBreadCrumb('权限管理','实体数据管理')"><i nz-icon
+                            nzType="profile" nzTheme="outline"></i>实体数据管理</li>
                 </ul>
             </li>
-            <li nz-submenu routerLinkActive #rla="routerLinkActive" [(nzOpen)]="rla.isActive">
-                <span title><i nz-icon nzType="idcard" nzTheme="outline"></i><span class="nav-text">办公流</span></span>
+            <li nz-submenu nzTitle="办公流" nzIcon="idcard">
                 <ul>
-                    <li nz-menu-item routerLinkActive #rla="routerLinkActive" [nzSelected]="rla.isActive"
-                        [routerLink]="[ '/workflow/flow' ]" (click)="setBreadCrumb('办公流','流程管理')"><i nz-icon
-                            nzType="deployment-unit" nzTheme="outline"></i>流程编辑（临时）</li>
+                    <li nz-menu-item nzMatchRouter [routerLink]="[ '/workflow/definition' ]"
+                        (click)="setBreadCrumb('办公流','办公流管理')"><i nz-icon nzType="deployment-unit"
+                            nzTheme="outline"></i>办公流管理</li>
+                    <li nz-menu-item nzMatchRouter [routerLink]="[ '/workflow/flow' ]"
+                        (click)="setBreadCrumb('办公流','流程编辑')"><i nz-icon nzType="deployment-unit"
+                            nzTheme="outline"></i>流程编辑（临时）</li>
                 </ul>
             </li>
         </ul>

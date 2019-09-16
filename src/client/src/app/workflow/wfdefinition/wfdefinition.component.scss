@@ -1,0 +1,33 @@
+#operateBar {
+  width: 100%;
+  button {
+    width: 100px;
+    margin: 5px;
+  }
+}
+
+.explorer {
+  height: 800px;
+  min-height: 800px;
+
+  .type-list {
+    height: 100%;
+    padding: 10px;
+    overflow: auto;
+    border: solid 1px lightgray;
+    border-right: none;
+    ul{
+      border: none;
+    }
+  }
+
+  .content {
+    border: 1px solid lightgray;
+    height: 100%;
+    padding: 10px;
+  }
+}
+
+.tc{
+  text-align: center;
+}

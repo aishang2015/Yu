@@ -9,7 +9,6 @@ namespace Yu.Data.Entities.WorkFlow
     /// <summary>
     /// 节点流转路径
     /// </summary>
-    [BelongTo(typeof(BaseIdentityDbContext))]
     public class WorkFlow_Connect : BaseEntity<Guid>
     {
         // 路径名称

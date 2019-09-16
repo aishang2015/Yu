@@ -73,4 +73,7 @@ export class UriConstant {
 
     // 重置密码
     static readonly ResetUserPwdByPhone = UriConstant.BaseApiUri + 'account/resetPwdByPhone';
+
+    // 工作流类型
+    static readonly WorkFlowTypeUri = UriConstant.BaseApiUri + 'workflowType';
 }

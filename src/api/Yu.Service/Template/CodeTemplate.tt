@@ -11,12 +11,12 @@
 <# var manager2 = new Manager(Host, GenerationEnvironment, true) { OutputPath = Path.GetDirectoryName(Host.TemplateFile)}; #>
 
 
-<# var EntityName = "ABC"; #>
+<# var EntityName = "WorkFlowType"; #>
 <# var EntityKeyType = "Guid"; #>
-<# var EntityDescribe = "this is abc"; #>
-<# var ModuleName = "abcMange"; #>
-<# var ControllerDescribe = "abc管理"; #>
-<# var Route = "abc"; #>
+<# var EntityDescribe = "工作流类型"; #>
+<# var ModuleName = "WorkFlow"; #>
+<# var ControllerDescribe = "工作流管理"; #>
+<# var Route = "workflowType"; #>
 <# var DbContextName = "BaseIdentityDbContext";#>
 <# var otherRepository = new System.Collections.Generic.List<string[]>()
 	{
@@ -28,12 +28,15 @@
 	{
 		// {"Name"，"Type"，"Describe"}
 	    // new string[]{"","",""}
+		new string[]{"Name","string","名称"},
+		new string[]{"Order","int","排序"},
 	};	
 #>
 
 <# var EntityNamespace = "Yu.Data.Entities." + ModuleName; #>
 <# var ServiceNamespace = "Yu.Service." + ModuleName + "." + EntityName + "s"; #>
 <# var ControllerNamespace = "Yu.Api.Areas." + ModuleName + "." + "Controllers"; #>
+<# var ModelNamespace = "Yu.Model.Areas." + ModuleName + "." + EntityName + "s"; #>
 
 
 <# 
@@ -42,6 +45,7 @@
 
 using System;
 using Yu.Data.Infrasturctures;
+using Yu.Data.Infrasturctures.BaseIdentity;
 
 namespace <#=EntityNamespace#>
 {
@@ -69,6 +73,7 @@ using Yu.Data.Entities;
 using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 using <#=EntityNamespace#>;
+using Yu.Data.Infrasturctures.BaseIdentity;
 
 namespace <#=ServiceNamespace#>
 {
@@ -195,7 +200,6 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
 using Yu.Data.Entities;
-using Yu.Data.Entities.Right;
 using Yu.Model.Common.InputModels;
 using <#=EntityNamespace#>;
 using <#=ServiceNamespace#>;
@@ -264,13 +268,17 @@ namespace <#=ControllerNamespace#>
 #>
 
 <# 
-	manager2.StartBlock(EntityName+"Service.tt");
+	manager2.StartBlock(EntityName+".services.tt");
 #>
 
 import { Injectable, Injector } from '@angular/core';
-import { BaseService } from './base.service';
+import { BaseService } from '../base.service';
 import { HttpClient } from '@angular/common/http';
-import { UriConstant } from '../constants/uri-constant';
+import { UriConstant } from '../../constants/uri-constant';
+
+@Injectable({
+    providedIn: 'root'
+})
 
 export class <#=EntityName#>Service extends BaseService {
 
@@ -301,6 +309,29 @@ export class <#=EntityName#>Service extends BaseService {
 	  const uri = UriConstant.<#=EntityName#>Uri + `?id=${id}`;
 	  return this.SafeRequest(this.http.delete(uri));
 	}
+}
+
+<# 
+	manager2.EndBlock(); 
+#>
+
+
+<# 
+	manager2.StartBlock(EntityName+"MapperProfile.cs");
+#>
+
+using AutoMapper;
+using <#=EntityNamespace#>;
+
+namespace <#=ModelNamespace#>
+{
+    public class <#=EntityName#>MapperProfile : Profile
+    {
+        public <#=EntityName#>MapperProfile()
+        {
+            CreateMap<<#=EntityName#>, <#=EntityName#>>();
+        }
+    }
 }
 
 <# 

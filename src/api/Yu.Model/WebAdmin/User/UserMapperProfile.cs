@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using System;
-using System.Linq;
-using Yu.Data.Infrasturctures;
 using Yu.Data.Infrasturctures.BaseIdentity;
 using Yu.Model.WebAdmin.User.OutputModels;
 
