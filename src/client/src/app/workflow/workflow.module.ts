@@ -16,7 +16,7 @@ import { WfdefinitionComponent } from './wfdefinition/wfdefinition.component';
     CoreModule,
     RouterModule.forChild([
       { path: 'definition', component: WfdefinitionComponent },
-      { path: 'flow', component: FlowComponent },
+      { path: 'flow/:id', component: FlowComponent },
     ])
   ]
 })

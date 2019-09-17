@@ -2,6 +2,9 @@ import { Component, OnInit, ViewChild, ElementRef, Renderer2 } from '@angular/co
 import * as jp from 'jsplumb';
 import * as pz from 'panzoom';
 import { NzModalService, NzDropdownMenuComponent, NzContextMenuService } from 'ng-zorro-antd';
+import { ActivatedRoute } from '@angular/router';
+import { WorkFlowDefineService } from 'src/app/core/services/workflow/workflowdefine.service';
+import { WorkFlowDefine } from '../models/workflowDefine';
 
 @Component({
   selector: 'app-flow',
@@ -61,9 +64,22 @@ export class FlowComponent implements OnInit {
     connectorHoverStyle: { strokeWidth: 4, cursor: 'pointer' },
   };
 
-  constructor(private renderer: Renderer2, private modalService: NzModalService, private nzContextMenuService: NzContextMenuService) { }
+  // 此流程图对应的工作流
+  wfDefine: WorkFlowDefine;
+
+  constructor(private renderer: Renderer2,
+    private modalService: NzModalService,
+    private nzContextMenuService: NzContextMenuService,
+    private routeInfo: ActivatedRoute,
+    private _workflowDefineService: WorkFlowDefineService, ) { }
 
   ngOnInit() {
+
+    // 取得工作流状态
+    const id = this.routeInfo.snapshot.params['id'];
+    this._workflowDefineService.getbyid(id).subscribe(result => {
+      this.wfDefine = result;
+    });
 
     // 初始化jsplumb
     this._jsPlumbInstance = this._jsPlumb.getInstance({

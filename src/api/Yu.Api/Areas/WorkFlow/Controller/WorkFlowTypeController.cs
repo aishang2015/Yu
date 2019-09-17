@@ -77,6 +77,13 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
         [Description("删除工作流类型数据")]
         public async Task<IActionResult> DeleteWorkFlowType([FromQuery]IdQuery query)
         {
+            var result = _service.HaveWorkFlowDefine(query.Id);
+            if (result)
+            {
+                ModelState.AddModelError("Name", ErrorMessages.WorkFlow_Type_E002);
+                return BadRequest(ModelState);
+            }
+
             await _service.DeleteWorkFlowTypeAsync(query.Id);
             return Ok();
         }

@@ -34,6 +34,16 @@ namespace Yu.Service.WorkFlow.WorkFlowTypes
         /// 检查名称是否重复
         /// </summary>
         bool HaveRepeatName(Guid id, string name);
+
+        /// <summary>
+        /// 检查类型下是否定义了流程
+        /// </summary>
+        bool HaveWorkFlowDefine(Guid id);
+
+        /// <summary>
+        /// 获取类型名称
+        /// </summary>
+        string GetTypeNameById(Guid id);
     }
 }
 

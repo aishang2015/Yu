@@ -1,5 +1,5 @@
 <nz-layout style="height:100vh;">
-    <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzWidth]="width" [nzReverseArrow]="isReverseArrow">
+    <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzWidth]="width" [nzReverseArrow]="isReverseArrow" *ngIf="isMenuVisible">
         <div class="logo"><a style="color:white" [routerLink]="[ '/dashboard']"
                 (click)="setDashboardBreadCrumb()">Yu</a></div>
         <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
@@ -30,15 +30,12 @@
                     <li nz-menu-item nzMatchRouter [routerLink]="[ '/workflow/definition' ]"
                         (click)="setBreadCrumb('办公流','办公流管理')"><i nz-icon nzType="deployment-unit"
                             nzTheme="outline"></i>办公流管理</li>
-                    <li nz-menu-item nzMatchRouter [routerLink]="[ '/workflow/flow' ]"
-                        (click)="setBreadCrumb('办公流','流程编辑')"><i nz-icon nzType="deployment-unit"
-                            nzTheme="outline"></i>流程编辑（临时）</li>
                 </ul>
             </li>
         </ul>
     </nz-sider>
     <nz-layout>
-        <nz-header style="background: #fff; padding:0;">
+        <nz-header style="background: #fff; padding:0;" *ngIf="isMenuVisible">
             <div style="line-height: 64px;float: right;padding:0 16px;">
 
                 <a nz-dropdown [nzTrigger]="'click'" [nzDropdownMenu]="menu">
@@ -56,7 +53,7 @@
             </div>
         </nz-header>
         <nz-content style="margin:0 16px;min-height: auto;">
-            <nz-breadcrumb style="margin:16px 0;">
+            <nz-breadcrumb style="margin:16px 0;" *ngIf="isMenuVisible">
                 <nz-breadcrumb-item *ngIf="prefix">{{ prefix }}</nz-breadcrumb-item>
                 <nz-breadcrumb-item *ngIf="endfix">{{ endfix }}</nz-breadcrumb-item>
             </nz-breadcrumb>
@@ -64,6 +61,6 @@
                 <router-outlet></router-outlet>
             </div>
         </nz-content>
-        <nz-footer style="text-align: center;">YU ©2019 Implement</nz-footer>
+        <nz-footer style="text-align: center;" *ngIf="isMenuVisible">YU ©2019 Implement</nz-footer>
     </nz-layout>
 </nz-layout>

@@ -8,6 +8,7 @@ using Yu.Data.Entities.WorkFlow;
 using Yu.Data.Infrasturctures.BaseIdentity;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Yu.Service.WorkFlow.WorkFlowTypes
 {
@@ -16,16 +17,24 @@ namespace Yu.Service.WorkFlow.WorkFlowTypes
 
         // 仓储类
         private IRepository<WorkFlowType, Guid> _repository;
-
+        private IRepository<WorkFlowDefine, Guid> _wfDefineRepository;
 
         // 工作单元
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
+        // 缓存
+        private IMemoryCache _memoryCache;
 
-        public WorkFlowTypeService(IRepository<WorkFlowType, Guid> repository, IUnitOfWork<BaseIdentityDbContext> unitOfWork)
+
+        public WorkFlowTypeService(IRepository<WorkFlowType, Guid> repository,
+            IRepository<WorkFlowDefine, Guid> wfDefineRepository,
+            IUnitOfWork<BaseIdentityDbContext> unitOfWork,
+            IMemoryCache memoryCache)
         {
             _repository = repository;
+            _wfDefineRepository = wfDefineRepository;
             _unitOfWork = unitOfWork;
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -44,6 +53,7 @@ namespace Yu.Service.WorkFlow.WorkFlowTypes
         {
             _repository.DeleteRange(e => e.Id == id);
             await _unitOfWork.CommitAsync();
+            _memoryCache.Remove(id);
         }
 
         /// <summary>
@@ -67,6 +77,7 @@ namespace Yu.Service.WorkFlow.WorkFlowTypes
         {
             _repository.Update(entity);
             await _unitOfWork.CommitAsync();
+            _memoryCache.Remove(entity.Id);
         }
 
         /// <summary>
@@ -78,6 +89,28 @@ namespace Yu.Service.WorkFlow.WorkFlowTypes
                        where wfType.Id != id && wfType.Name == name
                        select wfType;
             return data.Count() > 0;
+        }
+
+        /// <summary>
+        /// 检查类型下是否定义了流程
+        /// </summary>
+        public bool HaveWorkFlowDefine(Guid id)
+        {
+            return 0 < _wfDefineRepository.GetByWhere(wfd => wfd.TypeId == id).Count();
+        }
+
+        /// <summary>
+        /// 获取类型名称
+        /// </summary>
+        public string GetTypeNameById(Guid id)
+        {
+            return _memoryCache.GetOrCreate(id, entity =>
+            {
+                var typeName = from type in _repository.GetAllNoTracking()
+                               where type.Id == id
+                               select type.Name;
+                return typeName.FirstOrDefault();
+            });
         }
     }
 }

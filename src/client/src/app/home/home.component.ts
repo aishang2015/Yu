@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonConstant } from '../core/constants/common-constant';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { LocalStorageService } from '../core/services/local-storage.service';
 import { UriConstant } from '../core/constants/uri-constant';
 
@@ -30,12 +30,22 @@ export class HomeComponent implements OnInit {
     'right': false
   }
 
+  // 菜单可见
+  isMenuVisible = false;
+
   constructor(private router: Router,
+    private routeInfo: ActivatedRoute,
     private _localStorageService: LocalStorageService) { }
 
   ngOnInit() {
     this.userName = this._localStorageService.getUserName();
     this.avatarUrl = this._localStorageService.getAvatarUrl() ? UriConstant.AvatarBaseUri + this._localStorageService.getAvatarUrl() : '';
+
+    this.router.events.forEach((event) => {
+      if (event instanceof NavigationEnd) {
+        event.url.startsWith("/workflow/flow") ? this.isMenuVisible = false : this.isMenuVisible = true;
+      }
+    });
   }
 
   // 注销
@@ -62,7 +72,5 @@ export class HomeComponent implements OnInit {
     var identifycations = this._localStorageService.getIdentifycations();
     return identifycations.findIndex(i => i == identifycation) > -1;
   }
-
-  
 
 }

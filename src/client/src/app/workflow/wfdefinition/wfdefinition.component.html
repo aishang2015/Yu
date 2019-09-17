@@ -1,37 +1,45 @@
 <div id="operateBar">
     <button nz-button nzType="primary" (click)="addWfType()">添加分类</button>
     <button nz-button nzType="primary" (click)="editWfType()" *ngIf="wfTypeListSelectedIndex!=null">编辑分类</button>
-    <button nz-button nzType="primary" [nzLoading]="isLoading" (click)="removeWfType()" *ngIf="wfTypeListSelectedIndex!=null">删除分类</button>
+    <button nz-button nzType="primary" [nzLoading]="isLoading" (click)="removeWfType()"
+        *ngIf="wfTypeListSelectedIndex!=null">删除分类</button>
+    <nz-divider nzType="vertical" style="height: 2em;background-color:lightgray"></nz-divider>
+    <button nz-button nzType="primary" (click)="addWfDefine()">创建工作流</button>
+
 </div>
 <nz-divider></nz-divider>
 <div class="explorer">
     <div class="type-list" nz-col nzSpan="3">
         <ul nz-menu>
-            <li class="tc" nz-menu-item *ngFor="let type of wfTypeMenuList; let i = index" (click)="typeSelected(i)">{{type}}</li>
+            <li class="tc" nz-menu-item (click)="allTypeSelected()"> 所有类型</li>
+            <li class="tc" nz-menu-item *ngFor="let type of wfTypeMenuList; let i = index" (click)="typeSelected(i)">
+                {{type}}</li>
         </ul>
     </div>
     <div class="content" nz-col nzSpan="21">
 
         <div nz-row class="mt-10">
-            <nz-table #headerTable [nzData]="wfList" [nzFrontPagination]="false" nzHideOnSinglePage="true">
+            <nz-table #headerTable [nzData]="wfDefineList" [nzFrontPagination]="false">
                 <thead>
                     <tr>
                         <th nzAlign="center" nzWidth="75px">序号</th>
                         <th nzAlign="center" nzWidth="150px">名称</th>
                         <th nzAlign="center" nzWidth="200px">类型</th>
                         <th nzAlign="center">描述</th>
-                        <th nzAlign="center" nzWidth="150px">操作</th>
+                        <th nzAlign="center" nzWidth="300px">操作</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let data of listOfData;let i = index">
+                    <tr *ngFor="let data of wfDefineList;let i = index">
                         <td nzAlign="center" nzWidth="75px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
-                        <td nzAlign="center" nzWidth="150px"></td>
-                        <td nzAlign="center" nzWidth="200px"></td>
-                        <td nzAlign="center"></td>
-                        <td nzAlign="center" nzWidth="150px">
-                            <a (click)="editApi(data)" *canOperate="'editapilink'">修改</a>&nbsp;
-                            <a (click)="deleteApi(data)" *canOperate="'deleteapilink'">删除</a>
+                        <td nzAlign="center" nzWidth="150px">{{ data.name }}</td>
+                        <td nzAlign="center" nzWidth="200px">{{ data.typeName }}</td>
+                        <td nzAlign="center">{{ data.describe }}</td>
+                        <td nzAlign="center" nzWidth="300px">
+                            <a>表单设计</a>&nbsp;
+                            <a [routerLink]="[ '/workflow/flow', data.id]" target="_blank">流程设计</a>&nbsp;
+                            <a (click)="editWfDefine(data)" *canOperate="'editapilink'">修改</a>&nbsp;
+                            <a (click)="removeWfDefine(data)" *canOperate="'deleteapilink'">删除</a>
                         </td>
                     </tr>
                 </tbody>
@@ -41,7 +49,7 @@
             <nz-pagination [(nzPageIndex)]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize"
                 [nzShowTotal]="totalTemplate" nzShowSizeChanger [nzPageSizeOptions]="[10,20,30,40,50]"
                 (nzPageSizeChange)="pageSizeChange($event)" (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
-            <ng-template #totalTemplate let-total> 共计 {{ total }} 数据 </ng-template>
+            <ng-template #totalTemplate let-total> 共计 {{ total }} 流程 </ng-template>
         </div>
 
     </div>
@@ -79,6 +87,53 @@
                 <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading"
                     [disabled]="!form.valid||isLoading">提交</button>
                 <button class="mr-5" nz-button type="button" (click)="cancel(form)" [nzLoading]="isLoading">取消</button>
+            </nz-form-control>
+        </nz-form-item>
+
+    </form>
+</ng-template>
+
+<ng-template #wfDefineTpl>
+    <form nz-form #wfDefineForm="ngForm" (ngSubmit)="submitWfDefine(wfDefineForm)">
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="5">工作流名称</nz-form-label>
+            <nz-form-control [nzSpan]="19" [nzErrorTip]="nameErrorTpl">
+                <input nz-input autocomplete="off" type="text" name="name" [(ngModel)]="editedWfDefine.name"
+                    #name="ngModel" required placeholder="请输入名称" />
+                <ng-template #nameErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('required')">请输入名称</ng-container>
+                </ng-template>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="5">工作流类型</nz-form-label>
+            <nz-form-control [nzSpan]="19" [nzErrorTip]="typeErrorTpl">
+                <nz-select [(ngModel)]="editedWfDefine.typeId" nzPlaceHolder="请选择类型" name="typeId" required>
+                    <nz-option *ngFor="let wfType of wfTypeList" [nzValue]="wfType.id" [nzLabel]="wfType.name">
+                    </nz-option>
+                </nz-select>
+                <ng-template #typeErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('required')">请输入序号</ng-container>
+                </ng-template>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="5">工作流描述</nz-form-label>
+            <nz-form-control [nzSpan]="19">
+                <textarea [(ngModel)]="editedWfDefine.describe" nz-input rows="3" placeholder="请输入描述内容"
+                    name="describe"></textarea>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-control [nzSpan]="19" [nzOffset]="5">
+                <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading"
+                    [disabled]="!wfDefineForm.valid||isLoading">提交</button>
+                <button class="mr-5" nz-button type="button" (click)="cancel(wfDefineForm)"
+                    [nzLoading]="isLoading">取消</button>
             </nz-form-control>
         </nz-form-item>
 
