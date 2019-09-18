@@ -1,10 +1,14 @@
 import { Component, OnInit, ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import * as jp from 'jsplumb';
 import * as pz from 'panzoom';
-import { NzModalService, NzDropdownMenuComponent, NzContextMenuService } from 'ng-zorro-antd';
+import { NzModalService, NzDropdownMenuComponent, NzContextMenuService, NzMessageService } from 'ng-zorro-antd';
 import { ActivatedRoute } from '@angular/router';
 import { WorkFlowDefineService } from 'src/app/core/services/workflow/workflowdefine.service';
 import { WorkFlowDefine } from '../models/workflowDefine';
+import { WorkFlowFlowService } from 'src/app/core/services/workflow/workflowflow.service';
+import { WorkflowFlowConnection } from '../models/workflowFlowConnection';
+import { WorkflowFlowNode } from '../models/workflowFlowNode';
+import { element } from 'protractor';
 
 @Component({
   selector: 'app-flow',
@@ -65,13 +69,18 @@ export class FlowComponent implements OnInit {
   };
 
   // 此流程图对应的工作流
-  wfDefine: WorkFlowDefine;
+  wfDefine: WorkFlowDefine = new WorkFlowDefine();
+
+  flowConnections: WorkflowFlowConnection[] = [];
+  flowNodes: WorkflowFlowNode[] = [];
 
   constructor(private renderer: Renderer2,
     private modalService: NzModalService,
+    private messageService: NzMessageService,
     private nzContextMenuService: NzContextMenuService,
     private routeInfo: ActivatedRoute,
-    private _workflowDefineService: WorkFlowDefineService, ) { }
+    private _workflowDefineService: WorkFlowDefineService,
+    private _workFlowFlowService: WorkFlowFlowService) { }
 
   ngOnInit() {
 
@@ -79,6 +88,7 @@ export class FlowComponent implements OnInit {
     const id = this.routeInfo.snapshot.params['id'];
     this._workflowDefineService.getbyid(id).subscribe(result => {
       this.wfDefine = result;
+      this.initFlowData();
     });
 
     // 初始化jsplumb
@@ -184,17 +194,20 @@ export class FlowComponent implements OnInit {
     this._zoomController.zoomAbs(0, 0, 1);
   }
 
-  //#region 添加节点
+  //#region 添加节点操作
 
   // 工作节点
-  addWorkNode(title: string, describe: string) {
+  addWorkNode(title: string, describe: string, id = `work-node-${Date.now().toString(36)}`, top = '200', left = '200') {
 
     // 渲染元素
     // 此处要写完整的值，render不会自动补全值（譬如不能设置0要设置为0px）
     let workNode = this.renderer.createElement("div");
+    this.renderer.setStyle(workNode, "top", `${top}px`);
+    this.renderer.setStyle(workNode, "left", `${left}px`);
     this.renderer.addClass(workNode, "node");
     this.renderer.addClass(workNode, "work-node");
-    this.renderer.setAttribute(workNode, 'id', `work-node-${++this._index}`);
+    this.renderer.setAttribute(workNode, 'id', id);
+    this.renderer.setAttribute(workNode, 'flownodetype', `workNode`);
 
     let workNodeTitle = this.renderer.createElement("div");
     this.renderer.addClass(workNodeTitle, "work-node-title");
@@ -223,7 +236,16 @@ export class FlowComponent implements OnInit {
     });
 
     // 配置为源
-    this._jsPlumbInstance.makeSource(`work-node-${this._index}`, {
+    this._jsPlumbInstance.makeSource(id, {
+      anchor: 'Continuous',
+      maxConnections: -1,
+      allowLoopback: false,
+      filter: (event, element) => {
+        return event.target.classList.contains('work-node-title');
+      }
+    }, this.endpointOption);
+
+    this._jsPlumbInstance.makeTarget(id, {
       anchor: 'Continuous',
       maxConnections: -1,
       allowLoopback: false,
@@ -234,12 +256,15 @@ export class FlowComponent implements OnInit {
   }
 
   // 开始节点
-  addStartNode() {
+  addStartNode(top = '200', left = '200') {
 
     let startNode = this.renderer.createElement("div");
+    this.renderer.setStyle(startNode, "top", `${top}px`);
+    this.renderer.setStyle(startNode, "left", `${left}px`);
     this.renderer.addClass(startNode, "node");
     this.renderer.addClass(startNode, "start-node");
     this.renderer.setAttribute(startNode, 'id', `start-node`);
+    this.renderer.setAttribute(startNode, 'flownodetype', `startNode`);
 
     let startNodeFlg = this.renderer.createElement("div");
     this.renderer.addClass(startNodeFlg, "start-node-flg");
@@ -273,11 +298,14 @@ export class FlowComponent implements OnInit {
   }
 
   // 结束节点
-  addEndNode() {
+  addEndNode(top = '200', left = '200') {
     let endNode = this.renderer.createElement("div");
+    this.renderer.setStyle(endNode, "top", `${top}px`);
+    this.renderer.setStyle(endNode, "left", `${left}px`);
     this.renderer.addClass(endNode, "node");
     this.renderer.addClass(endNode, "end-node");
     this.renderer.setAttribute(endNode, 'id', `end-node`);
+    this.renderer.setAttribute(endNode, 'flownodetype', `endNode`);
 
     let endNodeFlg = this.renderer.createElement("div");
     this.renderer.addClass(endNodeFlg, "end-node-flg");
@@ -303,6 +331,82 @@ export class FlowComponent implements OnInit {
 
   }
 
+  //#endregion 
 
-  //#endregion
+  // 初始化流程图数据
+  initFlowData() {
+    this._workFlowFlowService.get(this.wfDefine.id).subscribe(result => {
+      this.handleNodes(result.nodes);
+      this.handleConnections(result.connections);
+    })
+  }
+
+  // 处理节点数据
+  handleNodes(nodes) {
+    console.log(nodes);
+    this.flowNodes = nodes;
+    this.flowNodes.forEach(node => {
+      switch (node.nodeType) {
+        case 'startNode':
+          this.addStartNode(node.top, node.left);
+          break;
+        case 'endNode':
+          this.addEndNode(node.top, node.left);
+          break;
+        case 'workNode':
+          this.addWorkNode("工作节点", "这是一个工作节点", node.nodeId, node.top, node.left);
+          break;
+      }
+    });
+  }
+
+  // 处理连接数据
+  handleConnections(connections) {
+    this.flowConnections = connections;
+    this.flowConnections.forEach(connection => {
+      this._jsPlumbInstance.connect({
+        source: connection.sourceId,
+        target: connection.targetId,
+        anchor: 'Continuous'
+      });
+    });
+  }
+
+  // 保存流程图
+  saveFlow() {
+    this.flowConnections = [];
+    let connections = this._jsPlumbInstance.getAllConnections();
+    connections.forEach(element => {
+      this.flowConnections.push({
+        defineId: this.wfDefine.id,
+        sourceId: element.sourceId,
+        targetId: element.targetId,
+      });
+    });
+
+    this.flowNodes = [];
+    let elements = document.getElementsByClassName('node');
+    console.log(elements);
+    for (let i = 0; i < elements.length; i++) {
+      let element: any = elements[i];
+      this.flowNodes.push({
+        defineId: this.wfDefine.id,
+        nodeId: element.id,
+        nodeType: element.attributes.flownodetype.value,
+        top: element.offsetTop,
+        left: element.offsetLeft,
+      })
+    }
+
+    this._workFlowFlowService.addOrUpdate({
+      nodes: this.flowNodes,
+      connections: this.flowConnections,
+      defineId: this.wfDefine.id,
+    }).subscribe(result => {
+      this.messageService.success("保存成功！");
+    });
+
+
+  }
+
 }

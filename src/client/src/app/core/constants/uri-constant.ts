@@ -79,4 +79,8 @@ export class UriConstant {
 
     // 工作流定义
     static readonly WorkFlowDefineUri = UriConstant.BaseApiUri + 'workflowDefine';
+
+    // 工作流流程节点
+    static readonly WorkFlowFlowUri = UriConstant.BaseApiUri + 'workflowFlow';
+    
 }
