@@ -35,6 +35,9 @@ namespace Yu.Service.WebAdmin.Group
         /// <returns></returns>
         IEnumerable<Guid> GetDescendantGroup(Guid groupId);
 
-
+        /// <summary>
+        /// 获取类型名称
+        /// </summary>
+        string GetGroupNameById(Guid id);
     }
 }

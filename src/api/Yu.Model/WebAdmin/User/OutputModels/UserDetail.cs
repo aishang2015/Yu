@@ -51,6 +51,13 @@ namespace Yu.Model.WebAdmin.User.OutputModels
         public string UserGroupId { get; set; }
 
         // 组织Id
-        public string UserGroupName { get; set; }
+        public string GroupName { get; set; }
+
+        // 岗位ID
+        public string PositionId { get; set; }
+
+        // 岗位名称
+        public string PositionName { get; set; }
+
     }
 }

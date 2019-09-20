@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { RuleGroup } from '../models/rule-group';
 import { Guid } from 'src/app/core/utils/guid';
-import { RuleService } from 'src/app/core/services/rule.service';
+import { RuleService } from 'src/app/core/services/rightmanage/rule.service';
 import { Rule } from '../models/rule';
 import { Condition } from '../models/condition';
 import { NzMessageService, NzModalService } from 'ng-zorro-antd';
-import { EntityService } from 'src/app/core/services/entity.service';
+import { EntityService } from 'src/app/core/services/rightmanage/entity.service';
 
 @Component({
   selector: 'app-rule-manage',

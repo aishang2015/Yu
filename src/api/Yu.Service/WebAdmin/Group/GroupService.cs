@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,15 +21,21 @@ namespace Yu.Service.WebAdmin.Group
         private IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
         private readonly IMapper _mapper;
 
+        // 缓存
+        private readonly IMemoryCache _memoryCache;
+
         public GroupService(IRepository<G, Guid> groupRepository,
             IRepository<GroupTree, Guid> groupTreeRepository,
             IUnitOfWork<BaseIdentityDbContext> unitOfWork,
-            IMapper mapper)
+            IMapper mapper,
+            IMemoryCache memoryCache)
         {
             _groupRepository = groupRepository;
             _groupTreeRepository = groupTreeRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -73,6 +80,11 @@ namespace Yu.Service.WebAdmin.Group
         {
             // 检索自身和所有子元素的ID
             var groupIds = _groupTreeRepository.GetByWhereNoTracking(gt => gt.Ancestor == groupId).Select(gt => gt.Descendant);
+
+            foreach(var id in groupIds)
+            {
+                _memoryCache.Remove(id);
+            }
 
             // 删除组织
             _groupRepository.DeleteRange(g => groupIds.Contains(g.Id));
@@ -120,9 +132,25 @@ namespace Yu.Service.WebAdmin.Group
         /// </summary>
         public async Task UpdateGroupAsync(GroupDetail groupDetail)
         {
+            _memoryCache.Remove(groupDetail.Id);
+
             // 更新
             _groupRepository.Update(_mapper.Map<G>(groupDetail));
             await _unitOfWork.CommitAsync();
+        }
+
+        /// <summary>
+        /// 获取类型名称
+        /// </summary>
+        public string GetGroupNameById(Guid id)
+        {
+            return _memoryCache.GetOrCreate(id, entity =>
+            {
+                var groupNames = from type in _groupRepository.GetAllNoTracking()
+                                 where type.Id == id
+                                 select type.GroupName;
+                return groupNames.FirstOrDefault();
+            });
         }
     }
 }

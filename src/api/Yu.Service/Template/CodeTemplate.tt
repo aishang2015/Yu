@@ -11,12 +11,12 @@
 <# var manager2 = new Manager(Host, GenerationEnvironment, true) { OutputPath = Path.GetDirectoryName(Host.TemplateFile)}; #>
 
 
-<# var EntityName = "WorkFlowFlowConnection"; #>
+<# var EntityName = "Position"; #>
 <# var EntityKeyType = "Guid"; #>
-<# var EntityDescribe = "工作流流程连接"; #>
-<# var ModuleName = "WorkFlow"; #>
-<# var ControllerDescribe = "工作流流程连接管理"; #>
-<# var Route = "workflowFlowNode"; #>
+<# var EntityDescribe = "岗位"; #>
+<# var ModuleName = "WebAdmin"; #>
+<# var ControllerDescribe = "岗位管理"; #>
+<# var Route = "position"; #>
 <# var DbContextName = "BaseIdentityDbContext";#>
 <# var otherRepository = new System.Collections.Generic.List<string[]>()
 	{
@@ -28,8 +28,7 @@
 	{
 		// {"Name"，"Type"，"Describe"}
 	    // new string[]{"","",""}
-		new string[]{"SourceId","string","源节点ID"},
-		new string[]{"TargetId","string","目标节点ID"},
+		new string[]{"PositionName","string","岗位名称"},
 	};	
 #>
 

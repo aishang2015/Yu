@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Role } from '../models/role';
 import { NzModalRef, NzModalService, NzTreeNodeOptions, NzMessageService } from 'ng-zorro-antd';
-import { ApiService } from 'src/app/core/services/api.service';
-import { ElementService } from 'src/app/core/services/element.service';
-import { RuleService } from 'src/app/core/services/rule.service';
-import { RoleService } from 'src/app/core/services/role.service';
+import { ApiService } from 'src/app/core/services/rightmanage/api.service';
+import { ElementService } from 'src/app/core/services/rightmanage/element.service';
+import { RuleService } from 'src/app/core/services/rightmanage/rule.service';
+import { RoleService } from 'src/app/core/services/rightmanage/role.service';
 
 @Component({
   selector: 'app-role-manage',

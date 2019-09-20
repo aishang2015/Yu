@@ -28,8 +28,9 @@
         <th nzAlign="center" nzWidth="75px">头像</th>
         <th nzAlign="center" nzWidth="150px">用户名</th>
         <th nzAlign="center" nzWidth="150px">姓名</th>
-        <th nzAlign="center" nzWidth="150px">用户角色</th>
-        <th nzAlign="center" nzWidth="150px">所属组织</th>
+        <th nzAlign="center" nzWidth="150px">角色</th>
+        <th nzAlign="center" nzWidth="150px">组织</th>
+        <th nzAlign="center" nzWidth="150px">岗位</th>
         <th nzAlign="center">操作</th>
       </tr>
     </thead>
@@ -43,6 +44,7 @@
         <td nzAlign="center" nzWidth="150px">{{ data.fullName }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.roles }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.groupName }}</td>
+        <td nzAlign="center" nzWidth="150px">{{ data.positionName }}</td>
         <td nzAlign="center">
           <a (appThrottleClick)="viewUserDetail(data)" *canOperate="'viewuserlink'">查看</a>&nbsp;&nbsp;
           <a (appThrottleClick)="editAvatar(data)" *canOperate="'editavatarlink'">头像</a>&nbsp;&nbsp;
@@ -193,7 +195,7 @@
 
     <nz-divider nzText="角色信息"></nz-divider>
 
-    <nz-form-label [nzSpan]="5">用户角色</nz-form-label>
+    <nz-form-label [nzSpan]="5">角色</nz-form-label>
     <nz-form-control [nzSpan]="12">
       <nz-select [(ngModel)]="editUserDetail.roles" name="roles" [nzSize]="size" nzMode="multiple"
         nzPlaceHolder="请选择角色">
@@ -203,11 +205,21 @@
 
     <nz-divider nzText="组织信息"></nz-divider>
 
-    <nz-form-label [nzSpan]="5">组织名称</nz-form-label>
+    <nz-form-label [nzSpan]="5">组织</nz-form-label>
     <nz-form-control [nzSpan]="12">
-      <nz-tree-select [nzNodes]="groupNodes" nzShowSearch name="groupId" nzPlaceHolder="请选择所属组织"
+      <nz-tree-select [nzNodes]="groupNodes" nzShowSearch name="groupId" nzPlaceHolder="请选择组织"
         [(ngModel)]="editUserDetail.userGroupId">
       </nz-tree-select>
+    </nz-form-control>
+
+    <nz-divider nzText="岗位信息"></nz-divider>
+
+    <nz-form-label [nzSpan]="5">岗位</nz-form-label>
+    <nz-form-control [nzSpan]="12">
+      <nz-select [(ngModel)]="editUserDetail.positionId" name="positions" [nzSize]="size"
+        nzPlaceHolder="请选择岗位">
+        <nz-option *ngFor="let option of positions" [nzLabel]="option.positionName" [nzValue]="option.id"></nz-option>
+      </nz-select>
     </nz-form-control>
 
     <nz-divider nzText="基本信息"></nz-divider>

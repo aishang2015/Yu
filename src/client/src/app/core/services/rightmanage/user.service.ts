@@ -1,7 +1,7 @@
 import { Injectable, Injector } from '@angular/core';
-import { BaseService } from './base.service';
+import { BaseService } from '../base.service';
 import { HttpClient } from '@angular/common/http';
-import { UriConstant } from '../constants/uri-constant';
+import { UriConstant } from '../../constants/uri-constant';
 import { UserDetail } from 'src/app/right-manage/models/user-detail';
 
 @Injectable({

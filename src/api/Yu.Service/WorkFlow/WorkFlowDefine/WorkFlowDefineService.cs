@@ -18,6 +18,12 @@ namespace Yu.Service.WorkFlow.WorkFlowDefines
         // 仓储类
         private IRepository<WorkFlowDefine, Guid> _repository;
 
+        // 仓储类
+        private IRepository<WorkFlowFlowConnection, Guid> _connectionRepository;
+
+        // 仓储类
+        private IRepository<WorkFlowFlowNode, Guid> _nodeRepository;
+
         // 工作流类型服务
         private readonly IWorkFlowTypeService _workFlowTypeService;
 
@@ -28,16 +34,19 @@ namespace Yu.Service.WorkFlow.WorkFlowDefines
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
         public WorkFlowDefineService(IRepository<WorkFlowDefine, Guid> repository,
+            IRepository<WorkFlowFlowConnection, Guid> connectionRepository,
+            IRepository<WorkFlowFlowNode, Guid> nodeRepository,
             IWorkFlowTypeService workFlowTypeService,
             IMapper mapper,
             IUnitOfWork<BaseIdentityDbContext> unitOfWork)
         {
             _repository = repository;
+            _connectionRepository = connectionRepository;
+            _nodeRepository = nodeRepository;
             _workFlowTypeService = workFlowTypeService;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
-
 
         /// <summary>
         /// 取得数据
@@ -63,6 +72,8 @@ namespace Yu.Service.WorkFlow.WorkFlowDefines
         public async Task DeleteWorkFlowDefineAsync(Guid id)
         {
             _repository.DeleteRange(e => e.Id == id);
+            _connectionRepository.DeleteRange(c => c.DefineId == id);
+            _nodeRepository.DeleteRange(n => n.DefineId == id);
             await _unitOfWork.CommitAsync();
         }
 

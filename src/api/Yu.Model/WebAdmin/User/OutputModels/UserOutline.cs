@@ -33,5 +33,10 @@ namespace Yu.Model.WebAdmin.User.OutputModels
         /// 组织名称
         /// </summary>
         public string GroupName { get; set; }
+
+        /// <summary>
+        /// 岗位名称
+        /// </summary>
+        public string PositionName { get; set; }
     }
 }

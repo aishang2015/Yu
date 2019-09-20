@@ -44,6 +44,9 @@ export class UriConstant {
     // 组织数据地址
     static readonly GroupUri = UriConstant.BaseApiUri + 'group';
 
+    // 组织数据地址
+    static readonly PositionUri = UriConstant.BaseApiUri + 'position';
+
     // 实体数据地址
     static readonly EntitiesUri = UriConstant.BaseApiUri + 'entities';
 

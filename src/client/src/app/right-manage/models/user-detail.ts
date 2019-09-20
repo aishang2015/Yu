@@ -15,4 +15,6 @@ export class UserDetail {
     roles: string[]; // 角色
     groupId: string; // 组织ID
     groupName: string; // 组织名称
+    positionId: string; // 岗位ID
+    positionName: string; // 岗位名称
 }

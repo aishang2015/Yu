@@ -1,8 +1,8 @@
 import { Injectable, Injector } from '@angular/core';
-import { BaseService } from './base.service';
+import { BaseService } from '../base.service';
 import { HttpClient } from '@angular/common/http';
-import { UriConstant } from '../constants/uri-constant';
-import { CommonConstant } from '../constants/common-constant';
+import { UriConstant } from '../../constants/uri-constant';
+import { CommonConstant } from '../../constants/common-constant';
 
 @Injectable({
   providedIn: 'root'

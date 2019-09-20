@@ -1,13 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { UserService } from 'src/app/core/services/user.service';
+import { UserService } from 'src/app/core/services/rightmanage/user.service';
 import { NzMessageService, NzModalService, NzModalRef, UploadFile, NzTreeNodeOptions } from 'ng-zorro-antd';
 import { UserDetail } from '../models/user-detail';
 import { Observable, Observer } from 'rxjs';
 import { CommonConstant } from 'src/app/core/constants/common-constant';
 import { UriConstant } from 'src/app/core/constants/uri-constant';
-import { RoleService } from 'src/app/core/services/role.service';
-import { GroupService } from 'src/app/core/services/group.service';
+import { RoleService } from 'src/app/core/services/rightmanage/role.service';
+import { GroupService } from 'src/app/core/services/rightmanage/group.service';
 import { ImageUriPipe } from 'src/app/core/pipes/image-uri.pipe';
+import { PositionService } from 'src/app/core/services/rightmanage/position.service';
 
 @Component({
   selector: 'app-user-manage',
@@ -42,6 +43,9 @@ export class UserManageComponent implements OnInit {
 
   // 角色数据
   roles = [];
+
+  // 职位数据
+  positions = [];
 
   // 组织数据
   groupNodes = [];
@@ -80,12 +84,14 @@ export class UserManageComponent implements OnInit {
     private _messageService: NzMessageService,
     private _modalService: NzModalService,
     private _roleService: RoleService,
-    private _groupService: GroupService) { }
+    private _groupService: GroupService,
+    private _positionService: PositionService) { }
 
   ngOnInit() {
     this.getUserInfo();
     this.initAllRoleName();
     this.initAllGroup();
+    this.initAllPositions();
   }
 
   // 页码发生变化
@@ -337,6 +343,13 @@ export class UserManageComponent implements OnInit {
         this.makeNodes(result);
       }
     )
+  }
+
+  // 取得所有岗位
+  private initAllPositions() {
+    this._positionService.getPositions().subscribe(result => {
+      this.positions = result;
+    })
   }
 
   // 代码参考group-manage.component.ts ⬇

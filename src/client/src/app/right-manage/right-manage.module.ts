@@ -10,7 +10,7 @@ import { ApiManageComponent } from './api-manage/api-manage.component';
 import { RuleManageComponent } from './rule-manage/rule-manage.component';
 import { EntityManageComponent } from './entity-manage/entity-manage.component';
 import { SubPathGuard } from '../core/services/sub-path-guard.service';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { PositionManageComponent } from './position-manage/position-manage.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +18,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     RoleManageComponent,
     MenuManageComponent,
     GroupManageComponent,
+    PositionManageComponent,
     ApiManageComponent,
     RuleManageComponent,
     EntityManageComponent,
@@ -30,6 +31,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
       { path: 'role', component: RoleManageComponent, canActivate: [SubPathGuard] },
       { path: 'menu', component: MenuManageComponent, canActivate: [SubPathGuard] },
       { path: 'group', component: GroupManageComponent, canActivate: [SubPathGuard] },
+      { path: 'position', component: PositionManageComponent },
       { path: 'api', component: ApiManageComponent, canActivate: [SubPathGuard] },
       { path: 'rule', component: RuleManageComponent, canActivate: [SubPathGuard] },
       { path: 'entity', component: EntityManageComponent, canActivate: [SubPathGuard] },

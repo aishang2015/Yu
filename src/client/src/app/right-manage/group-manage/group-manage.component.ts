@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Group } from '../models/group';
 import { NzTreeNodeOptions, NzMessageService, NzModalService } from 'ng-zorro-antd';
-import { GroupService } from 'src/app/core/services/group.service';
+import { GroupService } from 'src/app/core/services/rightmanage/group.service';
 
 @Component({
   selector: 'app-group-manage',

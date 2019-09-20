@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Entity } from '../models/entity';
 import { NzModalService, NzModalRef, NzMessageService } from 'ng-zorro-antd';
 import { findSafariExecutable } from 'selenium-webdriver/safari';
-import { EntityService } from 'src/app/core/services/entity.service';
+import { EntityService } from 'src/app/core/services/rightmanage/entity.service';
 
 @Component({
   selector: 'app-entity-manage',

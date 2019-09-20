@@ -16,6 +16,8 @@ using Yu.Data.Entities;
 using Yu.Data.Infrasturctures.BaseIdentity;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.User.OutputModels;
+using Yu.Service.WebAdmin.Group;
+using Yu.Service.WebAdmin.Positions;
 using GroupEntity = Yu.Data.Entities.Right.Group;
 
 namespace Yu.Service.WebAdmin.User
@@ -24,9 +26,9 @@ namespace Yu.Service.WebAdmin.User
     {
         private UserManager<BaseIdentityUser> _userManager;
 
-        private RoleManager<BaseIdentityRole> _roleManager;
+        private IGroupService _groupService;
 
-        private IRepository<GroupEntity, Guid> _groupRepository;
+        private IPositionService _positionService;
 
         private IFileStore _fileStore;
 
@@ -38,16 +40,16 @@ namespace Yu.Service.WebAdmin.User
 
         public UserService(
             UserManager<BaseIdentityUser> userManager,
-            RoleManager<BaseIdentityRole> roleManager,
-            IRepository<GroupEntity, Guid> groupRepository,
+            IGroupService groupService,
+            IPositionService positionService,
             IJwtFactory jwtFactory,
             IFileStore fileStore,
             IConfiguration configuration,
             IMapper mapper)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
-            _groupRepository = groupRepository;
+            _positionService = positionService;
+            _groupService = groupService;
             _jwtFactory = jwtFactory;
             _fileStore = fileStore;
             _serverFileRootPath = configuration["AvatarFileOption:ServerFileStorePath"];
@@ -99,13 +101,14 @@ namespace Yu.Service.WebAdmin.User
         public async Task<UserDetail> GetUserDetailAsync(Guid userId)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            var result = _mapper.Map<UserDetail>(user);
-
+            
             // 组织名称
-            if (!string.IsNullOrEmpty(user.UserGroupId))
-            {
-                result.UserGroupName = _groupRepository.GetById(Guid.Parse(user.UserGroupId))?.GroupName;
-            }
+            user.GroupName = string.IsNullOrEmpty(user.UserGroupId) ? string.Empty : _groupService.GetGroupNameById(Guid.Parse(user.UserGroupId));
+
+            // 岗位名称
+            user.PositionName = string.IsNullOrEmpty(user.PositionId) ? string.Empty : _positionService.GetPositionNameById(Guid.Parse(user.PositionId));
+
+            var result = _mapper.Map<UserDetail>(user);
 
             // 角色名称
             var roles = await _userManager.GetRolesAsync(user);
@@ -155,9 +158,15 @@ namespace Yu.Service.WebAdmin.User
             var skip = pageSize * (pageIndex - 1);
             var users = await _userManager.Users.Where(filter).Skip(skip).Take(pageSize).ToListAsync();
 
+            users.ForEach(user =>
+            {
+                user.GroupName = string.IsNullOrEmpty(user.UserGroupId) ? string.Empty : _groupService.GetGroupNameById(Guid.Parse(user.UserGroupId));
+                user.PositionName = string.IsNullOrEmpty(user.PositionId) ? string.Empty : _positionService.GetPositionNameById(Guid.Parse(user.PositionId));
+            });
+
             // 结果数据
             var userOutlines = _mapper.Map<List<UserOutline>>(users);
- 
+
             // 生成结果
             return new PagedData<UserOutline>
             {

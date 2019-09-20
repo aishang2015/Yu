@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ApiService } from 'src/app/core/services/api.service';
+import { ApiService } from 'src/app/core/services/rightmanage/api.service';
 import { ApiDetail } from '../models/api-detail';
 import { NzModalRef, NzModalService, NzMessageService } from 'ng-zorro-antd';
 

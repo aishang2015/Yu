@@ -191,7 +191,7 @@ namespace Yu.Api.Controllers
             return new LoginResult
             {
                 Token = token,
-                UserName = user.UserName,
+                UserName = user.FullName,
                 AvatarUrl = user.Avatar ?? string.Empty,
                 Identifycations = identities.Distinct().ToArray(),
                 Routes = routes.Distinct().ToArray()

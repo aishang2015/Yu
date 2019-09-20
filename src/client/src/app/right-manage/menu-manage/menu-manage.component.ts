@@ -3,9 +3,9 @@ import { Element } from '../models/element';
 import { EnumConstant } from 'src/app/core/constants/enum-constant';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { NzTreeComponent, NzTreeNodeOptions, NzModalService, NzMessageService } from 'ng-zorro-antd';
-import { ElementService } from 'src/app/core/services/element.service';
+import { ElementService } from 'src/app/core/services/rightmanage/element.service';
 import { resource } from 'selenium-webdriver/http';
-import { ApiService } from 'src/app/core/services/api.service';
+import { ApiService } from 'src/app/core/services/rightmanage/api.service';
 import { ApiDetail } from '../models/api-detail';
 
 @Component({

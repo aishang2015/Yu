@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output } from '@angular/core';
-import { EntityService } from '../../services/entity.service';
+import { EntityService } from '../../services/rightmanage/entity.service';
 import { EnumConstant } from '../../constants/enum-constant';
 import { Guid } from '../../utils/guid';
 import { Condition } from 'selenium-webdriver';

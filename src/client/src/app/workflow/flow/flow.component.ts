@@ -42,6 +42,9 @@ export class FlowComponent implements OnInit {
   // 模态框
   private _modal;
 
+  // 是否加载中
+  isLoading: boolean = false;
+
   selected = '2';
 
   // 节点id下标
@@ -374,6 +377,7 @@ export class FlowComponent implements OnInit {
 
   // 保存流程图
   saveFlow() {
+    this.isLoading = true;
     this.flowConnections = [];
     let connections = this._jsPlumbInstance.getAllConnections();
     connections.forEach(element => {
@@ -404,7 +408,8 @@ export class FlowComponent implements OnInit {
       defineId: this.wfDefine.id,
     }).subscribe(result => {
       this.messageService.success("保存成功！");
-    });
+      this.isLoading = false;
+    }, error => this.isLoading = false);
 
 
   }

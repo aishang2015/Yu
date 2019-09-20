@@ -1,0 +1,76 @@
+<!--搜索栏-->
+<div nz-row class="mt-10">
+    <div style="width: 250px;">
+        <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+            <input type="text" nz-input placeholder="搜索内容" name="searchText" [(ngModel)]="searchText"
+                autocomplete="off" />
+        </nz-input-group>
+        <ng-template #suffixIconButton>
+            <button nz-button nzType="default" nzSearch (click)="searchData()"><i nz-icon type="search"></i></button>
+        </ng-template>
+    </div>
+</div>
+
+<!--操作-->
+<div nz-row class="mt-10" *canOperate="'addentitybtn'">
+    <nz-button-group>
+        <button nz-button (click)="addPosition()"><i nz-icon nzType="plus"></i> 添加岗位</button>
+    </nz-button-group>
+</div>
+
+<!--信息展示-->
+<div nz-row class="mt-10">
+    <nz-table #headerTable [nzData]="positionList" [nzFrontPagination]="false" 
+        [nzBordered]="true">
+        <thead>
+            <tr>
+                <th nzAlign="center" nzWidth="75px">序号</th>
+                <th nzAlign="center" nzWidth="180px">职位名称</th>
+                <th nzAlign="center">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of positionList;let i = index">
+                <td nzAlign="center" nzWidth="75px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+                <td nzAlign="center" nzWidth="180px">{{ data.positionName }}</td>
+                <td nzAlign="center">
+                    <a (click)="deletePosition(data)">删除</a> &nbsp;
+                    <a (click)="editPosition(data)">修改</a>
+                </td>
+            </tr>
+        </tbody>
+    </nz-table>
+</div>
+
+<!--分页-->
+<div nz-row class="mt-10">
+    <nz-pagination [(nzPageIndex)]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" [nzShowTotal]="totalTemplate"
+        nzShowSizeChanger [nzPageSizeOptions]="[10,20,30,40,50]" (nzPageSizeChange)="pageSizeChange($event)" 
+        (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
+    <ng-template #totalTemplate let-total> 共计 {{ total }} 数据 </ng-template>
+</div>
+
+<!--模板内容-->
+<ng-template #editTpl>
+    <form nz-form #positionForm="ngForm" (ngSubmit)="submit(positionForm)">
+  
+      <nz-form-item>
+        <nz-form-label [nzSpan]="5">名称</nz-form-label>
+        <nz-form-control [nzSpan]="12" [nzErrorTip]="nameErrorTpl">
+          <input class="w250 cb" nz-input autocomplete="off" type="text" name="name" [(ngModel)]="editedPosition.positionName"
+            #name="ngModel" required />
+            <ng-template #nameErrorTpl let-control>
+                <ng-container *ngIf="control.hasError('required')">请输入名称</ng-container>
+            </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+  
+      <nz-form-item>
+        <nz-form-control [nzSpan]="12" [nzOffset]="5">
+          <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading" [disabled]="!positionForm.valid">提交</button>
+          <button class="mr-5" nz-button type="button" (click)="cancel(form)" [nzLoading]="isLoading">取消</button>
+        </nz-form-control>
+      </nz-form-item>
+  
+    </form>
+  </ng-template>

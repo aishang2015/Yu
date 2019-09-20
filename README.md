@@ -31,6 +31,9 @@
   - 核心框架：angular 8.1.3
   - UI框架：ng-zorro-antd 8.1.2
   - jwt：angular-jwt 2.1.0
+  - 流程图：jsplumb 2.11.2
+  - 缩放：panzoom 8.1.2
+  - aspnet/signalr 1.1.4
 
 ### 开发环境
 
@@ -98,6 +101,7 @@ src
 			├───dashboard 公告栏模块
 			├───right-manage 权限管理模块
 			├───home 根基础页面组件
+			├───workflow 工作流模块
 			└───core 共享功能模块
 				└───core 共享功能模块
 					├───Interceptors  http拦截器

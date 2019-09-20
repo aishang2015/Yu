@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
-using Yu.Service.WorkFlow.WorkFlowFlowNodes;
 using Yu.Model.WorkFlow.WorkFlowFlowNodes.InputModels;
-using Yu.Service.WorkFlow.WorkFlowFlowConnections;
 using Yu.Model.WorkFlow.WorkFlowFlow;
+using Yu.Service.WorkFlow.WorkFlowFlow;
 
 namespace Yu.Api.Areas.WorkFlow.Controllers
 {
@@ -14,14 +13,11 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
     [Description("工作流流程节点管理")]
     public class WorkFlowFlowController : AuthorizeController
     {
-        private readonly IWorkFlowFlowNodeService _workFlowFlowNodeService;
-        private readonly IWorkFlowFlowConnectionService _workFlowFlowConnectionService;
+        private readonly IWorkFlowFlowService _workFlowFlowService;
 
-        public WorkFlowFlowController(IWorkFlowFlowNodeService workFlowFlowNodeService,
-            IWorkFlowFlowConnectionService workFlowFlowConnectionService)
+        public WorkFlowFlowController(IWorkFlowFlowService workFlowFlowService)
         {
-            _workFlowFlowNodeService = workFlowFlowNodeService;
-            _workFlowFlowConnectionService = workFlowFlowConnectionService;
+            _workFlowFlowService = workFlowFlowService;
         }
 
         /// <summary>
@@ -31,8 +27,8 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
         [Description("取得工作流流程数据")]
         public IActionResult GetWorkFlowFlowNodes([FromQuery] WorkFlowFlowQuery query)
         {
-            var nodes = _workFlowFlowNodeService.GetWorkFlowFlowNodes(query.DefineId);
-            var connections = _workFlowFlowConnectionService.GetWorkFlowFlowConnections(query.DefineId);
+            var nodes = _workFlowFlowService.GetWorkFlowFlowNodes(query.DefineId);
+            var connections = _workFlowFlowService.GetWorkFlowFlowConnections(query.DefineId);
 
             return Ok(new WorkFlowFlowViewModel
             {
@@ -49,11 +45,7 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
         [Description("添加工作流流程节点数据")]
         public async Task<IActionResult> AddOrUpdateWorkFlowFlowNode([FromBody]WorkFlowFlowViewModel model)
         {
-            _workFlowFlowNodeService.DeleteWorkFlowFlowNodeAsync(model.DefineId);
-            await _workFlowFlowNodeService.AddWorkFlowFlowNodesAsync(model.Nodes);
-            _workFlowFlowConnectionService.DeleteWorkFlowFlowConnectionAsync(model.DefineId);
-            await _workFlowFlowConnectionService.AddWorkFlowFlowConnectionsAsync(model.Connections);
-            await _workFlowFlowNodeService.CommitAllAsync();
+            await _workFlowFlowService.AddOrUpdateFlow(model.DefineId, model.Nodes, model.Connections);
             return Ok();
         }
     }

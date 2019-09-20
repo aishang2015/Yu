@@ -1,5 +1,6 @@
 <nz-layout style="height:100vh;">
-    <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzWidth]="width" [nzReverseArrow]="isReverseArrow" *ngIf="isMenuVisible">
+    <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzWidth]="width" [nzReverseArrow]="isReverseArrow"
+        *ngIf="isMenuVisible">
         <div class="logo"><a style="color:white" [routerLink]="[ '/dashboard']"
                 (click)="setDashboardBreadCrumb()">Yu</a></div>
         <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
@@ -11,6 +12,8 @@
                         (click)="setBreadCrumb('权限管理','角色管理')"><i nz-icon nzType="audit" nzTheme="outline"></i>角色管理</li>
                     <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('groupmanage')" [routerLink]="[ '/right/group' ]"
                         (click)="setBreadCrumb('权限管理','组织管理')"><i nz-icon nzType="team" nzTheme="outline"></i>组织管理</li>
+                    <li nz-menu-item nzMatchRouter [routerLink]="[ '/right/position' ]"
+                        (click)="setBreadCrumb('权限管理','岗位管理')"><i nz-icon nzType="team" nzTheme="outline"></i>岗位管理</li>
                     <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('elementmanage')"
                         [routerLink]="[ '/right/menu' ]" (click)="setBreadCrumb('权限管理','页面元素管理')"><i nz-icon
                             nzType="ordered-list" nzTheme="outline"></i>页面元素管理</li>

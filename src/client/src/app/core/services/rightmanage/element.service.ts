@@ -1,6 +1,6 @@
 import { Injectable, Injector } from '@angular/core';
-import { BaseService } from './base.service';
-import { UriConstant } from '../constants/uri-constant';
+import { BaseService } from '../base.service';
+import { UriConstant } from '../../constants/uri-constant';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
