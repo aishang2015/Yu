@@ -20,6 +20,7 @@ registerLocaleData(zh);
 
 import { DragDropModule } from '@angular/cdk/drag-drop'; 
 import { NodeSelectComponent } from './components/node-select/node-select.component';
+import { HtmlPipe } from './pipes/html.pipe';
 
 @NgModule({
   imports: [
@@ -33,6 +34,7 @@ import { NodeSelectComponent } from './components/node-select/node-select.compon
 
     GenderPipe, // 性别转换管道
     ImageUriPipe, // 图片地址转换
+    HtmlPipe, // html安全转换
 
     TelephoneValidatorDirective, // 电话号码验证器
     UserNameValidatorDirective, // 用户名验证器
@@ -49,6 +51,7 @@ import { NodeSelectComponent } from './components/node-select/node-select.compon
     NodeSelectComponent,
     GenderPipe,
     ImageUriPipe,
+    HtmlPipe,
     TelephoneValidatorDirective,
     UserNameValidatorDirective,
     ConfirmPasswordValidatorDirective,

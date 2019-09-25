@@ -1,0 +1,63 @@
+<h3 nz-title> - 表单</h3>
+<div id="operateBar">
+    <button nz-button nzType="primary" (click)="saveForm()" [nzLoading]="isLoading" >保存当前表单</button>
+</div>
+<nz-divider></nz-divider>
+
+<div id="formContainer">
+    <div id="overflowContainer">
+        <div id="componentContainer">
+            <ul>
+                <li *ngFor="let component of components" (click)="addComponent(component.key)">
+                    {{component.describe}}
+                </li>
+            </ul>
+        </div>
+        <div id="editorContainer">
+            <editor id="editor" [(ngModel)]="dataModel" [init]="tinymceSetting" (onChange)="handleChange($event)">
+            </editor>
+        </div>
+        <div id="displayContainer">
+            <h4 nz-title>控件属性</h4>
+            <form *ngIf="editedWorkFlowFormElement.id">
+                <nz-form-item>
+                    <nz-form-label [nzSpan]="6">ID</nz-form-label>
+                    <nz-form-control [nzSpan]="12">
+                        <input nz-input [ngModel]="editedWorkFlowFormElement.id" name="id" [disabled]="true"/>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-label [nzSpan]="6">类型</nz-form-label>
+                    <nz-form-control [nzSpan]="12">
+                        <input nz-input [ngModel]="getElementName(editedWorkFlowFormElement.type)" name="type" [disabled]="true"/>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-label [nzSpan]="6">宽度</nz-form-label>
+                    <nz-form-control [nzSpan]="12">
+                        <nz-input-number nz-input [(ngModel)]="editedWorkFlowFormElement.width" name="width"></nz-input-number> px
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-label [nzSpan]="6">选项</nz-form-label>
+                    <nz-form-control [nzSpan]="18">
+                        <textarea rows="4" nz-input placeholder="不同的选项请用逗号隔开。例如：“是,否”"
+                        [(ngModel)]="editedWorkFlowFormElement.optionstr" name="options"></textarea>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-label [nzSpan]="6">行数</nz-form-label>
+                    <nz-form-control [nzSpan]="12">
+                        <nz-input-number nz-input [(ngModel)]="editedWorkFlowFormElement.line" name="line"></nz-input-number>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item nz-row>
+                    <nz-form-control [nzSpan]="12" [nzOffset]="6">
+                        <button nz-button nzType="primary" type="button" (click)="saveElement()">确定</button>
+                    </nz-form-control>
+                </nz-form-item>
+            </form>
+        </div>
+        <div #htmlContainer></div>
+    </div>
+</div>

@@ -31,6 +31,7 @@
                 "output": "/assets/"
               },
               { "glob": "**/*", "input": "./node_modules/tinymce/skins", "output": "/skins/" },
+              { "glob": "**/*", "input": "./node_modules/tinymce/themes", "output": "/themes/" },
               { "glob": "**/*", "input": "./node_modules/tinymce/plugins", "output": "/plugins/" }
             ],
             "styles": [
@@ -38,8 +39,7 @@
               "node_modules/ng-zorro-antd/ng-zorro-antd.min.css"
             ],
             "scripts": [
-              "node_modules/tinymce/tinymce.min.js",
-              "node_modules/tinymce/themes/silver/theme.js"
+              "node_modules/tinymce/tinymce.min.js"
             ],
             "es5BrowserSupport": true
           },

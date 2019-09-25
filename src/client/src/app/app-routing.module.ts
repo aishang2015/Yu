@@ -7,7 +7,7 @@ const routes: Routes = [
   { path: 'login', loadChildren: () => import('./account/account.module').then(m => m.AccountModule), canActivate: [LoginGuard] },
   { path: 'account', loadChildren: () => import('./account/account.module').then(m => m.AccountModule), canActivate: [LoginGuard] },
   { path: 'right', loadChildren: () => import('./right-manage/right-manage.module').then(m => m.RightManageModule), canActivate: [LoginGuard] },
-  { path: 'workflow', loadChildren: () => import('./workflow/workflow.module').then(m => m.WorkflowModule), canActivate: [LoginGuard] },
+  { path: 'workflow', loadChildren: () => import('./workflow/workflow.module').then(m => m.WorkflowModule) },
   { path: '', pathMatch: 'full', redirectTo: 'login' },
 ];
 

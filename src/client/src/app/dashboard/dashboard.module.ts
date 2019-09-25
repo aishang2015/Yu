@@ -2,10 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainComponent } from './main/main.component';
 import { RouterModule } from '@angular/router';
-import { NgZorroAntdModule } from 'ng-zorro-antd';
-import { HttpClientModule } from '@angular/common/http';
 import { CoreModule } from '../core/core.module';
-import { EditorModule } from '@tinymce/tinymce-angular';
 
 @NgModule({
   declarations: [
@@ -17,7 +14,6 @@ import { EditorModule } from '@tinymce/tinymce-angular';
     RouterModule.forChild([
       { path: '', component: MainComponent }
     ]),
-    EditorModule
   ]
 })
 export class DashboardModule { }
