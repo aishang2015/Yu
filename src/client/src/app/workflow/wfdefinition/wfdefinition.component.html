@@ -36,7 +36,7 @@
                         <td nzAlign="center" nzWidth="200px">{{ data.typeName }}</td>
                         <td nzAlign="center">{{ data.describe }}</td>
                         <td nzAlign="center" nzWidth="300px">
-                            <a>表单设计</a>&nbsp;
+                            <a [routerLink]="[ '/workflow/form', data.id]" target="_blank">表单设计</a>&nbsp;
                             <a [routerLink]="[ '/workflow/flow', data.id]" target="_blank">流程设计</a>&nbsp;
                             <a (click)="editWfDefine(data)" *canOperate="'editapilink'">修改</a>&nbsp;
                             <a (click)="removeWfDefine(data)" *canOperate="'deleteapilink'">删除</a>

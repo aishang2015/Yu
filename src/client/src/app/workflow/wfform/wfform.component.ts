@@ -1,8 +1,12 @@
 import { Component, OnInit, ViewChild, ElementRef, Renderer2, ComponentFactoryResolver, ViewContainerRef, NgModule, Compiler } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { NgZorroAntdModule } from 'ng-zorro-antd';
+import { NgZorroAntdModule, NzMessageService } from 'ng-zorro-antd';
 import { element } from 'protractor';
 import { WorkFlowFormElement } from '../models/workflowFormElement';
+import { WorkFlowFormService } from 'src/app/core/services/workflow/workflowform.service';
+import { ActivatedRoute } from '@angular/router';
+import { WorkFlowDefineService } from 'src/app/core/services/workflow/workflowdefine.service';
+import { WorkFlowDefine } from '../models/workflowDefine';
 
 declare var tinymce: any;
 
@@ -25,6 +29,12 @@ export class WfformComponent implements OnInit {
 
   // 光标位置
   bookmark: any;
+
+  // 按钮加载
+  isLoading: boolean;
+
+  // 工作流定义
+  wfDefine: WorkFlowDefine = new WorkFlowDefine();
 
   // 表单元素
   workflowFormElements: WorkFlowFormElement[] = [];
@@ -60,11 +70,33 @@ export class WfformComponent implements OnInit {
   @ViewChild('#editor', { static: true })
   tinymceEditor;
 
-  constructor(private renderer: Renderer2, private sanitizer: DomSanitizer, private resolveFactory: ComponentFactoryResolver,
-    private compiler: Compiler) { }
+  constructor(private renderer: Renderer2,
+    private sanitizer: DomSanitizer,
+    private resolveFactory: ComponentFactoryResolver,
+    private routeInfo: ActivatedRoute,
+    private compiler: Compiler,
+    private messageService: NzMessageService,
+    private _workflowDefineService: WorkFlowDefineService,
+    private _workflowFormService: WorkFlowFormService) { }
 
   ngOnInit() {
-    setInterval(() => this.initClickEvent(), 3000);
+
+    // 取得工作流状态
+    const id = this.routeInfo.snapshot.params['id'];
+    this._workflowDefineService.getbyid(id).subscribe(result => {
+      this.wfDefine = result;
+      this.initForm();
+    });
+
+  }
+
+  // 初始化表单编辑
+  initForm() {
+    this._workflowFormService.get(this.wfDefine.id).subscribe(result => {
+      this.dataModel = result.formContent ? result.formContent.editFormHtml : '';
+      this.workflowFormElements = result.formElements;
+      setInterval(() => this.initClickEvent(), 3000);
+    });
   }
 
   // 创建动态组件
@@ -100,11 +132,11 @@ export class WfformComponent implements OnInit {
     this.bindClick(elementid);
 
     this.workflowFormElements.push({
-      id: elementid,
+      elementId: elementid,
+      defineId: this.wfDefine.id,
       type: typeKey,
       width: 120,
-      optionstr: '',
-      options: [],
+      options: '',
       line: 3
     })
   }
@@ -119,7 +151,7 @@ export class WfformComponent implements OnInit {
     let contentDocument: any = document.getElementById('editor_ifr');
     let element: HTMLElement = contentDocument.contentDocument.getElementById(id);
     element.onclick = event => {
-      let element = this.workflowFormElements.find(e => e.id == id);
+      let element = this.workflowFormElements.find(e => e.elementId == id);
       if (element) {
         Object.assign(this.editedWorkFlowFormElement, element);
       }
@@ -133,7 +165,7 @@ export class WfformComponent implements OnInit {
     for (let i = 0; i < elements.length; i++) {
       let element: any = elements[i];
       element.onclick = event => {
-        let element = this.workflowFormElements.find(e => e.id == element.id);
+        let element = this.workflowFormElements.find(e => e.elementId == element.id);
         if (element) {
           Object.assign(this.editedWorkFlowFormElement, element);
         }
@@ -177,14 +209,14 @@ export class WfformComponent implements OnInit {
 
   // 保存控件属性
   saveElement() {
-    let element = this.workflowFormElements.find(e => e.id == this.editedWorkFlowFormElement.id);
+    let element = this.workflowFormElements.find(e => e.elementId == this.editedWorkFlowFormElement.elementId);
     if (element) {
       Object.assign(element, this.editedWorkFlowFormElement);
-      element.options = this.editedWorkFlowFormElement.optionstr.split(',');
       this.editedWorkFlowFormElement = new WorkFlowFormElement();
 
+      // 设置元素的宽度
       let contentDocument: any = document.getElementById('editor_ifr');
-      let htmlElement: HTMLElement = contentDocument.contentDocument.getElementById(element.id);
+      let htmlElement: HTMLElement = contentDocument.contentDocument.getElementById(element.elementId);
       if (htmlElement) {
         htmlElement.style.width = `${element.width}px`;
       }
@@ -193,27 +225,38 @@ export class WfformComponent implements OnInit {
 
   // 保存表单
   saveForm() {
+    this.isLoading = true;
     let contentDocument: any = document.getElementById('editor_ifr');
     for (let i = 0; i < this.workflowFormElements.length; i++) {
-      let htmlelement = contentDocument.contentDocument.getElementById(this.workflowFormElements[i].id);
+      let htmlelement = contentDocument.contentDocument.getElementById(this.workflowFormElements[i].elementId);
       if (!htmlelement) {
         this.workflowFormElements.splice(i, 1);
         i--;
       }
     }
-    console.log(this.workflowFormElements);
-    console.log(this.dataModel);
 
-    let htmlelements: HTMLCollection = contentDocument.contentDocument.getElementsByTagName('input');
-    for (let i = 0; i < htmlelements.length; i++) {
-      let element: any = htmlelements[i];
-      let key = this.components.find(c => c.describe == element.value) ? this.components.find(c => c.describe == element.value).key : '';
+    this._workflowFormService.addOrUpdate({
+      defineId: this.wfDefine.id,
+      formContent: {
+        defineId: this.wfDefine.id,
+        editFormHtml: this.dataModel
+      },
+      formElements: this.workflowFormElements
+    }).subscribe(result => {
+      this.messageService.success("保存成功！");
+      this.isLoading = false;
+    }, error => this.isLoading = false);
 
-      // 正则替换真正页面的标签
-      let newhtml = this.getEditHtml(element.id, key);
-      let regex = new RegExp(`<input id="${element.id}".*?/>`);
-      let result = this.dataModel.replace(regex, newhtml);
-    }
+    // let htmlelements: HTMLCollection = contentDocument.contentDocument.getElementsByTagName('input');
+    // for (let i = 0; i < htmlelements.length; i++) {
+    //   let element: any = htmlelements[i];
+    //   let key = this.components.find(c => c.describe == element.value) ? this.components.find(c => c.describe == element.value).key : '';
+
+    //   // 正则替换真正页面的标签
+    //   let newhtml = this.getEditHtml(element.id, key);
+    //   let regex = new RegExp(`<input id="${element.id}".*?/>`);
+    //   let result = this.dataModel.replace(regex, newhtml);
+    // }
   }
 
   // 取得编辑状态的html

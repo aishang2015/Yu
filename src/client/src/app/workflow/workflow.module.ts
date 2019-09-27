@@ -21,6 +21,7 @@ import { EditorModule } from '@tinymce/tinymce-angular';
     RouterModule.forChild([
       { path: 'definition', component: WfdefinitionComponent },
       { path: 'flow/:id', component: FlowComponent },
+      { path: 'form/:id', component: WfformComponent },
       { path: 'wfform', component: WfformComponent },
     ])
   ],
