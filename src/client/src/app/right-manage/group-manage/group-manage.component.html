@@ -3,12 +3,12 @@
   <div nz-col nzSpan="6" class="tree">
     <div class="mt-5">
       <nz-button-group>
-        <button nz-button nzType="default" (appThrottleClick)="createGroup()" [disabled]="isEditMode" *canOperate="'addgroupbtn'"><i nz-icon
-            type="plus"></i></button>
-        <button nz-button nzType="default" (appThrottleClick)="editGroup()" [disabled]="isEditMode" *canOperate="'editgroupbtn'"><i nz-icon
-            type="edit"></i></button>
-        <button nz-button nzType="default" (appThrottleClick)="deleteGroup()" [disabled]="isEditMode" *canOperate="'deletegroupbtn'"><i nz-icon
-            type="delete"></i></button>
+        <button nz-button nzType="default" (appThrottleClick)="createGroup()" [disabled]="isEditMode"
+          *canOperate="'addgroupbtn'"><i nz-icon type="plus"></i></button>
+        <button nz-button nzType="default" (appThrottleClick)="editGroup()" [disabled]="isEditMode"
+          *canOperate="'editgroupbtn'"><i nz-icon type="edit"></i></button>
+        <button nz-button nzType="default" (appThrottleClick)="deleteGroup()" [disabled]="isEditMode"
+          *canOperate="'deletegroupbtn'"><i nz-icon type="delete"></i></button>
       </nz-button-group>
     </div>
     <div class="mt-5">
@@ -31,13 +31,14 @@
 
         <nz-form-item>
           <nz-form-label [nzSpan]="5">组织名称</nz-form-label>
-          <nz-form-control [nzSpan]="12"
-            [ngClass]="{'has-error': groupName.invalid && (groupName.dirty || groupName.touched || isSubmit)}">
+          <nz-form-control [nzSpan]="12" [nzErrorTip]="groupErrorTpl">
             <input class="w250 cb" nz-input autocomplete="off" type="text" name="groupName"
               [(ngModel)]="editedGroup.groupName" #groupName="ngModel" required [disabled]="!isEditMode" />
-            <nz-form-explain
-              *ngIf="groupName.invalid && (groupName.dirty || groupName.touched || isSubmit) && groupName.errors.required">
-              请输入元素名称</nz-form-explain>
+            <ng-template #groupErrorTpl let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                请输入组织名称
+              </ng-container>
+            </ng-template>
           </nz-form-control>
         </nz-form-item>
 
@@ -52,7 +53,8 @@
         <nz-form-item *ngIf="isEditMode">
           <nz-form-control [nzSpan]="12" [nzOffset]="5">
             <button class="mr-5" nz-button nzType="primary" type="submit" [nzLoading]="isLoading">提交</button>
-            <button class="mr-5" nz-button nzType="primary" type="button" (click)="cancelEdit(editForm)" [nzLoading]="isLoading">取消</button>
+            <button class="mr-5" nz-button nzType="primary" type="button" (click)="cancelEdit(editForm)"
+              [nzLoading]="isLoading">取消</button>
           </nz-form-control>
         </nz-form-item>
 

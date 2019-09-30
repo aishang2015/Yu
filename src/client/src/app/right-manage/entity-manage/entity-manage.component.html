@@ -65,24 +65,27 @@
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">数据库上下文</nz-form-label>
-      <nz-form-control [nzSpan]="12"
-        [ngClass]="{'has-error': dbContext.invalid && (dbContext.dirty || dbContext.touched || isSubmit)}">
+      <nz-form-control [nzSpan]="12" [nzErrorTip]="dbErrorTpl">
         <input class="w250 cb" nz-input autocomplete="off" type="text" name="dbContext"
           [(ngModel)]="editedEntity.dbContext" #dbContext="ngModel" required />
-        <nz-form-explain
-          *ngIf="dbContext.invalid && (dbContext.dirty || dbContext.touched || isSubmit) && dbContext.errors.required">
-          请输入数据库上下文</nz-form-explain>
+        <ng-template #dbErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">
+            请输入数据库上下文
+          </ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">实体名</nz-form-label>
-      <nz-form-control [nzSpan]="12"
-        [ngClass]="{'has-error': table.invalid && (table.dirty || table.touched || isSubmit)}">
+      <nz-form-control [nzSpan]="12" [nzErrorTip]="tableErrorTpl">
         <input class="w250 cb" nz-input autocomplete="off" type="text" name="table" [(ngModel)]="editedEntity.table"
           #table="ngModel" required />
-        <nz-form-explain *ngIf="table.invalid && (table.dirty || table.touched || isSubmit) && table.errors.required">
-          请输入表名</nz-form-explain>
+        <ng-template #tableErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">
+            请输入表名
+          </ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
 
@@ -96,12 +99,14 @@
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">字段名</nz-form-label>
-      <nz-form-control [nzSpan]="12"
-        [ngClass]="{'has-error': field.invalid && (field.dirty || field.touched || isSubmit)}">
+      <nz-form-control [nzSpan]="12" [nzErrorTip]="fieldErrorTpl">
         <input class="w250 cb" nz-input autocomplete="off" type="text" name="field" [(ngModel)]="editedEntity.field"
           #field="ngModel" required />
-        <nz-form-explain *ngIf="field.invalid && (field.dirty || field.touched || isSubmit) && field.errors.required">
-          请输入字段名</nz-form-explain>
+        <ng-template #fieldErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">
+            请输入字段名
+          </ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
 
@@ -116,7 +121,7 @@
 
     <nz-form-item>
       <nz-form-control [nzSpan]="12" [nzOffset]="5">
-        <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading">提交</button>
+        <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading" [disabled]="!form.valid">提交</button>
         <button class="mr-5" nz-button type="button" (click)="cancel(form)" [nzLoading]="isLoading">取消</button>
       </nz-form-control>
     </nz-form-item>

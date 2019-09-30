@@ -165,9 +165,9 @@ export class WfformComponent implements OnInit {
     for (let i = 0; i < elements.length; i++) {
       let element: any = elements[i];
       element.onclick = event => {
-        let element = this.workflowFormElements.find(e => e.elementId == element.id);
-        if (element) {
-          Object.assign(this.editedWorkFlowFormElement, element);
+        let e = this.workflowFormElements.find(e => e.elementId == element.id);
+        if (e) {
+          Object.assign(this.editedWorkFlowFormElement, e);
         }
       };
     }

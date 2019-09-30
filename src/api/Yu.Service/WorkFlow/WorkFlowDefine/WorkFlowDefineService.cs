@@ -24,6 +24,12 @@ namespace Yu.Service.WorkFlow.WorkFlowDefines
         // 仓储类
         private IRepository<WorkFlowFlowNode, Guid> _nodeRepository;
 
+        // 表单内容
+        private IRepository<WorkFlowFormContent, Guid> _workflowFormContentRepository;
+
+        // 表单元素
+        private IRepository<WorkFlowFormElement, Guid> _workflowFormElementRepository;
+
         // 工作流类型服务
         private readonly IWorkFlowTypeService _workFlowTypeService;
 
@@ -36,6 +42,8 @@ namespace Yu.Service.WorkFlow.WorkFlowDefines
         public WorkFlowDefineService(IRepository<WorkFlowDefine, Guid> repository,
             IRepository<WorkFlowFlowConnection, Guid> connectionRepository,
             IRepository<WorkFlowFlowNode, Guid> nodeRepository,
+            IRepository<WorkFlowFormContent, Guid> workflowFormContentRepository,
+            IRepository<WorkFlowFormElement, Guid> workflowFormElementRepository,
             IWorkFlowTypeService workFlowTypeService,
             IMapper mapper,
             IUnitOfWork<BaseIdentityDbContext> unitOfWork)
@@ -43,6 +51,8 @@ namespace Yu.Service.WorkFlow.WorkFlowDefines
             _repository = repository;
             _connectionRepository = connectionRepository;
             _nodeRepository = nodeRepository;
+            _workflowFormContentRepository = workflowFormContentRepository;
+            _workflowFormElementRepository = workflowFormElementRepository;
             _workFlowTypeService = workFlowTypeService;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -74,6 +84,8 @@ namespace Yu.Service.WorkFlow.WorkFlowDefines
             _repository.DeleteRange(e => e.Id == id);
             _connectionRepository.DeleteRange(c => c.DefineId == id);
             _nodeRepository.DeleteRange(n => n.DefineId == id);
+            _workflowFormContentRepository.DeleteRange(n => n.DefineId == id);
+            _workflowFormElementRepository.DeleteRange(n => n.DefineId == id);
             await _unitOfWork.CommitAsync();
         }
 

@@ -112,48 +112,45 @@
 
     <form #form="ngForm" (ngSubmit)="changePwd(form)" appConfirmPassword>
       <nz-form-item>
-        <nz-form-control
-          [ngClass]="{'has-error': oldPassword.invalid && (oldPassword.dirty || oldPassword.touched || isSubmit)}">
-          <nz-form-label class="info_label">旧密码：</nz-form-label>
+        <nz-form-label [nzSpan]="2" class="info_label">旧密码</nz-form-label>
+        <nz-form-control [nzSpan]="5" [nzErrorTip]="oldPwdErrorTpl">
           <input nz-input class="info_content" type="password" [(ngModel)]="changePwdModel.oldPassword"
             name="oldPassword" #oldPassword="ngModel" required />
-          <nz-form-explain class="info_explain"
-            *ngIf="oldPassword.invalid && (oldPassword.dirty || oldPassword.touched || isSubmit) && oldPassword.errors.required">
-            请输入旧密码</nz-form-explain>
+          <ng-template #oldPwdErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">请输入旧密码</ng-container>
+          </ng-template>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-control
-          [ngClass]="{'has-error': newPassword.invalid && (newPassword.dirty || newPassword.touched || isSubmit)}">
-          <nz-form-label class="info_label">新密码：</nz-form-label>
+        <nz-form-label [nzSpan]="2" class="info_label">新密码</nz-form-label>
+        <nz-form-control [nzSpan]="5" [nzErrorTip]="newPwdErrorTpl">
           <input nz-input class="info_content" type="password" [(ngModel)]="changePwdModel.newPassword"
             name="newPassword" #newPassword="ngModel" required />
-          <nz-form-explain class="info_explain"
-            *ngIf="newPassword.invalid && (newPassword.dirty || newPassword.touched || isSubmit) && newPassword.errors.required">
-            请输入新密码</nz-form-explain>
+          <ng-template #newPwdErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">请输入旧密码</ng-container>
+          </ng-template>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-control
-          [ngClass]="{'has-error': (confirmPassword.invalid || form.errors?.isNotSame) && (confirmPassword.dirty || confirmPassword.touched || isSubmit)}">
-          <nz-form-label class="info_label">确认新密码：</nz-form-label>
+        <nz-form-label [nzSpan]="2" class="info_label">确认新密码：</nz-form-label>
+        <nz-form-control [nzSpan]="5" [nzErrorTip]="comfirmPwdErrorTpl">
           <input nz-input class="info_content" type="password" [(ngModel)]="changePwdModel.confirmPassword"
             name="confirmPassword" #confirmPassword="ngModel" required />
-          <nz-form-explain class="info_explain"
-            *ngIf="confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched || isSubmit) && confirmPassword.errors.required">
-            请输入确认密码</nz-form-explain>
-          <nz-form-explain class="info_explain"
+          <ng-template #comfirmPwdErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">请输入确认密码</ng-container>
+          </ng-template>
+          <div style="color:#f5222d;"
             *ngIf="form.errors?.isNotSame && (confirmPassword.dirty || confirmPassword.touched || isSubmit) ">
-            确认密码和新密码不一致</nz-form-explain>
+            确认密码和新密码不一致</div>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
         <nz-form-control>
           <div class="info_label"></div>
-          <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading">确认修改</button>
+          <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading" [disabled]="!form.valid">确认修改</button>
         </nz-form-control>
       </nz-form-item>
 

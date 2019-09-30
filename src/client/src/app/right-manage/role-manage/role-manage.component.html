@@ -55,32 +55,35 @@
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">名称</nz-form-label>
-      <nz-form-control [nzSpan]="12"
-        [ngClass]="{'has-error': name.invalid && (name.dirty || name.touched || isSubmit)}">
+      <nz-form-control [nzSpan]="12" [nzErrorTip]="nameErrorTpl">
         <input class="w250 cb" nz-input autocomplete="off" type="text" name="name" [(ngModel)]="editedRole.name"
           #name="ngModel" required />
-        <nz-form-explain *ngIf="name.invalid && (name.dirty || name.touched || isSubmit) && name.errors.required">
-          请输入名称</nz-form-explain>
+        <ng-template #nameErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">
+            请输入名称
+          </ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">描述</nz-form-label>
-      <nz-form-control [nzSpan]="12"
-        [ngClass]="{'has-error': describe.invalid && (describe.dirty || describe.touched || isSubmit)}">
+      <nz-form-control [nzSpan]="12" [nzErrorTip]="describeErrorTpl">
         <input class="w350 cb" nz-input autocomplete="off" type="text" name="describe" [(ngModel)]="editedRole.describe"
           #describe="ngModel" required />
-        <nz-form-explain
-          *ngIf="describe.invalid && (describe.dirty || describe.touched || isSubmit) && describe.errors.required">
-          请输入简单描述</nz-form-explain>
+        <ng-template #describeErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">
+            请输入简单描述
+          </ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">页面权限</nz-form-label>
       <nz-form-control [nzSpan]="12">
-        <nz-tree-select class="w350" [nzNodes]="elementsNodes" name="elements" nzCheckable
-          nzPlaceHolder="请选择页面权限" [(ngModel)]="editedRole.elements">
+        <nz-tree-select class="w350" [nzNodes]="elementsNodes" name="elements" nzCheckable nzPlaceHolder="请选择页面权限"
+          [(ngModel)]="editedRole.elements">
         </nz-tree-select>
       </nz-form-control>
     </nz-form-item>
@@ -98,7 +101,7 @@
 
     <nz-form-item>
       <nz-form-control [nzSpan]="12" [nzOffset]="5">
-        <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading">提交</button>
+        <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading" [disabled]="!form.valid">提交</button>
         <button class="mr-5" nz-button type="button" (click)="cancel(form)" [nzLoading]="isLoading">取消</button>
       </nz-form-control>
     </nz-form-item>

@@ -3,12 +3,12 @@
   <div nz-col nzSpan="6" class="tree">
     <div class="mt-5">
       <nz-button-group>
-        <button nz-button nzType="default" (appThrottleClick)="createMenu()" [disabled]="isEditMode" *canOperate="'addelementbtn'"><i nz-icon
-            type="plus"></i></button>
-        <button nz-button nzType="default" (appThrottleClick)="editMenu()" [disabled]="isEditMode" *canOperate="'editelementbtn'"><i nz-icon
-            type="edit"></i></button>
-        <button nz-button nzType="default" (appThrottleClick)="deleteMenu()" [disabled]="isEditMode" *canOperate="'deleteelementbtn'"><i nz-icon
-            type="delete"></i></button>
+        <button nz-button nzType="default" (appThrottleClick)="createMenu()" [disabled]="isEditMode"
+          *canOperate="'addelementbtn'"><i nz-icon type="plus"></i></button>
+        <button nz-button nzType="default" (appThrottleClick)="editMenu()" [disabled]="isEditMode"
+          *canOperate="'editelementbtn'"><i nz-icon type="edit"></i></button>
+        <button nz-button nzType="default" (appThrottleClick)="deleteMenu()" [disabled]="isEditMode"
+          *canOperate="'deleteelementbtn'"><i nz-icon type="delete"></i></button>
       </nz-button-group>
     </div>
     <div class="mt-5">
@@ -31,39 +31,43 @@
 
         <nz-form-item>
           <nz-form-label [nzSpan]="5">元素名称</nz-form-label>
-          <nz-form-control [nzSpan]="12"
-            [ngClass]="{'has-error': name.invalid && (name.dirty || name.touched || isSubmit)}">
+          <nz-form-control [nzSpan]="12" [nzErrorTip]="elementErrorTpl">
             <input class="w250 cb" nz-input autocomplete="off" type="text" name="name" [(ngModel)]="editedElement.name"
               #name="ngModel" required [disabled]="!isEditMode" />
-            <nz-form-explain *ngIf="name.invalid && (name.dirty || name.touched || isSubmit) && name.errors.required">
-              请输入元素名称</nz-form-explain>
+            <ng-template #elementErrorTpl let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                请输入元素名称
+              </ng-container>
+            </ng-template>
           </nz-form-control>
         </nz-form-item>
 
         <nz-form-item>
           <nz-form-label [nzSpan]="5">元素识别</nz-form-label>
-          <nz-form-control [nzSpan]="12"
-            [ngClass]="{'has-error': elementType.invalid && (elementType.dirty || elementType.touched || isSubmit)}">
+          <nz-form-control [nzSpan]="12" [nzErrorTip]="typeErrorTpl">
             <nz-select class="w250 cb" [(ngModel)]="editedElement.elementType" nzAllowClear name="elementType"
               #elementType="ngModel" required [disabled]="!isEditMode">
               <nz-option *ngFor="let option of elementTypes" [nzValue]="option.value" [nzLabel]="option.name">
               </nz-option>
             </nz-select>
-            <nz-form-explain
-              *ngIf="elementType.invalid && (elementType.dirty || elementType.touched || isSubmit) && elementType.errors.required">
-              请选择元素类型</nz-form-explain>
+            <ng-template #typeErrorTpl let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                请选择元素类型
+              </ng-container>
+            </ng-template>
           </nz-form-control>
         </nz-form-item>
 
         <nz-form-item>
           <nz-form-label [nzSpan]="5">元素唯一标识</nz-form-label>
-          <nz-form-control [nzSpan]="12"
-            [ngClass]="{'has-error': identification.invalid && (identification.dirty || identification.touched || isSubmit)}">
+          <nz-form-control [nzSpan]="12" [nzErrorTip]="identifiErrorTpl">
             <input class="w250 cb" nz-input autocomplete="off" type="text" name="identification"
               [(ngModel)]="editedElement.identification" #identification="ngModel" required [disabled]="!isEditMode" />
-            <nz-form-explain
-              *ngIf="identification.invalid && (identification.dirty || identification.touched || isSubmit) && identification.errors.required">
-              请输入元素元素唯一标识</nz-form-explain>
+            <ng-template #identifiErrorTpl let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                请输入元素元素唯一标识
+              </ng-container>
+            </ng-template>
           </nz-form-control>
         </nz-form-item>
 
@@ -78,8 +82,8 @@
         <nz-form-item>
           <nz-form-label [nzSpan]="5">关联api</nz-form-label>
           <nz-form-control [nzSpan]="12">
-            <nz-select class="w500 cb" [(ngModel)]="editedElement.apis" name="apis" nzMode="multiple" [nzDisabled]="!isEditMode"
-              nzPlaceHolder="请选择关联的api">
+            <nz-select class="w500 cb" [(ngModel)]="editedElement.apis" name="apis" nzMode="multiple"
+              [nzDisabled]="!isEditMode" nzPlaceHolder="请选择关联的api">
               <nz-option *ngFor="let api of apis" [nzLabel]="combineApiLabel(api.name,api.address,api.type)"
                 [nzValue]="api.id">
               </nz-option>
@@ -89,8 +93,10 @@
 
         <nz-form-item *ngIf="isEditMode">
           <nz-form-control [nzSpan]="12" [nzOffset]="5">
-            <button class="mr-5" nz-button nzType="primary" type="submit" [nzLoading]="isLoading">提交</button>
-            <button class="mr-5" nz-button nzType="primary" type="button" (click)="cancelEdit(editForm)" [nzLoading]="isLoading">取消</button>
+            <button class="mr-5" nz-button nzType="primary" type="submit" [nzLoading]="isLoading"
+              [disabled]="!editForm.valid">提交</button>
+            <button class="mr-5" nz-button nzType="primary" type="button" (click)="cancelEdit(editForm)"
+              [nzLoading]="isLoading">取消</button>
           </nz-form-control>
         </nz-form-item>
 

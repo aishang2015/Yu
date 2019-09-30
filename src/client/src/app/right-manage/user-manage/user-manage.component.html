@@ -146,16 +146,17 @@
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">用户名</nz-form-label>
-      <nz-form-control [nzSpan]="12"
-        [ngClass]="{'has-error': userName.invalid && (userName.dirty || userName.touched || isSubmit)}">
+      <nz-form-control [nzSpan]="12" [nzErrorTip]="nameErrorTpl">
         <input nz-input autocomplete="off" type="text" name="userName" #userName="ngModel" style="color: black;"
           [(ngModel)]="editUserDetail.userName" required appUserName [disabled]="editUserDetail.id" />
-        <nz-form-explain
-          *ngIf="userName.invalid && (userName.dirty || userName.touched|| isSubmit) && userName.errors.required">
-          请输入用户名</nz-form-explain>
-        <nz-form-explain
-          *ngIf="userName.invalid && (userName.dirty || userName.touched|| isSubmit) && userName.errors.userName">
-          用户名只能包含数字和字母</nz-form-explain>
+        <ng-template #nameErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">
+            请输入用户名
+          </ng-container>
+          <ng-container *ngIf="control.hasError('userName')">
+            用户名只能包含数字和字母
+          </ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
 
@@ -168,13 +169,14 @@
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">联系电话</nz-form-label>
-      <nz-form-control [nzSpan]="12"
-        [ngClass]="{'has-error': phoneNumber.invalid && (phoneNumber.dirty || phoneNumber.touched || isSubmit)}">
+      <nz-form-control [nzSpan]="12" [nzErrorTip]="phoneErrorTpl">
         <input nz-input autocomplete="off" type="text" name="phoneNumber" [(ngModel)]="editUserDetail.phoneNumber"
           #phoneNumber="ngModel" appTelephone />
-        <nz-form-explain
-          *ngIf="phoneNumber.invalid && (phoneNumber.dirty || phoneNumber.touched) && phoneNumber.errors.telephone">
-          电话号码格式不正确！</nz-form-explain>
+        <ng-template #phoneErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('telephone')">
+            电话号码格式不正确！
+          </ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
 
@@ -216,8 +218,7 @@
 
     <nz-form-label [nzSpan]="5">岗位</nz-form-label>
     <nz-form-control [nzSpan]="12">
-      <nz-select [(ngModel)]="editUserDetail.positionId" name="positions" [nzSize]="size"
-        nzPlaceHolder="请选择岗位">
+      <nz-select [(ngModel)]="editUserDetail.positionId" name="positions" [nzSize]="size" nzPlaceHolder="请选择岗位">
         <nz-option *ngFor="let option of positions" [nzLabel]="option.positionName" [nzValue]="option.id"></nz-option>
       </nz-select>
     </nz-form-control>
@@ -274,7 +275,8 @@
 
     <nz-form-item>
       <nz-form-control [nzSpan]="12" [nzOffset]="5">
-        <button class="mr-5" nz-button nzType="primary" type="submit" [nzLoading]="isLoading">提交</button>
+        <button class="mr-5" nz-button nzType="primary" type="submit" [nzLoading]="isLoading"
+          [disabled]="!editForm.valid">提交</button>
         <button class="mr-5" nz-button nzType="primary" type="button" (click)="cancelEdit()"
           [nzLoading]="isLoading">取消</button>
       </nz-form-control>

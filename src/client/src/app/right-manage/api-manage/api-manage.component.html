@@ -63,53 +63,59 @@
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">名称</nz-form-label>
-      <nz-form-control [nzSpan]="12"
-        [ngClass]="{'has-error': name.invalid && (name.dirty || name.touched || isSubmit)}">
+      <nz-form-control [nzSpan]="12" [nzErrorTip]="nameErrorTpl">
         <input class="w250 cb" nz-input autocomplete="off" type="text" name="name" [(ngModel)]="editedApi.name"
           #name="ngModel" required />
-        <nz-form-explain *ngIf="name.invalid && (name.dirty || name.touched || isSubmit) && name.errors.required">
-          请输入名称</nz-form-explain>
+        <ng-template #nameErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">
+            请输入名称
+          </ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">控制器</nz-form-label>
-      <nz-form-control [nzSpan]="12"
-        [ngClass]="{'has-error': controller.invalid && (controller.dirty || controller.touched || isSubmit)}">
+      <nz-form-control [nzSpan]="12" [nzErrorTip]="controllerErrorTpl">
         <input class="w250 cb" nz-input autocomplete="off" type="text" name="controller"
           [(ngModel)]="editedApi.controller" #controller="ngModel" required />
-        <nz-form-explain
-          *ngIf="controller.invalid && (controller.dirty || controller.touched || isSubmit) && controller.errors.required">
-          请输入控制器</nz-form-explain>
+        <ng-template #controllerErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">
+            请输入控制器
+          </ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">访问类型</nz-form-label>
-      <nz-form-control [nzSpan]="12"
-        [ngClass]="{'has-error': type.invalid && (type.dirty || type.touched || isSubmit)}">
+      <nz-form-control [nzSpan]="12" [nzErrorTip]="typeErrorTpl">
         <input class="w250 cb" nz-input autocomplete="off" type="text" name="type" [(ngModel)]="editedApi.type"
           #type="ngModel" required />
-        <nz-form-explain *ngIf="type.invalid && (type.dirty || type.touched || isSubmit) && type.errors.required">
-          请输入访问类型</nz-form-explain>
+        <ng-template #typeErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">
+            请输入访问类型
+          </ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
       <nz-form-label [nzSpan]="5">地址</nz-form-label>
-      <nz-form-control [nzSpan]="12"
-        [ngClass]="{'has-error': address.invalid && (address.dirty || address.touched || isSubmit)}">
+      <nz-form-control [nzSpan]="12" [nzErrorTip]="addressErrorTpl">
         <input class="w250 cb" nz-input autocomplete="off" type="text" name="address" [(ngModel)]="editedApi.address"
           #address="ngModel" required />
-        <nz-form-explain
-          *ngIf="address.invalid && (address.dirty || address.touched || isSubmit) && address.errors.required">
-          请输入地址</nz-form-explain>
+        <ng-template #addressErrorTpl let-control>
+          <ng-container *ngIf="control.hasError('required')">
+            请输入地址
+          </ng-container>
+        </ng-template>
       </nz-form-control>
     </nz-form-item>
 
     <nz-form-item>
       <nz-form-control [nzSpan]="12" [nzOffset]="5">
-        <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading">提交</button>
+        <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading" [disabled]="!form.valid">提交</button>
         <button class="mr-5" nz-button type="button" (click)="cancel(form)" [nzLoading]="isLoading">取消</button>
       </nz-form-control>
     </nz-form-item>
