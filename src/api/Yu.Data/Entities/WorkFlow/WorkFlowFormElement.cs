@@ -15,6 +15,9 @@ namespace Yu.Data.Entities.WorkFlow
         // dom的id
         public string ElementId { get; set; }
 
+        // 表单元素名称
+        public string Name { get; set; }
+
         // 元素类型
         public string Type { get; set; }
 

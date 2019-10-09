@@ -37,6 +37,17 @@ namespace Yu.Api.Areas.WorkFlow.Controller
             });
         }
 
+        /// <summary>
+        /// 取得元素数据
+        /// </summary>
+        [HttpGet("workflowFormElement")]
+        [Description("取得工作流表单元素数据")]
+        public IActionResult GetWorkFlowFormElement([FromQuery]IdQuery query)
+        {
+            var formElements = _workFlowFormService.GetWorkFlowFormElements(query.Id);
+            return Ok(formElements);
+        }
+
         [HttpPut("workflowForm")]
         [Description("更新添加表单内容")]
         public async Task<IActionResult> AddOrUpdateWorkFlowForm([FromBody]WorkFlowFormViewModel model)

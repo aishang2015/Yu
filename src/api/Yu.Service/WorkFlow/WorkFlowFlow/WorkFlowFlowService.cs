@@ -17,19 +17,22 @@ namespace Yu.Service.WorkFlow.WorkFlowFlow
         // 仓储类
         private IRepository<WorkFlowFlowNode, Guid> _nodeRepository;
 
+        // 仓储类
+        private IRepository<WorkFlowFlowNodeElement, Guid> _nodeElementRepository;
+
         // 工作单元
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
-
         public WorkFlowFlowService(IRepository<WorkFlowFlowConnection, Guid> connectionRepository,
             IRepository<WorkFlowFlowNode, Guid> nodeRepository,
+            IRepository<WorkFlowFlowNodeElement, Guid> nodeElementRepository,
             IUnitOfWork<BaseIdentityDbContext> unitOfWork)
         {
             _connectionRepository = connectionRepository;
             _nodeRepository = nodeRepository;
+            _nodeElementRepository = nodeElementRepository;
             _unitOfWork = unitOfWork;
         }
-
 
         /// <summary>
         /// 添加数据
@@ -55,7 +58,7 @@ namespace Yu.Service.WorkFlow.WorkFlowFlow
         public List<WorkFlowFlowConnection> GetWorkFlowFlowConnections(Guid id)
         {
             // 查询过滤
-            var query = _connectionRepository.GetByWhere(wffc => wffc.DefineId == id);
+            var query = _connectionRepository.GetByWhereNoTracking(wffc => wffc.DefineId == id);
 
             // 生成结果
             return query.ToList();
@@ -95,13 +98,45 @@ namespace Yu.Service.WorkFlow.WorkFlowFlow
         /// <summary>
         /// 保存流程
         /// </summary>
-        public async Task AddOrUpdateFlow(Guid defineId, List<WorkFlowFlowNode> nodes, List<WorkFlowFlowConnection> connections)
+        public async Task AddOrUpdateFlow(Guid defineId, List<WorkFlowFlowNode> nodes, List<WorkFlowFlowConnection> connections, List<WorkFlowFlowNodeElement> nodeElements)
         {
             DeleteWorkFlowFlowNodeAsync(defineId);
             await AddWorkFlowFlowNodesAsync(nodes);
             DeleteWorkFlowFlowConnectionAsync(defineId);
             await AddWorkFlowFlowConnectionsAsync(connections);
+            DeleteWorkFlowFlowNodeElementAsync(defineId);
+            await AddWorkFlowFlowNodeElementsAsync(nodeElements);
             await _unitOfWork.CommitAsync();
         }
+
+        /// <summary>
+        /// 取得数据
+        /// </summary>
+        public List<WorkFlowFlowNodeElement> GetWorkFlowFlowNodeElements(Guid id)
+        {
+            // 查询过滤
+            var result = _nodeElementRepository.GetByWhereNoTracking(wffne => wffne.DefineId == id);
+
+            // 生成结果
+            return result.ToList();
+        }
+
+        /// <summary>
+        /// 删除数据
+        /// </summary>
+        public void DeleteWorkFlowFlowNodeElementAsync(Guid id)
+        {
+            _nodeElementRepository.DeleteRange(e => e.DefineId == id);
+        }
+
+        /// <summary>
+        /// 添加数据
+        /// </summary>
+        public async Task AddWorkFlowFlowNodeElementsAsync(List<WorkFlowFlowNodeElement> nodeElements)
+        {
+            await _nodeElementRepository.InsertRangeAsync(nodeElements);
+        }
+
+
     }
 }

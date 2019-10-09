@@ -42,6 +42,21 @@ namespace Yu.Service.WorkFlow.WorkFlowFlow
         /// <summary>
         /// 保存流程
         /// </summary>
-        Task AddOrUpdateFlow(Guid defineId, List<WorkFlowFlowNode> nodes, List<WorkFlowFlowConnection> connections);
+        Task AddOrUpdateFlow(Guid defineId, List<WorkFlowFlowNode> nodes, List<WorkFlowFlowConnection> connections, List<WorkFlowFlowNodeElement> nodeElements);
+        
+        /// <summary>
+        /// 取得数据
+        /// </summary>
+        List<WorkFlowFlowNodeElement> GetWorkFlowFlowNodeElements(Guid id);
+
+        /// <summary>
+        /// 删除数据
+        /// </summary>
+        void DeleteWorkFlowFlowNodeElementAsync(Guid id);
+
+        /// <summary>
+        /// 添加数据
+        /// </summary>
+        Task AddWorkFlowFlowNodeElementsAsync(List<WorkFlowFlowNodeElement> nodeElements);
     }
 }

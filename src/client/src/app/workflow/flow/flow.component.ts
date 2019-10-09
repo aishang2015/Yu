@@ -9,6 +9,10 @@ import { WorkFlowFlowService } from 'src/app/core/services/workflow/workflowflow
 import { WorkflowFlowConnection } from '../models/workflowFlowConnection';
 import { WorkflowFlowNode } from '../models/workflowFlowNode';
 import { element } from 'protractor';
+import { WorkflowFlowNodeInfo } from '../models/workflowFlowNodeInfo';
+import { WorkFlowFormService } from 'src/app/core/services/workflow/workflowform.service';
+import { WorkFlowFormElement } from '../models/workflowFormElement';
+import { WorkflowFlowNodeElement } from '../models/workflowFlowNodeElement';
 
 @Component({
   selector: 'app-flow',
@@ -33,6 +37,13 @@ export class FlowComponent implements OnInit {
   @ViewChild('menu', { static: true })
   private _nzDropdownMenu;
 
+  // 节点属性编辑模态框
+  @ViewChild('editTpl', { static: true })
+  private _nodeEditTpl;
+
+  // 工作流定义id
+  private id;
+
   // 右键
   private _rightClickElement;
 
@@ -56,6 +67,9 @@ export class FlowComponent implements OnInit {
   // jsplubm 实例
   private _jsPlumbInstance;
 
+  // 编辑节点信息
+  nodeInfo: WorkflowFlowNodeInfo = new WorkflowFlowNodeInfo();
+
   // 端点选项
   private endpointOption = {
     maxConnections: 5,
@@ -72,10 +86,20 @@ export class FlowComponent implements OnInit {
   };
 
   // 此流程图对应的工作流
-  wfDefine: WorkFlowDefine = new WorkFlowDefine();
+  private wfDefine: WorkFlowDefine = new WorkFlowDefine();
 
-  flowConnections: WorkflowFlowConnection[] = [];
-  flowNodes: WorkflowFlowNode[] = [];
+  // 流程图表单元素合集
+  private wfFormElements: WorkFlowFormElement[] = [];
+
+  // 流程图节点和表单元素信息
+  private flowNodeElements: WorkflowFlowNodeElement[] = [];
+
+  // 工作流节点的基本信息
+  private nodeInfos: WorkflowFlowNodeInfo[] = [];
+
+  // 视图模型
+  private flowConnections: WorkflowFlowConnection[] = [];
+  private flowNodes: WorkflowFlowNode[] = [];
 
   constructor(private renderer: Renderer2,
     private modalService: NzModalService,
@@ -83,15 +107,21 @@ export class FlowComponent implements OnInit {
     private nzContextMenuService: NzContextMenuService,
     private routeInfo: ActivatedRoute,
     private _workflowDefineService: WorkFlowDefineService,
-    private _workFlowFlowService: WorkFlowFlowService) { }
+    private _workFlowFlowService: WorkFlowFlowService,
+    private _workFlowFormService: WorkFlowFormService) { }
 
   ngOnInit() {
 
     // 取得工作流状态
-    const id = this.routeInfo.snapshot.params['id'];
-    this._workflowDefineService.getbyid(id).subscribe(result => {
+    this.id = this.routeInfo.snapshot.params['id'];
+    this._workflowDefineService.getbyid(this.id).subscribe(result => {
       this.wfDefine = result;
       this.initFlowData();
+    });
+
+    // 初始化表单元素集合
+    this._workFlowFormService.getFormElement(this.id).subscribe(result => {
+      this.wfFormElements = result;
     });
 
     // 初始化jsplumb
@@ -131,7 +161,10 @@ export class FlowComponent implements OnInit {
     });
 
     // 初始化缩放区域
-    this._zoomController = pz.default(this._zoomContainer.nativeElement);
+    this._zoomController = pz.default(this._zoomContainer.nativeElement,
+      {
+        zoomDoubleClickSpeed: 1,
+      });
     this._zoomController.on('transform', (e) => {
       const transform = e.getTransform();
       this._jsPlumbInstance.setZoom(transform.scale);
@@ -140,7 +173,6 @@ export class FlowComponent implements OnInit {
 
   // 添加节点
   addNode() {
-    console.log(this._jsPlumbInstance.getConnections());
     this._modal = this.modalService.create({
       nzTitle: null,
       nzContent: this._nodeSelectTemplate,
@@ -197,10 +229,10 @@ export class FlowComponent implements OnInit {
     this._zoomController.zoomAbs(0, 0, 1);
   }
 
-  //#region 添加节点操作
+  //#region 添加节点操作合集
 
   // 工作节点
-  addWorkNode(title: string, describe: string, id = `work-node-${Date.now().toString(36)}`, top = '200', left = '200') {
+  addWorkNode(title, describe, id = `work-node-${Date.now().toString(36)}`, top = '200', left = '200') {
 
     // 渲染元素
     // 此处要写完整的值，render不会自动补全值（譬如不能设置0要设置为0px）
@@ -224,6 +256,9 @@ export class FlowComponent implements OnInit {
     this.renderer.appendChild(workNodeDescribe, describeEl);
     this.renderer.appendChild(workNode, workNodeDescribe);
 
+    // 节点基本信息
+    this.nodeInfos.push({ nodeId: id, name: '工作节点', describe: '这是一个工作节点' });
+
     // 绑定右键菜单
     let that = this;
     this.renderer.listen(workNode, 'contextmenu', event => {
@@ -231,6 +266,18 @@ export class FlowComponent implements OnInit {
       this._rightClickElement = workNode;
     });
     this.renderer.appendChild(this._diagram.nativeElement, workNode);
+
+    // 绑定双击
+    this.renderer.listen(workNode, 'dblclick', event => {
+      that.nodeInfo = that.nodeInfos.find(n => n.nodeId == id);
+      that._modal = that.modalService.create({
+        nzTitle: null,
+        nzContent: that._nodeEditTpl,
+        nzFooter: null,
+        nzClosable: false,
+        nzMaskClosable: false
+      });
+    });
 
     // 设置元素拖拽
     this._jsPlumbInstance.draggable(workNode, {
@@ -327,6 +374,7 @@ export class FlowComponent implements OnInit {
     });
 
     this._jsPlumbInstance.makeTarget(endNode, {
+      anchor: 'Continuous',
       maxConnections: 1,
       isSource: false,
       isTarget: true,
@@ -336,17 +384,18 @@ export class FlowComponent implements OnInit {
 
   //#endregion 
 
+  //#region 初始化操作合集
   // 初始化流程图数据
   initFlowData() {
     this._workFlowFlowService.get(this.wfDefine.id).subscribe(result => {
       this.handleNodes(result.nodes);
       this.handleConnections(result.connections);
+      this.handleNodeElements(result.nodeElements);
     })
   }
 
   // 处理节点数据
   handleNodes(nodes) {
-    console.log(nodes);
     this.flowNodes = nodes;
     this.flowNodes.forEach(node => {
       switch (node.nodeType) {
@@ -357,7 +406,7 @@ export class FlowComponent implements OnInit {
           this.addEndNode(node.top, node.left);
           break;
         case 'workNode':
-          this.addWorkNode("工作节点", "这是一个工作节点", node.nodeId, node.top, node.left);
+          this.addWorkNode(node.name, node.describe, node.nodeId, node.top, node.left);
           break;
       }
     });
@@ -375,6 +424,33 @@ export class FlowComponent implements OnInit {
     });
   }
 
+  // 处理节点元素关联设置
+  handleNodeElements(nodeElements) {
+    this.flowNodeElements = nodeElements;
+  }
+  //#endregion
+
+  // 取得节点元素关联设置对象
+  getNodeElement(nodeid, elementid) {
+    let nodeElement = this.flowNodeElements.find(wffne => wffne.flowNodeId == nodeid && wffne.formElementId == elementid);
+    if (!nodeElement) {
+      this.flowNodeElements.push({
+        defineId: this.id,
+        flowNodeId: nodeid,
+        formElementId: elementid,
+        isVisible: true,
+        isEditable: true
+      })
+      nodeElement = this.flowNodeElements.find(wffne => wffne.flowNodeId == nodeid && wffne.formElementId == elementid);
+    }
+    return nodeElement;
+  }
+
+  // 取得表单元素类型
+  getElementName(key){
+    return this._workFlowFormService.components.find(c => c.key == key).describe;
+  }
+
   // 保存流程图
   saveFlow() {
     this.isLoading = true;
@@ -390,21 +466,24 @@ export class FlowComponent implements OnInit {
 
     this.flowNodes = [];
     let elements = document.getElementsByClassName('node');
-    console.log(elements);
     for (let i = 0; i < elements.length; i++) {
       let element: any = elements[i];
+      let nodeInfo = this.nodeInfos.find(info => info.nodeId == element.id);
       this.flowNodes.push({
         defineId: this.wfDefine.id,
         nodeId: element.id,
         nodeType: element.attributes.flownodetype.value,
         top: element.offsetTop,
         left: element.offsetLeft,
+        name: nodeInfo ? nodeInfo.name : '',
+        describe: nodeInfo ? nodeInfo.describe : ''
       })
     }
 
     this._workFlowFlowService.addOrUpdate({
       nodes: this.flowNodes,
       connections: this.flowConnections,
+      nodeElements: this.flowNodeElements,
       defineId: this.wfDefine.id,
     }).subscribe(result => {
       this.messageService.success("保存成功！");
@@ -412,6 +491,24 @@ export class FlowComponent implements OnInit {
     }, error => this.isLoading = false);
 
 
+  }
+
+  // 提交数据
+  basicInfoSubmit(form) {
+    let element = document.getElementById(this.nodeInfo.nodeId);
+
+    // 设置名称
+    let titleElement = element.getElementsByClassName('work-node-title')[0];
+    if (titleElement) {
+      titleElement.innerHTML = this.nodeInfo.name;
+    }
+
+    // 设置描述
+    let describeElement = element.getElementsByClassName('work-node-describe')[0];
+    if (describeElement) {
+      describeElement.innerHTML = this.nodeInfo.describe;
+    }
+    this._modal.close();
   }
 
 }

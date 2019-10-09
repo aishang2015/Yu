@@ -23,6 +23,13 @@ namespace Yu.Data.Entities.WorkFlow
 
         // 左边距
         public string Left { get; set; }
+
+        //--------------------------------------------------------
+        // 工作节点名称
+        public string Name { get; set; }
+
+        // 工作节点描述
+        public string Describe { get; set; }
     }
 }
 

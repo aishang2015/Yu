@@ -1,7 +1,7 @@
 <h3 nz-title>{{wfDefine.name}} - 流程图</h3>
 <div id="operateBar">
     <button nz-button nzType="primary" (click)="addNode()">添加节点</button>
-    <button nz-button nzType="primary" (click)="saveFlow()" [nzLoading]="isLoading" >保存流程图</button>
+    <button nz-button nzType="primary" (click)="saveFlow()" [nzLoading]="isLoading">保存流程图</button>
     <!-- <button nz-button nzType="primary">重置</button>
     <button nz-button nzType="primary">保存</button> -->
 </div>
@@ -34,3 +34,75 @@
         <li nz-menu-item (click)="deleteNode()"><i nz-icon nzType="delete" nzTheme="outline"></i>删除</li>
     </ul>
 </nz-dropdown-menu>
+
+
+<ng-template #editTpl>
+    <nz-tabset>
+        <nz-tab nzTitle="基本信息">
+            <form nz-form #basicinfoform="ngForm" (ngSubmit)="basicInfoSubmit(basicinfoform)">
+                <nz-form-item>
+                    <nz-form-label [nzSpan]="5">节点名称</nz-form-label>
+                    <nz-form-control [nzSpan]="19" [nzErrorTip]="nameErrorTpl">
+                        <input nz-input autocomplete="off" type="text" name="name" [(ngModel)]="nodeInfo.name"
+                            required />
+                        <ng-template #nameErrorTpl let-control>
+                            <ng-container *ngIf="control.hasError('required')">
+                                请输入节点名称
+                            </ng-container>
+                        </ng-template>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-label [nzSpan]="5">节点描述</nz-form-label>
+                    <nz-form-control [nzSpan]="19" [nzErrorTip]="desErrorTpl">
+                        <input nz-input autocomplete="off" type="text" name="des" [(ngModel)]="nodeInfo.describe"
+                            required maxlength="22" />
+                        <ng-template #desErrorTpl let-control>
+                            <ng-container *ngIf="control.hasError('required')">
+                                请输入节点描述
+                            </ng-container>
+                        </ng-template>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-control [nzSpan]="12" [nzOffset]="5">
+                        <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading"
+                            [disabled]="!basicinfoform.valid">确定</button>
+                        <button class="mr-5" nz-button type="button" (click)="cancel()"
+                            [nzLoading]="isLoading">取消</button>
+                    </nz-form-control>
+                </nz-form-item>
+            </form>
+        </nz-tab>
+        <nz-tab nzTitle="表单设置">
+            <nz-table #basicTable [nzData]="wfFormElements" nzShowPagination="false">
+                <thead>
+                    <tr>
+                        <th nzAlign="center">名称</th>
+                        <th nzAlign="center">类型</th>
+                        <th nzAlign="center">可见</th>
+                        <th nzAlign="center">可编辑</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let data of basicTable.data">
+                        <td nzAlign="center">{{ data.name }}</td>
+                        <td nzAlign="center">{{ getElementName(data.type) }}</td>
+                        <td nzAlign="center"><label nz-checkbox [(ngModel)]="getNodeElement(nodeInfo.nodeId,data.id).isVisible"></label>
+                        </td>
+                        <td nzAlign="center"><label nz-checkbox [(ngModel)]="getNodeElement(nodeInfo.nodeId,data.id).isEditable"></label>
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+
+            <div class="mt-10" style="float: right">
+                <button class="mr-5" nz-button type="button" (click)="cancel()">确定</button>
+            </div>
+
+        </nz-tab>
+        <nz-tab nzTitle="流转设置">
+            Content of Tab Pane 3
+        </nz-tab>
+    </nz-tabset>
+</ng-template>

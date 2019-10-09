@@ -1,11 +1,15 @@
 export class WorkFlowFormElement {
-    elementId: string;   // id
+    id?:string;          // id
 
-    defineId:string;  // 工作流定义ID
-    type: string;  // 类型
-    width: number;  // 宽度
+    name:string;        // 名称
 
-    options:string;  // 选项  选择器用
+    elementId: string;  // domid
 
-    line: number; // 行数 文本域用
+    defineId:string;    // 工作流定义ID
+    type: string;       // 类型
+    width: number;      // 宽度
+
+    options:string;     // 选项  选择器用
+
+    line: number;       // 行数 文本域用
 }

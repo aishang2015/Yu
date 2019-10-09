@@ -51,7 +51,9 @@
 
 .work-node {
   border-radius: 5px;
-  max-width: 200px;
+  width: 200px;
+  height: 100px;
+  overflow: hidden;
   .work-node-title {
     font-size: 20px;
     padding: 5px 20px;

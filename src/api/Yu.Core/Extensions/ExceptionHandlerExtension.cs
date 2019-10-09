@@ -37,7 +37,7 @@ namespace Yu.Core.Extensions
                 builder.Run(async context =>
                 {
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    await context.Response.WriteAsync("系统故障").ConfigureAwait(false);
+                    await context.Response.WriteAsync("抱歉，服务器端出现错误").ConfigureAwait(false);
                 });
             });
         }

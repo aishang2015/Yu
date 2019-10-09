@@ -9,8 +9,13 @@ namespace Yu.Data.Entities.WorkFlow
     [BelongTo(typeof(BaseIdentityDbContext))]
     public class WorkFlowFlowNodeElement : BaseEntity<Guid>
     {
-        public Guid FlowNodeId { get; set; }
+        // 工作流定义id
+        public Guid DefineId { get; set; }
 
+        // 工作流节点id
+        public string FlowNodeId { get; set; }
+
+        // 表单元素ID
         public Guid FormElementId { get; set; }
 
         // 是否可见

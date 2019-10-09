@@ -29,11 +29,13 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
         {
             var nodes = _workFlowFlowService.GetWorkFlowFlowNodes(query.DefineId);
             var connections = _workFlowFlowService.GetWorkFlowFlowConnections(query.DefineId);
+            var nodeElements = _workFlowFlowService.GetWorkFlowFlowNodeElements(query.DefineId);
 
             return Ok(new WorkFlowFlowViewModel
             {
                 Nodes = nodes,
                 Connections = connections,
+                NodeElements = nodeElements,
                 DefineId = query.DefineId
             });
         }
@@ -45,7 +47,7 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
         [Description("添加工作流流程节点数据")]
         public async Task<IActionResult> AddOrUpdateWorkFlowFlowNode([FromBody]WorkFlowFlowViewModel model)
         {
-            await _workFlowFlowService.AddOrUpdateFlow(model.DefineId, model.Nodes, model.Connections);
+            await _workFlowFlowService.AddOrUpdateFlow(model.DefineId, model.Nodes, model.Connections, model.NodeElements);
             return Ok();
         }
     }

@@ -11,6 +11,8 @@ namespace Yu.Model.WorkFlow.WorkFlowFlow
 
         public List<WorkFlowFlowConnection> Connections { get; set; }
 
+        public List<WorkFlowFlowNodeElement> NodeElements { get; set; }
+
         public Guid DefineId { get; set; }
     }
 }

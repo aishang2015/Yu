@@ -56,17 +56,6 @@ export class WfformComponent implements OnInit {
     toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
   }
 
-  // 组件数据
-  components = [
-    { key: 'input', describe: '输入框' },
-    { key: 'textarea', describe: '文本域' },
-    { key: 'inputnumber', describe: '数字输入框' },
-    { key: 'datepicker', describe: '日期选择' },
-    { key: 'timepicker', describe: '时间选择' },
-    { key: 'selecter', describe: '选择器' },
-    { key: 'upload', describe: '文件上传' },
-  ];
-
   @ViewChild('#editor', { static: true })
   tinymceEditor;
 
@@ -119,7 +108,6 @@ export class WfformComponent implements OnInit {
 
   // 变化事件
   handleChange($event) {
-    // console.log(this.dataModel);
   }
 
   // 点击添加控件
@@ -134,6 +122,7 @@ export class WfformComponent implements OnInit {
     this.workflowFormElements.push({
       elementId: elementid,
       defineId: this.wfDefine.id,
+      name: '',
       type: typeKey,
       width: 120,
       options: '',
@@ -151,9 +140,9 @@ export class WfformComponent implements OnInit {
     let contentDocument: any = document.getElementById('editor_ifr');
     let element: HTMLElement = contentDocument.contentDocument.getElementById(id);
     element.onclick = event => {
-      let element = this.workflowFormElements.find(e => e.elementId == id);
-      if (element) {
-        Object.assign(this.editedWorkFlowFormElement, element);
+      let e = this.workflowFormElements.find(e => e.elementId == id);
+      if (e) {
+        Object.assign(this.editedWorkFlowFormElement, e);
       }
     };
   }
@@ -204,7 +193,8 @@ export class WfformComponent implements OnInit {
 
   // 获取控件类型名称
   getElementName(key) {
-    return this.components.find(c => c.key == key) ? this.components.find(c => c.key == key).describe : '';
+    return this._workflowFormService.components.find(c => c.key == key) ?
+      this._workflowFormService.components.find(c => c.key == key).describe : '';
   }
 
   // 保存控件属性

@@ -27,6 +27,12 @@
                     </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
+                    <nz-form-label [nzSpan]="6">名称</nz-form-label>
+                    <nz-form-control [nzSpan]="12">
+                        <input nz-input [(ngModel)]="editedWorkFlowFormElement.name" name="name"/>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
                     <nz-form-label [nzSpan]="6">类型</nz-form-label>
                     <nz-form-control [nzSpan]="12">
                         <input nz-input [ngModel]="getElementName(editedWorkFlowFormElement.type)" name="type"
