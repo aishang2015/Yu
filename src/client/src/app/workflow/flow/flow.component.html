@@ -65,12 +65,9 @@
                     </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
-                    <nz-form-control [nzSpan]="12" [nzOffset]="5">
-                        <button class="mr-5" nz-button type="submit" [nzLoading]="isLoading"
-                            [disabled]="!basicinfoform.valid">确定</button>
-                        <button class="mr-5" nz-button type="button" (click)="cancel()"
-                            [nzLoading]="isLoading">取消</button>
-                    </nz-form-control>
+                    <div class="mt-10" style="float: right">
+                        <button class="mr-5" nz-button type="submit">确定</button>
+                    </div>
                 </nz-form-item>
             </form>
         </nz-tab>
@@ -88,9 +85,11 @@
                     <tr *ngFor="let data of basicTable.data">
                         <td nzAlign="center">{{ data.name }}</td>
                         <td nzAlign="center">{{ getElementName(data.type) }}</td>
-                        <td nzAlign="center"><label nz-checkbox [(ngModel)]="getNodeElement(nodeInfo.nodeId,data.id).isVisible"></label>
+                        <td nzAlign="center"><label nz-checkbox
+                                [(ngModel)]="getNodeElement(nodeInfo.nodeId,data.id).isVisible"></label>
                         </td>
-                        <td nzAlign="center"><label nz-checkbox [(ngModel)]="getNodeElement(nodeInfo.nodeId,data.id).isEditable"></label>
+                        <td nzAlign="center"><label nz-checkbox
+                                [(ngModel)]="getNodeElement(nodeInfo.nodeId,data.id).isEditable"></label>
                         </td>
                     </tr>
                 </tbody>
@@ -101,8 +100,56 @@
             </div>
 
         </nz-tab>
-        <nz-tab nzTitle="流转设置">
-            Content of Tab Pane 3
+        <nz-tab nzTitle="人员设置">
+            <form nz-form #peopleForm="ngForm" (ngSubmit)="peopleSubmit(peopleForm)">
+
+                <nz-form-item>
+                    <nz-form-label [nzSpan]="5">办理方式</nz-form-label>
+                    <nz-form-control [nzSpan]="19">
+                        <nz-select [(ngModel)]="nodeHandle.handleType" name="handleType">
+                            <nz-option [nzValue]="1" nzLabel="指定人员办理"></nz-option>
+                            <nz-option [nzValue]="2" nzLabel="指定岗位办理"></nz-option>
+                        </nz-select>
+                    </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item *ngIf="nodeHandle.handleType==1">
+                    <nz-form-label [nzSpan]="5">指定人员</nz-form-label>
+                    <nz-form-control [nzSpan]="19">
+                        <nz-select [(ngModel)]="nodeHandle.handlePeople" name="handlePeople" nzShowSearch nzServerSearch
+                            nzMode="multiple" (nzOnSearch)="searchPeople($event)">
+                            <nz-option *ngFor="let user of userList" [nzLabel]="getUserLabel(user)" [nzValue]="user.id">
+                            </nz-option>
+                        </nz-select>
+                    </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item *ngIf="nodeHandle.handleType==2">
+                    <nz-form-label [nzSpan]="5">岗位</nz-form-label>
+                    <nz-form-control [nzSpan]="19">
+                        <nz-select [(ngModel)]="nodeHandle.positionId" name="positionId" nzPlaceHolder="请选择岗位">
+                            <nz-option *ngFor="let option of positions" [nzLabel]="option.positionName"
+                                [nzValue]="option.id"></nz-option>
+                        </nz-select>
+                    </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item *ngIf="nodeHandle.handleType==2">
+                    <nz-form-label [nzSpan]="5">所在部门</nz-form-label>
+                    <nz-form-control [nzSpan]="19">
+                        <nz-select [(ngModel)]="nodeHandle.positionGroup" name="positionGroup">
+                            <nz-option [nzValue]="1" nzLabel="任意部门"></nz-option>
+                            <nz-option [nzValue]="2" nzLabel="发起人部门"></nz-option>
+                            <nz-option [nzValue]="3" nzLabel="发起人上级部门"></nz-option>
+                        </nz-select>
+                    </nz-form-control>
+                </nz-form-item>
+
+                <div class="mt-10" style="float: right">
+                    <button class="mr-5" nz-button type="button" (click)="cancel()">确定</button>
+                </div>
+
+            </form>
         </nz-tab>
     </nz-tabset>
 </ng-template>

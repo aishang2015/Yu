@@ -176,6 +176,25 @@ namespace Yu.Service.WebAdmin.User
         }
 
         /// <summary>
+        /// 取得用户概要数据
+        /// </summary>
+        /// <param name="ids">id</param>
+        /// <returns>用户数据</returns>
+        public async Task<List<UserOutline>> GetUserOutlinesByIds(List<Guid> ids)
+        {
+            var users = await _userManager.Users.Where(u=> ids.Contains(u.Id)).ToListAsync();
+            users.ForEach(user =>
+            {
+                user.GroupName = string.IsNullOrEmpty(user.UserGroupId) ? string.Empty : _groupService.GetGroupNameById(Guid.Parse(user.UserGroupId));
+                user.PositionName = string.IsNullOrEmpty(user.PositionId) ? string.Empty : _positionService.GetPositionNameById(Guid.Parse(user.PositionId));
+            });
+
+            // 结果数据
+            var userOutlines = _mapper.Map<List<UserOutline>>(users);
+            return userOutlines;
+        }
+
+        /// <summary>
         /// 更新用户头像
         /// </summary>
         /// <param name="userId">用户ID</param>

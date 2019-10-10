@@ -13,6 +13,9 @@ import { WorkflowFlowNodeInfo } from '../models/workflowFlowNodeInfo';
 import { WorkFlowFormService } from 'src/app/core/services/workflow/workflowform.service';
 import { WorkFlowFormElement } from '../models/workflowFormElement';
 import { WorkflowFlowNodeElement } from '../models/workflowFlowNodeElement';
+import { WorkflowFlowNodeHandle } from '../models/workflowFlowNodeHandle';
+import { UserService } from 'src/app/core/services/rightmanage/user.service';
+import { PositionService } from 'src/app/core/services/rightmanage/position.service';
 
 @Component({
   selector: 'app-flow',
@@ -67,9 +70,6 @@ export class FlowComponent implements OnInit {
   // jsplubm 实例
   private _jsPlumbInstance;
 
-  // 编辑节点信息
-  nodeInfo: WorkflowFlowNodeInfo = new WorkflowFlowNodeInfo();
-
   // 端点选项
   private endpointOption = {
     maxConnections: 5,
@@ -85,6 +85,12 @@ export class FlowComponent implements OnInit {
     connectorHoverStyle: { strokeWidth: 4, cursor: 'pointer' },
   };
 
+  // 用户列表
+  userList = [];
+
+  // 职位数据
+  positions = [];
+
   // 此流程图对应的工作流
   private wfDefine: WorkFlowDefine = new WorkFlowDefine();
 
@@ -94,8 +100,17 @@ export class FlowComponent implements OnInit {
   // 流程图节点和表单元素信息
   private flowNodeElements: WorkflowFlowNodeElement[] = [];
 
+  // 编辑节点信息
+  nodeInfo: WorkflowFlowNodeInfo = new WorkflowFlowNodeInfo();
+
   // 工作流节点的基本信息
   private nodeInfos: WorkflowFlowNodeInfo[] = [];
+
+  // 编辑中办理信息
+  nodeHandle: WorkflowFlowNodeHandle = new WorkflowFlowNodeHandle();
+
+  // 工作流节点办理人员信息
+  private nodeHandles: WorkflowFlowNodeHandle[] = [];
 
   // 视图模型
   private flowConnections: WorkflowFlowConnection[] = [];
@@ -108,7 +123,9 @@ export class FlowComponent implements OnInit {
     private routeInfo: ActivatedRoute,
     private _workflowDefineService: WorkFlowDefineService,
     private _workFlowFlowService: WorkFlowFlowService,
-    private _workFlowFormService: WorkFlowFormService) { }
+    private _workFlowFormService: WorkFlowFormService,
+    private _userService: UserService,
+    private _positionService: PositionService) { }
 
   ngOnInit() {
 
@@ -122,6 +139,11 @@ export class FlowComponent implements OnInit {
     // 初始化表单元素集合
     this._workFlowFormService.getFormElement(this.id).subscribe(result => {
       this.wfFormElements = result;
+    });
+
+    // 初始化岗位信息
+    this._positionService.getPositions().subscribe(result => {
+      this.positions = result;
     });
 
     // 初始化jsplumb
@@ -232,7 +254,7 @@ export class FlowComponent implements OnInit {
   //#region 添加节点操作合集
 
   // 工作节点
-  addWorkNode(title, describe, id = `work-node-${Date.now().toString(36)}`, top = '200', left = '200') {
+  addWorkNode(title, describe, id = `work-node-${Date.now().toString(36)}`, top = '200', left = '200', people = []) {
 
     // 渲染元素
     // 此处要写完整的值，render不会自动补全值（譬如不能设置0要设置为0px）
@@ -259,6 +281,9 @@ export class FlowComponent implements OnInit {
     // 节点基本信息
     this.nodeInfos.push({ nodeId: id, name: '工作节点', describe: '这是一个工作节点' });
 
+    // 节点人员信息
+    this.nodeHandles.push({ nodeId: id, handleType: 1, handlePeople: people, positionGroup: 1, positionId: null });
+
     // 绑定右键菜单
     let that = this;
     this.renderer.listen(workNode, 'contextmenu', event => {
@@ -270,6 +295,10 @@ export class FlowComponent implements OnInit {
     // 绑定双击
     this.renderer.listen(workNode, 'dblclick', event => {
       that.nodeInfo = that.nodeInfos.find(n => n.nodeId == id);
+      that.nodeHandle = that.nodeHandles.find(n => n.nodeId == id);
+      that._userService.getUserOutlinesById(that.nodeHandle.handlePeople.join(',')).subscribe(
+        result => that.userList = result
+      );
       that._modal = that.modalService.create({
         nzTitle: null,
         nzContent: that._nodeEditTpl,
@@ -406,7 +435,7 @@ export class FlowComponent implements OnInit {
           this.addEndNode(node.top, node.left);
           break;
         case 'workNode':
-          this.addWorkNode(node.name, node.describe, node.nodeId, node.top, node.left);
+          this.addWorkNode(node.name, node.describe, node.nodeId, node.top, node.left, node.handlePeoples.split(','));
           break;
       }
     });
@@ -447,7 +476,7 @@ export class FlowComponent implements OnInit {
   }
 
   // 取得表单元素类型
-  getElementName(key){
+  getElementName(key) {
     return this._workFlowFormService.components.find(c => c.key == key).describe;
   }
 
@@ -469,6 +498,7 @@ export class FlowComponent implements OnInit {
     for (let i = 0; i < elements.length; i++) {
       let element: any = elements[i];
       let nodeInfo = this.nodeInfos.find(info => info.nodeId == element.id);
+      let nodeHandle = this.nodeHandles.find(info => info.nodeId == element.id);
       this.flowNodes.push({
         defineId: this.wfDefine.id,
         nodeId: element.id,
@@ -476,7 +506,11 @@ export class FlowComponent implements OnInit {
         top: element.offsetTop,
         left: element.offsetLeft,
         name: nodeInfo ? nodeInfo.name : '',
-        describe: nodeInfo ? nodeInfo.describe : ''
+        describe: nodeInfo ? nodeInfo.describe : '',
+        handleType: nodeHandle ? nodeHandle.handleType : 1,
+        handlePeoples: nodeHandle ? nodeHandle.handlePeople.join(',') : '',
+        positionId: nodeHandle ? nodeHandle.positionId : '',
+        positionGroup: nodeHandle ? nodeHandle.positionGroup : 1
       })
     }
 
@@ -509,6 +543,20 @@ export class FlowComponent implements OnInit {
       describeElement.innerHTML = this.nodeInfo.describe;
     }
     this._modal.close();
+  }
+
+  // 搜索人员
+  searchPeople(value) {
+    this._userService.getUserOutlines(1, 100, value).subscribe(
+      result => {
+        this.userList = result.data;
+      }
+    )
+  }
+
+  // 取得显示内容
+  getUserLabel(user) {
+    return `${user.fullName}:${user.groupName}:${user.positionName}(${user.userName})`;
   }
 
 }

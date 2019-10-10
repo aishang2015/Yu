@@ -20,6 +20,13 @@ namespace Yu.Service.WebAdmin.User
         Task<PagedData<UserOutline>> GetUserOutlinesAsync(int pageIndex, int pageSize, string searchText);
 
         /// <summary>
+        /// 取得用户概要数据
+        /// </summary>
+        /// <param name="ids">id</param>
+        /// <returns>用户数据</returns>
+        Task<List<UserOutline>> GetUserOutlinesByIds(List<Guid> ids);
+
+        /// <summary>
         /// 取得用户详细数据
         /// </summary>
         /// <param name="userId">用户ID</param>

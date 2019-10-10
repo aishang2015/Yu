@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
 using Yu.Data.Infrasturctures.BaseIdentity.Mvc;
@@ -39,6 +41,25 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         {
             // 取得数据            
             var result = await _userService.GetUserOutlinesAsync(query.PageIndex, query.PageSize, query.SearchText);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 取得用户概要情报
+        /// </summary>
+        [HttpGet("assignOutline")]
+        [Description("取得用户概要情报")]
+        public async Task<IActionResult> GetUserOutlines([FromQuery]string ids)
+        {
+            if (string.IsNullOrEmpty(ids)) return Ok();
+
+            // id转化
+            var idarray = ids.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            var guidIdList = from id in idarray
+                             select Guid.Parse(id);
+
+            // 取得数据            
+            var result = await _userService.GetUserOutlinesByIds(guidIdList.ToList());
             return Ok(result);
         }
 

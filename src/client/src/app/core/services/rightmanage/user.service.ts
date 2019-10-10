@@ -19,6 +19,12 @@ export class UserService extends BaseService {
     return this.SafeRequest(this.http.get(uri));
   }
 
+  // 通过id取得用户概要数据
+  getUserOutlinesById(ids){
+    let uri = `${UriConstant.AssignOutlineUri}?ids=${ids}`;
+    return this.SafeRequest(this.http.get(uri));
+  }
+
   // 取得用户详细数据
   getUserDetail(userId) {
     let uri = `${UriConstant.UserDetailUri}?id=${userId}`;

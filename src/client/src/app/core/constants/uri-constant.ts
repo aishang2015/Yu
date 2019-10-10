@@ -23,6 +23,9 @@ export class UriConstant {
     // 用户概要数据地址
     static readonly UserOutlineUri = UriConstant.BaseApiUri + 'userOutline';
 
+    // 用户概要数据地址
+    static readonly AssignOutlineUri = UriConstant.BaseApiUri + 'assignOutline';
+
     // 用户详细数据地址
     static readonly UserDetailUri = UriConstant.BaseApiUri + 'userDetail';
 
