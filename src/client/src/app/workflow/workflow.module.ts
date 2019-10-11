@@ -6,6 +6,9 @@ import { RouterModule } from '@angular/router';
 import { WfdefinitionComponent } from './wfdefinition/wfdefinition.component';
 import { WfformComponent } from './wfform/wfform.component';
 import { EditorModule } from '@tinymce/tinymce-angular';
+import { HandleComponent } from './handle/handle.component';
+import { JobComponent } from './job/job.component';
+import { RecyclebinComponent } from './recyclebin/recyclebin.component';
 
 
 @NgModule({
@@ -13,6 +16,9 @@ import { EditorModule } from '@tinymce/tinymce-angular';
     FlowComponent,
     WfdefinitionComponent,
     WfformComponent,
+    HandleComponent,
+    JobComponent,
+    RecyclebinComponent
   ],
   imports: [
     CommonModule,
@@ -23,6 +29,9 @@ import { EditorModule } from '@tinymce/tinymce-angular';
       { path: 'flow/:id', component: FlowComponent },
       { path: 'form/:id', component: WfformComponent },
       { path: 'wfform', component: WfformComponent },
+      { path: 'handle', component: HandleComponent },
+      { path: 'job', component: JobComponent },
+      { path: 'recycle', component: RecyclebinComponent },
     ])
   ],
 })

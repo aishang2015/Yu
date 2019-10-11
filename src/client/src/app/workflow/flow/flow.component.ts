@@ -543,6 +543,14 @@ export class FlowComponent implements OnInit {
       describeElement.innerHTML = this.nodeInfo.describe;
     }
     this._modal.close();
+
+    this.saveFlow();
+  }
+
+  saveChange() {
+    this._modal.close();
+    this._modal = null;
+    this.saveFlow();
   }
 
   // 搜索人员
