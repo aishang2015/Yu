@@ -12,7 +12,7 @@ namespace Yu.Data.Entities.WorkFlow
         // 工作流定义
         public Guid DefineId { get; set; }
 
-        // 节点ID
+        // 节点domID
         public string NodeId { get; set; }
 
         // 节点类型

@@ -12,7 +12,7 @@ namespace Yu.Data.Entities.WorkFlow
         // 工作流定义id
         public Guid DefineId { get; set; }
 
-        // 工作流节点id
+        // 工作流dom节点id
         public string FlowNodeId { get; set; }
 
         // 表单元素ID
