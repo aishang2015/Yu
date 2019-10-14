@@ -26,6 +26,12 @@ export class WorkFlowDefineService extends BaseService {
 		return this.SafeRequest(this.http.get(uri));
 	}
 
+	// 取得全部数据
+	getAll(){
+		const uri = UriConstant.AllWorkFlowDefineUri;
+		return this.SafeRequest(this.http.get(uri));
+	}
+
 	// 添加数据
 	add(data) {
 		const uri = UriConstant.WorkFlowDefineUri;

@@ -1,0 +1,17 @@
+
+.workflownode {
+  display: inline-block;
+  padding: 8px;
+  border: 1px solid lightgray;
+  border-radius: 4px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.wfSelected {
+  border-color: gray;
+}
+
+.workflownode:hover{
+  border: 1px solid gray;
+}

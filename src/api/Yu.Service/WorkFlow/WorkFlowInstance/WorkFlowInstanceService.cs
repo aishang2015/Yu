@@ -12,21 +12,28 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
     public class WorkFlowInstanceService : IWorkFlowInstanceService
     {
 
-	    // 仓储类
+        // 仓储类
         private IRepository<WorkFlowInstance, Guid> _repository;
 
-		
+        // 工作流表单值仓储
+        private IRepository<WorkFlowInstanceForm, Guid> _workflowInstanceFormRepository;
+
+        // 工作流表单节点数据仓储
+        private IRepository<WorkFlowInstanceNode, Guid> _workFlowInstanceNodeRepository;
+
         // 工作单元
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
-
-        public WorkFlowInstanceService(IRepository<WorkFlowInstance, Guid> repository, IUnitOfWork<BaseIdentityDbContext> unitOfWork)
+        public WorkFlowInstanceService(IRepository<WorkFlowInstance, Guid> repository, IRepository<WorkFlowInstanceForm, Guid> workflowInstanceFormRepository, IRepository<WorkFlowInstanceNode, Guid> workFlowInstanceNodeRepository, IUnitOfWork<BaseIdentityDbContext> unitOfWork)
         {
             _repository = repository;
-						_unitOfWork = unitOfWork;
+            _workflowInstanceFormRepository = workflowInstanceFormRepository;
+            _workFlowInstanceNodeRepository = workFlowInstanceNodeRepository;
+            _unitOfWork = unitOfWork;
         }
 
-		/// <summary>
+
+        /// <summary>
         /// 添加数据
         /// </summary>
         public async Task AddWorkFlowInstanceAsync(WorkFlowInstance entity)
@@ -66,6 +73,6 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
             _repository.Update(entity);
             await _unitOfWork.CommitAsync();
         }
-	}
+    }
 }
 

@@ -44,6 +44,13 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
             return Ok(result);
         }
 
+        [HttpGet("allWorkflowDefines")]
+        [Description("取得全部工作流定义")]
+        public IActionResult GetAllWorkFlowDefines()
+        {
+            return Ok(_service.GetAllWrokFlowDefines());
+        }
+
         /// <summary>
         /// 创建数据
         /// </summary>
@@ -76,6 +83,6 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
             await _service.DeleteWorkFlowDefineAsync(query.Id);
             return Ok();
         }
-	}
+    }
 }
 

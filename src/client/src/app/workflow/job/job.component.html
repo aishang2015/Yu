@@ -1,3 +1,11 @@
 <div id="operateBar">
-    <button nz-button nzType="primary" (click)="addJob()">发起工作</button>
+    <button nz-button nzType="primary" (click)="addJob()">发起工作流</button>
 </div>
+
+<ng-template #createTpl>
+    <app-workflow-selected #selected></app-workflow-selected>
+    <div nz-row>
+        <button class="mr-5 fr" nz-button (click)="comfirmAdd(selected.checked)">确定</button>
+        <button class="mr-5 fr" nz-button (click)="cancel()">取消</button>
+    </div>
+</ng-template>

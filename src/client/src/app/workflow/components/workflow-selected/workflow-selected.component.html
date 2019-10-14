@@ -1,0 +1,7 @@
+<div *ngFor="let type of workflowTypes">
+    <h2>{{type.name}}</h2>
+    <div class="workflownode" [ngClass]="{'wfSelected': item.id == checked.id}" *ngFor="let item of getWorkFlowDefines(type)" 
+        (click)="check(item)">
+        {{item.name}}
+    </div>
+</div>

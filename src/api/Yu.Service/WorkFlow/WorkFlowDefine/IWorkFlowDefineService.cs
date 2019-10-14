@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Yu.Data.Entities;
 using Yu.Data.Entities.WorkFlow;
@@ -19,6 +20,11 @@ namespace Yu.Service.WorkFlow.WorkFlowDefines
         /// 取得数据
         /// </summary>
 		PagedData<WorkflowDefineResult> GetWorkFlowDefines(int pageIndex, int pageSize, string typeId);
+
+        /// <summary>
+        /// 取得数据
+        /// </summary>
+		List<WorkflowDefineResult> GetAllWrokFlowDefines();
 
         /// <summary>
         /// 删除数据

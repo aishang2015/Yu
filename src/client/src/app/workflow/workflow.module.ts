@@ -9,7 +9,9 @@ import { EditorModule } from '@tinymce/tinymce-angular';
 import { HandleComponent } from './handle/handle.component';
 import { JobComponent } from './job/job.component';
 import { RecyclebinComponent } from './recyclebin/recyclebin.component';
-
+import { WorkflowSelectedComponent } from './components/workflow-selected/workflow-selected.component';
+import { JobEditComponent } from './components/job-edit/job-edit.component';
+import { FlowViewComponent } from './components/flow-view/flow-view.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,10 @@ import { RecyclebinComponent } from './recyclebin/recyclebin.component';
     WfformComponent,
     HandleComponent,
     JobComponent,
-    RecyclebinComponent
+    RecyclebinComponent,
+    WorkflowSelectedComponent,
+    JobEditComponent,
+    FlowViewComponent
   ],
   imports: [
     CommonModule,

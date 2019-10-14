@@ -9,6 +9,7 @@ using AutoMapper;
 using Yu.Service.WorkFlow.WorkFlowTypes;
 using System.Collections.Generic;
 using Yu.Model.WorkFlow.WorkFlowDefine.OutputModels;
+using System.Linq;
 
 namespace Yu.Service.WorkFlow.WorkFlowDefines
 {
@@ -117,6 +118,15 @@ namespace Yu.Service.WorkFlow.WorkFlowDefines
                 Data = result,
                 Total = wfDefines.Total
             };
+        }
+
+        /// <summary>
+        /// 取得数据
+        /// </summary>
+        public List<WorkflowDefineResult> GetAllWrokFlowDefines()
+        {
+            var result = _mapper.Map<List<WorkflowDefineResult>>(_repository.GetAllNoTracking().ToList());
+            return result;
         }
 
         /// <summary>
