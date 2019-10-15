@@ -7,6 +7,7 @@ using Yu.Data.Entities;
 using Yu.Model.Common.InputModels;
 using Yu.Data.Entities.WorkFlow;
 using Yu.Service.WorkFlow.WorkFlowInstances;
+using Yu.Core.Extensions;
 
 namespace Yu.Api.Areas.WorkFlow.Controller
 {
@@ -39,6 +40,7 @@ namespace Yu.Api.Areas.WorkFlow.Controller
         [Description("添加工作流实例数据")]
         public async Task<IActionResult> AddWorkFlowInstance([FromBody]WorkFlowInstance entity)
         {
+            entity.UserName = User.GetUserName();            
             await _service.AddWorkFlowInstanceAsync(entity);
             return Ok();
         }

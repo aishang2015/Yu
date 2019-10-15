@@ -2,10 +2,57 @@
     <button nz-button nzType="primary" (click)="addJob()">发起工作流</button>
 </div>
 
+
+<div nz-row class="mt-10">
+    <nz-table #headerTable [nzData]="wfInstanceList" [nzFrontPagination]="false">
+        <thead>
+            <tr>
+                <th nzAlign="center" nzWidth="75px">序号</th>
+                <th nzAlign="center" nzWidth="200px">类型</th>
+                <th nzAlign="center" nzWidth="200px">名称</th>
+                <th nzAlign="center" nzWidth="200px">发起时间</th>
+                <th nzAlign="center" nzWidth="200px">状态</th>
+                <th nzAlign="center">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of wfInstanceList;let i = index">
+                <td nzAlign="center" nzWidth="75px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
+                <td nzAlign="center" nzWidth="200px">{{ getDefineType(data.defineId) }}</td>
+                <td nzAlign="center" nzWidth="200px">{{ getDefineName(data.defineId) }}</td>
+                <td nzAlign="center" nzWidth="200px">{{ data.openDate | date:"yyyy/MM/dd HH:mm" }}</td>
+                <td nzAlign="center" nzWidth="200px">开始|流转中|结束</td>
+                <td nzAlign="center">
+                    <a (click)="viewData(data)">查看</a>&nbsp;
+                    <a (click)="editData(data)">编辑</a>&nbsp;
+                    <a (click)="viewFlow(data)">查看流程</a>&nbsp;
+                    <a (click)="removeInstance(data)">删除</a>
+                </td>
+            </tr>
+        </tbody>
+    </nz-table>
+</div>
+<div nz-row class="mt-10">
+    <nz-pagination [(nzPageIndex)]="pageIndex" [nzTotal]="total" [nzPageSize]="pageSize" [nzShowTotal]="totalTemplate"
+        nzShowSizeChanger [nzPageSizeOptions]="[10,20,30,40,50]" (nzPageSizeChange)="pageSizeChange($event)"
+        (nzPageIndexChange)="pageIndexChange()"></nz-pagination>
+    <ng-template #totalTemplate let-total> 共计 {{ total }} 流程 </ng-template>
+</div>
+
+
 <ng-template #createTpl>
-    <app-workflow-selected #selected></app-workflow-selected>
+    <app-workflow-selected #selected [workflowDefines]="workflowDefines" [workflowTypes]="workflowTypes">
+    </app-workflow-selected>
     <div nz-row>
         <button class="mr-5 fr" nz-button (click)="comfirmAdd(selected.checked)">确定</button>
+        <button class="mr-5 fr" nz-button (click)="cancel()">取消</button>
+    </div>
+</ng-template>
+
+<ng-template #editTpl>
+    <app-job-edit #edit [wfDefineId]="editingWorkFlowInstance.defineId"></app-job-edit>
+    <div nz-row>
+        <button class="mr-5 fr" nz-button (click)="confirmEdit(edit)">确定</button>
         <button class="mr-5 fr" nz-button (click)="cancel()">取消</button>
     </div>
 </ng-template>

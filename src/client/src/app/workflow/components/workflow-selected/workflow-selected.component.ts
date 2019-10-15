@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { WorkFlowTypeService } from 'src/app/core/services/workflow/workflowtype.service';
 import { WorkFlowDefineService } from 'src/app/core/services/workflow/workflowdefine.service';
 import { WorkFlowDefine } from '../../models/workflowDefine';
@@ -15,21 +15,16 @@ export class WorkflowSelectedComponent implements OnInit {
   checked = new WorkFlowDefine();
 
   // 工作流定义
+  @Input()
   workflowDefines: WorkFlowDefine[] = [];
 
   // 工作流类型
+  @Input()
   workflowTypes: WorkflowType[] = [];
 
-  constructor(private _workflowTypeService: WorkFlowTypeService,
-    private _workflowDefineService: WorkFlowDefineService) { }
+  constructor() { }
 
   ngOnInit() {
-    this._workflowDefineService.getAll().subscribe(result => {
-      this.workflowDefines = result;
-    });
-    this._workflowTypeService.get().subscribe(result => {
-      this.workflowTypes = result;
-    })
   }
 
   getWorkFlowDefines(type) {

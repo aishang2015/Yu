@@ -15,8 +15,8 @@ namespace Yu.Data.Entities.WorkFlow
         // 工作流定义ID
         public Guid DefineId { get; set; }
 
-        // 发起人ID
-        public Guid UserId { get; set; }
+        // 发起人
+        public string UserName { get; set; }
 
         // 当前所在的流程节点ID
         public Guid NodeId { get; set; }

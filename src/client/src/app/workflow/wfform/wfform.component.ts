@@ -42,6 +42,9 @@ export class WfformComponent implements OnInit {
   // 编辑表单元素
   editedWorkFlowFormElement: WorkFlowFormElement = new WorkFlowFormElement();
 
+  // 全部组件
+  components = this._workflowFormService.components;
+
   // tinymce初始化配置
   tinymceSetting = {
     language_url: '../../assets/tinymce/langs/zh_CN.js',
@@ -237,16 +240,7 @@ export class WfformComponent implements OnInit {
       this.isLoading = false;
     }, error => this.isLoading = false);
 
-    // let htmlelements: HTMLCollection = contentDocument.contentDocument.getElementsByTagName('input');
-    // for (let i = 0; i < htmlelements.length; i++) {
-    //   let element: any = htmlelements[i];
-    //   let key = this.components.find(c => c.describe == element.value) ? this.components.find(c => c.describe == element.value).key : '';
 
-    //   // 正则替换真正页面的标签
-    //   let newhtml = this.getEditHtml(element.id, key);
-    //   let regex = new RegExp(`<input id="${element.id}".*?/>`);
-    //   let result = this.dataModel.replace(regex, newhtml);
-    // }
   }
 
   // 取得编辑状态的html

@@ -6,6 +6,9 @@ using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 using Yu.Data.Entities.WorkFlow;
 using Yu.Data.Infrasturctures.BaseIdentity;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
+using Yu.Core.Extensions;
 
 namespace Yu.Service.WorkFlow.WorkFlowInstances
 {
@@ -21,16 +24,29 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         // 工作流表单节点数据仓储
         private IRepository<WorkFlowInstanceNode, Guid> _workFlowInstanceNodeRepository;
 
+        // 工作流节点定义
+        private IRepository<WorkFlowFlowNode, Guid> _workFlowFlowNodeRepository;
+
         // 工作单元
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
-        public WorkFlowInstanceService(IRepository<WorkFlowInstance, Guid> repository, IRepository<WorkFlowInstanceForm, Guid> workflowInstanceFormRepository, IRepository<WorkFlowInstanceNode, Guid> workFlowInstanceNodeRepository, IUnitOfWork<BaseIdentityDbContext> unitOfWork)
+        IHttpContextAccessor _httpContextAccessor;
+
+        public WorkFlowInstanceService(IRepository<WorkFlowInstance, Guid> repository,
+            IRepository<WorkFlowInstanceForm, Guid> workflowInstanceFormRepository,
+            IRepository<WorkFlowInstanceNode, Guid> workFlowInstanceNodeRepository,
+            IRepository<WorkFlowFlowNode, Guid> workFlowFlowNodeRepository,
+            IUnitOfWork<BaseIdentityDbContext> unitOfWork,
+            IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _workflowInstanceFormRepository = workflowInstanceFormRepository;
             _workFlowInstanceNodeRepository = workFlowInstanceNodeRepository;
+            _workFlowFlowNodeRepository = workFlowFlowNodeRepository;
             _unitOfWork = unitOfWork;
+            _httpContextAccessor = httpContextAccessor;
         }
+
 
 
         /// <summary>
@@ -38,6 +54,11 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         /// </summary>
         public async Task AddWorkFlowInstanceAsync(WorkFlowInstance entity)
         {
+            // 取得开始节点的数据
+            var node = _workFlowFlowNodeRepository.GetByWhereNoTracking(wfn => wfn.DefineId == entity.DefineId && wfn.NodeType == "")
+                .FirstOrDefault();
+            entity.NodeId = node == null ? Guid.NewGuid() : node.Id;
+            entity.OpenDate = DateTime.Now;
             await _repository.InsertAsync(entity);
             await _unitOfWork.CommitAsync();
         }
@@ -59,7 +80,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         public PagedData<WorkFlowInstance> GetWorkFlowInstances(int pageIndex, int pageSize, string searchText = "")
         {
             // 查询过滤
-            var query = _repository.GetAllNoTracking();
+            var query = _repository.GetByWhereNoTracking(wfi => wfi.UserName == _httpContextAccessor.HttpContext.User.GetUserName());
 
             // 生成结果
             return _repository.GetByPage(query, pageIndex, pageSize);
