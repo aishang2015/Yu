@@ -17,7 +17,7 @@ namespace Yu.Data.Entities.WorkFlow
         public Guid InstanceId { get; set; }
 
         // 元素的ID
-        public Guid ElementID { get; set; }
+        public Guid ElementId { get; set; }
 
         // 编辑元素的值
         public string Value { get; set; }

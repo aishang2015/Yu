@@ -15,7 +15,7 @@ namespace Yu.Data.Entities.WorkFlow
         public Guid NodeId { get; set; }
 
         // 处理人ID
-        public Guid HandlePeopleID { get; set; }
+        public Guid HandlePeopleId { get; set; }
         
         // 处理结果
         // 1.暂存
