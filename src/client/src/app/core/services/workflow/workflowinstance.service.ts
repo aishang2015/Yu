@@ -26,6 +26,18 @@ export class WorkFlowInstanceService extends BaseService {
 		return this.SafeRequest(this.http.post(uri, data));
 	}
 
+	// 取得表单数据
+	getForm(id) {
+		const uri = UriConstant.WorkFlowInstanceFormUri + `?id=${id}`;
+		return this.SafeRequest(this.http.get(uri));
+	}
+
+	// 更新表单数据
+	putForm(data) {
+		const uri = UriConstant.WorkFlowInstanceFormUri;
+		return this.SafeRequest(this.http.put(uri, data));
+	}
+
 	// 更新数据
 	update(data) {
 		const uri = UriConstant.WorkFlowInstanceUri;

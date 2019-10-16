@@ -130,7 +130,11 @@ export class JobComponent implements OnInit {
 
   // 确认修改
   confirmEdit(edit) {
-    console.log(edit);
+    edit.saveContent().subscribe(result=>{
+      this._messageService.success('修改成功！');
+      this._nzModal.close();
+      this._nzModal = null;
+    });
   }
 
 }

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { NgZorroAntdModule, NZ_I18N, zh_CN } from "ng-zorro-antd";
 import { GenderPipe } from './pipes/gender.pipe';
 import { TelephoneValidatorDirective } from './validators/telephone-validator.directive';
@@ -46,6 +46,7 @@ import { HtmlPipe } from './pipes/html.pipe';
   ],
   exports: [
     FormsModule,
+    ReactiveFormsModule,
     NgZorroAntdModule,
     AppRuleComponent,
     NodeSelectComponent,

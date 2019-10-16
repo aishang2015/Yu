@@ -9,6 +9,7 @@ using Yu.Data.Infrasturctures.BaseIdentity;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Yu.Core.Extensions;
+using System.Collections.Generic;
 
 namespace Yu.Service.WorkFlow.WorkFlowInstances
 {
@@ -61,6 +62,25 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
             entity.OpenDate = DateTime.Now;
             await _repository.InsertAsync(entity);
             await _unitOfWork.CommitAsync();
+        }
+
+        /// <summary>
+        /// 更新或保存表单值
+        /// </summary>
+        public async Task AddOrUpdateWorkFlowInstanceForm(Guid instanceId, List<WorkFlowInstanceForm> forms)
+        {
+            forms.ForEach(wfif => wfif.InstanceId = instanceId);
+            _workflowInstanceFormRepository.DeleteRange(wfif => wfif.InstanceId == instanceId);
+            await _workflowInstanceFormRepository.InsertRangeAsync(forms);
+            await _unitOfWork.CommitAsync();
+        }
+
+        /// <summary>
+        /// 取得工作流实例表单值
+        /// </summary>
+        public List<WorkFlowInstanceForm> GetWorkFlowInstanceForm(Guid id)
+        {
+            return _workflowInstanceFormRepository.GetByWhereNoTracking(wfif => wfif.InstanceId == id).ToList();
         }
 
         /// <summary>

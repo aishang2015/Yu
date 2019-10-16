@@ -8,6 +8,9 @@ using Yu.Model.Common.InputModels;
 using Yu.Data.Entities.WorkFlow;
 using Yu.Service.WorkFlow.WorkFlowInstances;
 using Yu.Core.Extensions;
+using System.Collections.Generic;
+using Yu.Model.WorkFlow.WorkFlowInstance.InputModels;
+using System;
 
 namespace Yu.Api.Areas.WorkFlow.Controller
 {
@@ -22,7 +25,7 @@ namespace Yu.Api.Areas.WorkFlow.Controller
             _service = service;
         }
 
-		/// <summary>
+        /// <summary>
         /// 取得数据
         /// </summary>
         [HttpGet("workflowInstance")]
@@ -40,8 +43,24 @@ namespace Yu.Api.Areas.WorkFlow.Controller
         [Description("添加工作流实例数据")]
         public async Task<IActionResult> AddWorkFlowInstance([FromBody]WorkFlowInstance entity)
         {
-            entity.UserName = User.GetUserName();            
+            entity.UserName = User.GetUserName();
             await _service.AddWorkFlowInstanceAsync(entity);
+            return Ok();
+        }
+
+        [HttpGet("workflowInstanceForm")]
+        [Description("工作流实例表单数据")]
+        public IActionResult GetWorkFlowInstanceForm([FromQuery]Guid id)
+        {
+            var forms = _service.GetWorkFlowInstanceForm(id);
+            return Ok(forms);
+        }
+
+        [HttpPut("workflowInstanceForm")]
+        [Description("更新工作流实例表单数据")]
+        public async Task<IActionResult> AddOrUpdateWorkFlowInstanceForm([FromBody]WorkFlowInstanceFormInputViewModel model)
+        {
+            await _service.AddOrUpdateWorkFlowInstanceForm(model.InstanceId, model.WorkFlowInstanceForms);
             return Ok();
         }
 
@@ -66,6 +85,6 @@ namespace Yu.Api.Areas.WorkFlow.Controller
             await _service.DeleteWorkFlowInstanceAsync(query.Id);
             return Ok();
         }
-	}
+    }
 }
 

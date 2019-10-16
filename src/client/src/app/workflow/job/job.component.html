@@ -50,9 +50,9 @@
 </ng-template>
 
 <ng-template #editTpl>
-    <app-job-edit #edit [wfDefineId]="editingWorkFlowInstance.defineId"></app-job-edit>
+    <app-job-edit #edit [wfDefineId]="editingWorkFlowInstance.defineId" [wfInstanceId]="this.editingWorkFlowInstance.id"></app-job-edit>
     <div nz-row>
-        <button class="mr-5 fr" nz-button (click)="confirmEdit(edit)">确定</button>
+        <button class="mr-5 fr" nz-button (click)="confirmEdit(edit)">暂存</button>
         <button class="mr-5 fr" nz-button (click)="cancel()">取消</button>
     </div>
 </ng-template>
