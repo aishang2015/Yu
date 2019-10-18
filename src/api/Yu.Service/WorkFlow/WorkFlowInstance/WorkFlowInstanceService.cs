@@ -59,6 +59,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
             var node = _workFlowFlowNodeRepository.GetByWhereNoTracking(wfn => wfn.DefineId == entity.DefineId && wfn.NodeType == "")
                 .FirstOrDefault();
             entity.NodeId = node == null ? Guid.NewGuid() : node.Id;
+            entity.State = 1;
             entity.OpenDate = DateTime.Now;
             await _repository.InsertAsync(entity);
             await _unitOfWork.CommitAsync();
@@ -89,6 +90,8 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         public async Task DeleteWorkFlowInstanceAsync(Guid id)
         {
             _repository.DeleteRange(e => e.Id == id);
+            _workflowInstanceFormRepository.DeleteRange(e => e.InstanceId == id);
+            _workFlowInstanceNodeRepository.DeleteRange(e => e.InstanceId == id);
             await _unitOfWork.CommitAsync();
         }
 
@@ -100,7 +103,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         public PagedData<WorkFlowInstance> GetWorkFlowInstances(int pageIndex, int pageSize, string searchText = "")
         {
             // 查询过滤
-            var query = _repository.GetByWhereNoTracking(wfi => wfi.UserName == _httpContextAccessor.HttpContext.User.GetUserName());
+            var query = _repository.GetByWhereNoTracking(wfi => wfi.UserName == _httpContextAccessor.HttpContext.User.GetUserName() && !wfi.IsDelete);
 
             // 生成结果
             return _repository.GetByPage(query, pageIndex, pageSize);
@@ -113,6 +116,36 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         {
             _repository.Update(entity);
             await _unitOfWork.CommitAsync();
+        }
+
+        /// <summary>
+        /// 取得被删除的工作流实例
+        /// </summary>
+        public PagedData<WorkFlowInstance> GetDeletedWorkFlowInstanceForm(int pageIndex, int pageSize, string searchText)
+        {
+
+            // 查询过滤
+            var query = _repository.GetByWhereNoTracking(wfi => wfi.UserName == _httpContextAccessor.HttpContext.User.GetUserName() && wfi.IsDelete);
+
+            // 生成结果
+            return _repository.GetByPage(query, pageIndex, pageSize);
+        }
+
+        /// <summary>
+        /// 设置工作流实例删除位
+        /// </summary>
+        public async Task<bool> SetWorkFlowInstanceDelete(Guid id, bool isDelete)
+        {
+            var instance = _repository.GetByWhere(wfi => wfi.Id == id).FirstOrDefault();
+            if (instance.State == 2)
+            {
+                return false;
+            }
+
+            instance.IsDelete = isDelete;
+            _repository.Update(instance);
+            await _unitOfWork.CommitAsync();
+            return true;
         }
     }
 }

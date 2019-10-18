@@ -11,6 +11,7 @@ using Yu.Core.Extensions;
 using System.Collections.Generic;
 using Yu.Model.WorkFlow.WorkFlowInstance.InputModels;
 using System;
+using Yu.Model.Message;
 
 namespace Yu.Api.Areas.WorkFlow.Controller
 {
@@ -48,14 +49,20 @@ namespace Yu.Api.Areas.WorkFlow.Controller
             return Ok();
         }
 
+        /// <summary>
+        /// 取得工作流实例表单数据
+        /// </summary>
         [HttpGet("workflowInstanceForm")]
-        [Description("工作流实例表单数据")]
+        [Description("取得工作流实例表单数据")]
         public IActionResult GetWorkFlowInstanceForm([FromQuery]Guid id)
         {
             var forms = _service.GetWorkFlowInstanceForm(id);
             return Ok(forms);
         }
 
+        /// <summary>
+        /// 更新工作流实例表单数据
+        /// </summary>
         [HttpPut("workflowInstanceForm")]
         [Description("更新工作流实例表单数据")]
         public async Task<IActionResult> AddOrUpdateWorkFlowInstanceForm([FromBody]WorkFlowInstanceFormInputViewModel model)
@@ -85,6 +92,48 @@ namespace Yu.Api.Areas.WorkFlow.Controller
             await _service.DeleteWorkFlowInstanceAsync(query.Id);
             return Ok();
         }
+
+        #region 逻辑删除工作流实例
+
+        /// <summary>
+        /// 取得回收站工作流实例数据
+        /// </summary>
+        [HttpGet("deltetedWorkflowInstance")]
+        [Description("取得回收站工作流实例数据")]
+        public IActionResult GetDeletedWorkFlowInstanceForm([FromQuery] PagedQuery query)
+        {
+            var forms = _service.GetDeletedWorkFlowInstanceForm(query.PageIndex, query.PageSize, query.SearchText);
+            return Ok(forms);
+        }
+
+        /// <summary>
+        /// 工作流实例加入回收站
+        /// </summary>
+        [HttpPut("deltetedWorkflowInstance")]
+        [Description("工作流实例加入回收站")]
+        public async Task<IActionResult> LogicDeletedWorkFlowInstance([FromBody]IdQuery query)
+        {
+            var success = await _service.SetWorkFlowInstanceDelete(query.Id, true);
+            if (!success)
+            {
+                ModelState.AddModelError("IsDelete", ErrorMessages.WorkFlow_Instance_E001);
+                return BadRequest(ModelState);
+            }
+            return Ok();
+        }
+
+        /// <summary>
+        /// 工作流实例加入回收站
+        /// </summary>
+        [HttpPatch("deltetedWorkflowInstance")]
+        [Description("工作流实例从回收站取回")]
+        public async Task<IActionResult> LogicRebackWorkFlowInstance([FromBody]IdQuery query)
+        {
+            await _service.SetWorkFlowInstanceDelete(query.Id, false);
+            return Ok();
+        }
+
+        #endregion
     }
 }
 

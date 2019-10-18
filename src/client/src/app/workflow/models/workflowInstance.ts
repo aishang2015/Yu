@@ -3,5 +3,6 @@ export class WorkFlowInstance {
     defineId: string;
     userName: string;
     nodeId: string;
-    openDate: string;
+    state:string;
+    openDate: string;    
 }

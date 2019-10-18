@@ -36,7 +36,7 @@ export class JobEditComponent implements OnInit {
   dynamicComponentRef;
 
   // 值
-  values: { [code: string]: string } = {};
+  values: { [code: string]: object } = {};
 
   constructor(
     private fb: FormBuilder,
@@ -55,7 +55,11 @@ export class JobEditComponent implements OnInit {
       this._workflowInstanceService.getForm(this.wfInstanceId).subscribe(result => {
         this.workflowFormElements.forEach(wffe => {
           let form = result.find(f => f.elementId == wffe.id);
-          this.values[wffe.elementId] = form ? form.value : '';
+          if (wffe.type == 'timepicker' || wffe.type == 'datepicker') {
+            this.values[wffe.elementId] = (form && form.value != '') ? new Date(form.value) : new Date();
+          } else {
+            this.values[wffe.elementId] = form ? form.value : null;
+          }
         });
       });
       this.htmlEdit();

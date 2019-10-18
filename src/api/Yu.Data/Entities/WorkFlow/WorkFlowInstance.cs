@@ -21,8 +21,14 @@ namespace Yu.Data.Entities.WorkFlow
         // 当前所在的流程节点ID
         public Guid NodeId { get; set; }
 
+        // 工作流状态：1开始，2流转中，3被退回，4结束
+        public int State { get; set; }
+
         // 发起日期
         public DateTime OpenDate { get; set; }
+
+        // 删除标志位
+        public bool IsDelete { get; set; } = false;
     }
 }
 

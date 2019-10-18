@@ -21,12 +21,12 @@
                 <td nzAlign="center" nzWidth="200px">{{ getDefineType(data.defineId) }}</td>
                 <td nzAlign="center" nzWidth="200px">{{ getDefineName(data.defineId) }}</td>
                 <td nzAlign="center" nzWidth="200px">{{ data.openDate | date:"yyyy/MM/dd HH:mm" }}</td>
-                <td nzAlign="center" nzWidth="200px">开始|流转中|结束</td>
+                <td nzAlign="center" nzWidth="200px">{{ getStatusName(data.state)}}</td>
                 <td nzAlign="center">
                     <a (click)="viewData(data)">查看</a>&nbsp;
                     <a (click)="editData(data)">编辑</a>&nbsp;
                     <a (click)="viewFlow(data)">查看流程</a>&nbsp;
-                    <a (click)="removeInstance(data)">删除</a>
+                    <a (click)="deleteData(data)">删除</a>
                 </td>
             </tr>
         </tbody>

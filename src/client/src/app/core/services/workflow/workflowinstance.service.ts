@@ -49,5 +49,30 @@ export class WorkFlowInstanceService extends BaseService {
 		const uri = UriConstant.WorkFlowInstanceUri + `?id=${id}`;
 		return this.SafeRequest(this.http.delete(uri));
 	}
+
+	// 逻辑删除
+	logicDelete(obj) {
+		const uri = UriConstant.DeletedWorkFlowInstanceUri;
+		return this.SafeRequest(this.http.put(uri, obj));
+	}
+
+	// 逻辑删除恢复
+	revertDelete(obj) {
+		const uri = UriConstant.DeletedWorkFlowInstanceUri;
+		return this.SafeRequest(this.http.patch(uri, obj));
+	}
+
+	// 取得逻辑删除数据
+	getDeletedInstance(pageIndex, pageSize) {
+		const uri = UriConstant.DeletedWorkFlowInstanceUri + `?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+		return this.SafeRequest(this.http.get(uri));
+	}
+
+	instanceStatusMap={
+		'1':'开始',
+		'2':'流转中',
+		'3':'被退回',
+		'4':'结束'
+	}
 }
 

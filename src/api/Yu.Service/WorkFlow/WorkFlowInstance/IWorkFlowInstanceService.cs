@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Yu.Data.Entities;
 using Yu.Data.Entities.WorkFlow;
- 
+
 namespace Yu.Service.WorkFlow.WorkFlowInstances
 {
 
-	public interface IWorkFlowInstanceService
-	{
+    public interface IWorkFlowInstanceService
+    {
         /// <summary>
         /// 取得数据
         /// </summary>
 		PagedData<WorkFlowInstance> GetWorkFlowInstances(int pageIndex, int pageSize, string searchText);
-		
+
         /// <summary>
         /// 删除数据
         /// </summary>
@@ -39,6 +39,16 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         /// 更新数据
         /// </summary>
         Task UpdateWorkFlowInstanceAsync(WorkFlowInstance entity);
-	}
+
+        /// <summary>
+        /// 取得被删除的工作流实例
+        /// </summary>
+        PagedData<WorkFlowInstance> GetDeletedWorkFlowInstanceForm(int pageIndex, int pageSize, string searchText);
+
+        /// <summary>
+        /// 设置工作流实例删除位
+        /// </summary>
+        Task<bool> SetWorkFlowInstanceDelete(Guid id, bool isDelete);
+    }
 }
 

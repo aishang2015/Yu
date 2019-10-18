@@ -79,13 +79,17 @@ export class JobComponent implements OnInit {
 
   // 确认创建
   comfirmAdd(define) {
-    this._workflowInstanceService.add({
-      defineId: define.id,
-    }).subscribe(result => {
-      this._nzModal.close();
-      this._nzModal = null;
-      this.initJobList();
-    });
+    if (define.id) {
+      this._workflowInstanceService.add({
+        defineId: define.id,
+      }).subscribe(result => {
+        this._nzModal.close();
+        this._nzModal = null;
+        this.initJobList();
+      });
+    } else {
+      this._messageService.warning('请选择一个工作流类型！');
+    }
   }
 
   // 取消编辑
@@ -116,6 +120,12 @@ export class JobComponent implements OnInit {
     return this.workflowTypes.find(wft => wft.id == typeid).name;
   }
 
+  //  取得状态定义
+  getStatusName(state) {
+    return this._workflowInstanceService.instanceStatusMap[state];
+  }
+
+  // 编辑数据
   editData(data) {
     this.editingWorkFlowInstance = data;
     this._nzModal = this._modalService.create({
@@ -128,9 +138,26 @@ export class JobComponent implements OnInit {
     })
   }
 
+  // 删除数据
+  deleteData(data) {
+    this._modalService.confirm(
+      {
+        nzTitle: '删除确认',
+        nzContent: '是否删除？',
+        nzOkText: '确定',
+        nzCancelText: '取消',
+        nzOnOk: result => {
+          this._workflowInstanceService.logicDelete({ id: data.id })
+            .subscribe(result => { this._messageService.success("已经移入回收站"); this.initJobList(); });
+
+        }
+      }
+    );
+  }
+
   // 确认修改
   confirmEdit(edit) {
-    edit.saveContent().subscribe(result=>{
+    edit.saveContent().subscribe(result => {
       this._messageService.success('修改成功！');
       this._nzModal.close();
       this._nzModal = null;
