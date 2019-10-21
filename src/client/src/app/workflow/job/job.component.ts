@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NzModalService, NzMessageService } from 'ng-zorro-antd';
+import { NzModalService, NzMessageService, NzModalRef } from 'ng-zorro-antd';
 import { WorkFlowInstanceService } from 'src/app/core/services/workflow/workflowinstance.service';
 import { WorkFlowInstance } from '../models/workflowInstance';
 import { WorkFlowDefine } from '../models/workflowDefine';
@@ -15,7 +15,7 @@ import { WorkFlowDefineService } from 'src/app/core/services/workflow/workflowde
 export class JobComponent implements OnInit {
 
   // 模态框对象
-  private _nzModal;
+  private _nzModal:NzModalRef;
 
   // 工作流实例对象
   wfInstanceList: WorkFlowInstance[] = [];
@@ -162,6 +162,21 @@ export class JobComponent implements OnInit {
       this._nzModal.close();
       this._nzModal = null;
     });
+  }
+
+  // 提交数据
+  submit(edit){
+    edit.saveContent().subscribe(result => {
+      this._nzModal.close();
+      this._nzModal = null;
+    });
+  }
+
+  // 打印数据
+  print(){    
+    window.document.body.innerHTML=window.document.getElementsByClassName("ant-modal")[0].innerHTML;
+    window.print();
+    window.location.reload();  
   }
 
 }

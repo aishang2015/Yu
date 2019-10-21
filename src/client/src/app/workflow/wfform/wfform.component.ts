@@ -120,7 +120,6 @@ export class WfformComponent implements OnInit {
 
     tinymce.execCommand("mceInsertContent", false, html);
     tinymce.get('editor').focus();
-    this.bindClick(elementid);
 
     this.workflowFormElements.push({
       elementId: elementid,
@@ -130,7 +129,9 @@ export class WfformComponent implements OnInit {
       width: 120,
       options: '',
       line: 3
-    })
+    });
+
+    this.bindClick(elementid);
   }
 
   // 关闭模态框
@@ -143,11 +144,14 @@ export class WfformComponent implements OnInit {
     let contentDocument: any = document.getElementById('editor_ifr');
     let element: HTMLElement = contentDocument.contentDocument.getElementById(id);
     element.onclick = event => {
-      let e = this.workflowFormElements.find(e => e.elementId == id);
+      let e = this.workflowFormElements.find(e => e.elementId == element.id);
       if (e) {
         Object.assign(this.editedWorkFlowFormElement, e);
       }
     };
+    //element.onblur = event => {
+    //  this.editedWorkFlowFormElement = new WorkFlowFormElement();
+    //};
   }
 
   // 初始化点击事件

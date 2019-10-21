@@ -559,7 +559,7 @@ export class FlowComponent implements OnInit {
       result => {
         this.userList = result.data;
       }
-    )
+    );
   }
 
   // 取得显示内容

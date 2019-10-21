@@ -44,7 +44,8 @@ export class HomeComponent implements OnInit {
     this.router.events.forEach((event) => {
       if (event instanceof NavigationEnd) {
         (event.url.startsWith("/workflow/flow") ||
-          event.url.startsWith("/workflow/form"))
+          event.url.startsWith("/workflow/form") ||
+          event.url.startsWith("/workflow/flowview"))
           ? this.isMenuVisible = false : this.isMenuVisible = true;
       }
     });

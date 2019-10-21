@@ -24,8 +24,8 @@
                 <td nzAlign="center" nzWidth="200px">{{ getStatusName(data.state)}}</td>
                 <td nzAlign="center">
                     <a (click)="viewData(data)">查看</a>&nbsp;
-                    <a (click)="editData(data)">编辑</a>&nbsp;
-                    <a (click)="viewFlow(data)">查看流程</a>&nbsp;
+                    <a (click)="editData(data)">处理</a>&nbsp;
+                    <a [routerLink]="[ '/workflow/flowview', data.defineId]" target="_blank">流程</a>&nbsp;
                     <a (click)="deleteData(data)">删除</a>
                 </td>
             </tr>
@@ -52,7 +52,9 @@
 <ng-template #editTpl>
     <app-job-edit #edit [wfDefineId]="editingWorkFlowInstance.defineId" [wfInstanceId]="this.editingWorkFlowInstance.id"></app-job-edit>
     <div nz-row>
+        <button class="mr-5 fr" nz-button (click)="submit(edit)">提交</button>
         <button class="mr-5 fr" nz-button (click)="confirmEdit(edit)">暂存</button>
         <button class="mr-5 fr" nz-button (click)="cancel()">取消</button>
+        <button class="mr-5" nz-button (click)="print()">打印</button>
     </div>
 </ng-template>

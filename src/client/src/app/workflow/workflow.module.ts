@@ -32,6 +32,7 @@ import { FlowViewComponent } from './components/flow-view/flow-view.component';
     RouterModule.forChild([
       { path: 'definition', component: WfdefinitionComponent },
       { path: 'flow/:id', component: FlowComponent },
+      { path: 'flowview/:id', component: FlowViewComponent },
       { path: 'form/:id', component: WfformComponent },
       { path: 'wfform', component: WfformComponent },
       { path: 'handle', component: HandleComponent },

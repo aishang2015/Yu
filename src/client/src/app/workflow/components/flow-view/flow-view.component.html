@@ -1,1 +1,35 @@
-<p>flow-view works!</p>
+<div id="flowContainer">
+    <div id="flowContainer">
+        <button nz-button nzType="link" nzShape="circle" nzGhost (click)="zoomInClick()"><i nz-icon nzType="zoom-in"
+                nzTheme="outline"></i></button>
+        <button nz-button nzType="link" nzShape="circle" nzGhost (click)="zoomOutClick()"><i nz-icon nzType="zoom-out"
+                nzTheme="outline"></i></button>
+        <button nz-button nzType="link" nzShape="circle" nzGhost (click)="fitClick()"><i nz-icon nzType="redo"
+                nzTheme="outline"></i></button>
+        <div id="zoomContainer" #zoomContainer>
+            <div id="diagramContainer" #diagram>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #handlePeopleModal>
+    <label>办理人员：</label>
+    <nz-table #table [nzData]="userList" nzShowPagination="false">
+        <thead>
+            <tr>
+                <th>姓名</th>
+                <th>组织</th>
+                <th>职位</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let user of table.data">
+                <td>{{ user.fullName }}</td>
+                <td>{{ user.groupName }}</td>
+                <td>{{ user.positionName }}</td>
+            </tr>
+        </tbody>
+    </nz-table>
+    <button class="mt-5" nz-button (click)="close()">关闭</button>
+</ng-template>
