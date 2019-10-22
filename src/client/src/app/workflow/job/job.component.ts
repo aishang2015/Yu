@@ -6,6 +6,8 @@ import { WorkFlowDefine } from '../models/workflowDefine';
 import { WorkflowType } from '../models/workflowType';
 import { WorkFlowTypeService } from 'src/app/core/services/workflow/workflowtype.service';
 import { WorkFlowDefineService } from 'src/app/core/services/workflow/workflowdefine.service';
+import { WorkFlowFlowService } from 'src/app/core/services/workflow/workflowflow.service';
+import { WorkFlowInstanceNode } from '../models/WorkFlowInstanceNode';
 
 @Component({
   selector: 'app-job',
@@ -15,7 +17,7 @@ import { WorkFlowDefineService } from 'src/app/core/services/workflow/workflowde
 export class JobComponent implements OnInit {
 
   // 模态框对象
-  private _nzModal:NzModalRef;
+  private _nzModal: NzModalRef;
 
   // 工作流实例对象
   wfInstanceList: WorkFlowInstance[] = [];
@@ -25,6 +27,9 @@ export class JobComponent implements OnInit {
 
   // 工作流类型
   workflowTypes: WorkflowType[] = [];
+
+  // 工作流实例节点处理信息
+  workflowInstanceNodes: WorkFlowInstanceNode[] = [];
 
   // 分页
   pageIndex = 1;
@@ -44,6 +49,7 @@ export class JobComponent implements OnInit {
 
   constructor(private _modalService: NzModalService,
     private _messageService: NzMessageService,
+    private _workFlowFlowService: WorkFlowFlowService,
     private _workflowTypeService: WorkFlowTypeService,
     private _workflowDefineService: WorkFlowDefineService,
     private _workflowInstanceService: WorkFlowInstanceService) { }
@@ -125,9 +131,19 @@ export class JobComponent implements OnInit {
     return this._workflowInstanceService.instanceStatusMap[state];
   }
 
+  // 取得处理状态
+  getHandleStatus(state){
+    return this._workflowInstanceService.handleStatusMap[state];
+  }
+
   // 编辑数据
   editData(data) {
     this.editingWorkFlowInstance = data;
+    this._workflowInstanceService.getInstanceNode(this.editingWorkFlowInstance.id).subscribe(
+      result => {
+        this.workflowInstanceNodes = result;
+      }
+    );
     this._nzModal = this._modalService.create({
       nzTitle: null,
       nzContent: this.editTpl,
@@ -165,7 +181,7 @@ export class JobComponent implements OnInit {
   }
 
   // 提交数据
-  submit(edit){
+  submit(edit) {
     edit.saveContent().subscribe(result => {
       this._nzModal.close();
       this._nzModal = null;
@@ -173,10 +189,10 @@ export class JobComponent implements OnInit {
   }
 
   // 打印数据
-  print(){    
-    window.document.body.innerHTML=window.document.getElementsByClassName("ant-modal")[0].innerHTML;
+  print() {
+    window.document.body.innerHTML = window.document.getElementsByClassName("ant-modal")[0].innerHTML;
     window.print();
-    window.location.reload();  
+    window.location.reload();
   }
 
 }

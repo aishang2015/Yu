@@ -33,7 +33,12 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         /// <summary>
         /// 取得工作流实例表单值
         /// </summary>
-        List<WorkFlowInstanceForm> GetWorkFlowInstanceForm(Guid id);
+        List<WorkFlowInstanceForm> GetWorkFlowInstanceForm(Guid instanceId);
+
+        /// <summary>
+        /// 取得工作流实例节点处理数据
+        /// </summary>
+        List<WorkFlowInstanceNode> GetWorkFlowInstanceNode(Guid instanceId);
 
         /// <summary>
         /// 更新数据

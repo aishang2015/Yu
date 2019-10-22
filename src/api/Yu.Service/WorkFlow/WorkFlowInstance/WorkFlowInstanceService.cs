@@ -2,7 +2,6 @@
 using System;
 using System.Threading.Tasks;
 using Yu.Data.Entities;
-using Yu.Data.Infrasturctures;
 using Yu.Data.Repositories;
 using Yu.Data.Entities.WorkFlow;
 using Yu.Data.Infrasturctures.BaseIdentity;
@@ -10,11 +9,16 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Yu.Core.Extensions;
 using System.Collections.Generic;
+using Yu.Core.Utils;
+using Microsoft.AspNetCore.Identity;
+using Yu.Data.Entities.Right;
 
 namespace Yu.Service.WorkFlow.WorkFlowInstances
 {
     public class WorkFlowInstanceService : IWorkFlowInstanceService
     {
+        // 用户
+        private UserManager<BaseIdentityUser> _userManager;
 
         // 仓储类
         private IRepository<WorkFlowInstance, Guid> _repository;
@@ -28,27 +32,37 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         // 工作流节点定义
         private IRepository<WorkFlowFlowNode, Guid> _workFlowFlowNodeRepository;
 
+        // 工作流连接仓储
+        private IRepository<WorkFlowFlowConnection, Guid> _workFlowFlowConnectionRepository;
+
+        // 组织树仓储
+        private IRepository<GroupTree, Guid> _groupTreeRepository;
+
         // 工作单元
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
         IHttpContextAccessor _httpContextAccessor;
 
-        public WorkFlowInstanceService(IRepository<WorkFlowInstance, Guid> repository,
+        public WorkFlowInstanceService(UserManager<BaseIdentityUser> userManager,
+            IRepository<WorkFlowInstance, Guid> repository,
             IRepository<WorkFlowInstanceForm, Guid> workflowInstanceFormRepository,
             IRepository<WorkFlowInstanceNode, Guid> workFlowInstanceNodeRepository,
             IRepository<WorkFlowFlowNode, Guid> workFlowFlowNodeRepository,
+            IRepository<WorkFlowFlowConnection, Guid> workFlowFlowConnectionRepository,
+            IRepository<GroupTree, Guid> groupTreeRepository,
             IUnitOfWork<BaseIdentityDbContext> unitOfWork,
             IHttpContextAccessor httpContextAccessor)
         {
+            _userManager = userManager;
             _repository = repository;
             _workflowInstanceFormRepository = workflowInstanceFormRepository;
             _workFlowInstanceNodeRepository = workFlowInstanceNodeRepository;
             _workFlowFlowNodeRepository = workFlowFlowNodeRepository;
+            _workFlowFlowConnectionRepository = workFlowFlowConnectionRepository;
+            _groupTreeRepository = groupTreeRepository;
             _unitOfWork = unitOfWork;
             _httpContextAccessor = httpContextAccessor;
         }
-
-
 
         /// <summary>
         /// 添加数据
@@ -56,11 +70,104 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         public async Task AddWorkFlowInstanceAsync(WorkFlowInstance entity)
         {
             // 取得开始节点的数据
-            var node = _workFlowFlowNodeRepository.GetByWhereNoTracking(wfn => wfn.DefineId == entity.DefineId && wfn.NodeType == "")
+            var node = _workFlowFlowNodeRepository.GetByWhereNoTracking(wfn => wfn.DefineId == entity.DefineId)
                 .FirstOrDefault();
+            entity.Id = GuidUtil.NewSquentialGuid();
             entity.NodeId = node == null ? Guid.NewGuid() : node.Id;
             entity.State = 1;
             entity.OpenDate = DateTime.Now;
+
+            // 设置实例
+            var nodes = _workFlowFlowNodeRepository.GetByWhereNoTracking(wffn => wffn.DefineId == node.DefineId).ToList();
+
+            var n = nodes.Find(wffn => wffn.NodeType == "startNode");
+            while (n != null)
+            {
+                var handlePepleIds = string.Empty;
+                var handlePepleNames = string.Empty;
+                if (n.NodeType == "endNode")
+                {
+                    break;
+                }
+                else if (n.NodeType == "startNode")
+                {
+                    // 当前登录用户
+                    var userName = _httpContextAccessor.HttpContext.User.GetUserName();
+                    var currentUser = await _userManager.FindByNameAsync(userName);
+                    handlePepleIds = currentUser.Id.ToString();
+                    handlePepleNames = currentUser.FullName;
+                }
+                else
+                {
+                    // 取得经办人
+                    if (n.HandleType == 1)
+                    {
+                        // 指定人员办理
+                        handlePepleIds = n.HandlePeoples;
+                        handlePepleNames = string.Join(",", from user in _userManager.Users
+                                                            where handlePepleIds.Contains(user.Id.ToString())
+                                                            select user.FullName);
+                    }
+                    else if (n.HandleType == 2)
+                    {
+                        // 当前登录用户
+                        var userName = _httpContextAccessor.HttpContext.User.GetUserName();
+                        var currentUser = await _userManager.FindByNameAsync(userName);
+                        var users = new List<BaseIdentityUser>();
+
+                        // 指定岗位人员办理
+                        switch (n.PositionGroup)
+                        {
+                            // 不指定部门
+                            case 1:
+                                // 直接根据岗位信息查找人员
+                                users.AddRange(_userManager.Users.Where(u => u.PositionId == n.PositionId));
+                                break;
+                            // 发起人部门的指定岗位
+                            case 2:
+                                users.AddRange(from user in _userManager.Users
+                                               where user.PositionId == n.PositionId &&
+                                                   user.UserGroupId == currentUser.UserGroupId
+                                               select user);
+                                break;
+                            // 发起人部门上一级部门的指定岗位
+                            case 3:
+                                var upperGroupId = _groupTreeRepository
+                                    .GetByWhereNoTracking(gt => gt.Descendant.ToString() == currentUser.UserGroupId)
+                                    .FirstOrDefault()?.Ancestor;
+                                if (upperGroupId != null)
+                                {
+                                    users.AddRange(from user in _userManager.Users
+                                                   where user.PositionId == n.PositionId &&
+                                                       user.UserGroupId == upperGroupId.ToString()
+                                                   select user);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        handlePepleIds = string.Join(",", users.Select(u => u.Id));
+                        handlePepleNames = string.Join(",", users.Select(u => u.FullName));
+                    }
+
+                }
+
+
+                await _workFlowInstanceNodeRepository.InsertAsync(new WorkFlowInstanceNode
+                {
+                    InstanceId = entity.Id,
+                    NodeId = n.Id,
+                    HandlePeoples = handlePepleIds,
+                    HandlePeopleNames = handlePepleNames,
+                    Explain = string.IsNullOrEmpty(handlePepleIds) ? "没有找到匹配的经办人员,略过改步骤." : string.Empty,
+                    handleStatus = 0
+                });
+
+                var connection = _workFlowFlowConnectionRepository
+                    .GetByWhereNoTracking(wffc => wffc.SourceId == n.NodeId.ToString()).FirstOrDefault();
+                n = connection == null ? null : nodes.FirstOrDefault(nd => nd.NodeId.ToString() == connection.TargetId);
+            }
+
             await _repository.InsertAsync(entity);
             await _unitOfWork.CommitAsync();
         }
@@ -79,9 +186,17 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         /// <summary>
         /// 取得工作流实例表单值
         /// </summary>
-        public List<WorkFlowInstanceForm> GetWorkFlowInstanceForm(Guid id)
+        public List<WorkFlowInstanceForm> GetWorkFlowInstanceForm(Guid instanceId)
         {
-            return _workflowInstanceFormRepository.GetByWhereNoTracking(wfif => wfif.InstanceId == id).ToList();
+            return _workflowInstanceFormRepository.GetByWhereNoTracking(wfif => wfif.InstanceId == instanceId).ToList();
+        }
+
+        /// <summary>
+        /// 取得工作流实例节点处理数据
+        /// </summary>
+        public List<WorkFlowInstanceNode> GetWorkFlowInstanceNode(Guid instanceId)
+        {
+            return _workFlowInstanceNodeRepository.GetByWhereNoTracking(wfin => wfin.InstanceId == instanceId).ToList();
         }
 
         /// <summary>

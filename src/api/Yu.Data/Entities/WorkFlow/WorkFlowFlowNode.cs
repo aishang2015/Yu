@@ -47,7 +47,7 @@ namespace Yu.Data.Entities.WorkFlow
         // 1不指定部门
         // 2发起人部门
         // 3发起人上级部门
-        public string PositionGroup { get; set; }
+        public int PositionGroup { get; set; }
         
     }
 }

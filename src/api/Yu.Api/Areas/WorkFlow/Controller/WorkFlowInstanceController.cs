@@ -50,28 +50,6 @@ namespace Yu.Api.Areas.WorkFlow.Controller
         }
 
         /// <summary>
-        /// 取得工作流实例表单数据
-        /// </summary>
-        [HttpGet("workflowInstanceForm")]
-        [Description("取得工作流实例表单数据")]
-        public IActionResult GetWorkFlowInstanceForm([FromQuery]Guid id)
-        {
-            var forms = _service.GetWorkFlowInstanceForm(id);
-            return Ok(forms);
-        }
-
-        /// <summary>
-        /// 更新工作流实例表单数据
-        /// </summary>
-        [HttpPut("workflowInstanceForm")]
-        [Description("更新工作流实例表单数据")]
-        public async Task<IActionResult> AddOrUpdateWorkFlowInstanceForm([FromBody]WorkFlowInstanceFormInputViewModel model)
-        {
-            await _service.AddOrUpdateWorkFlowInstanceForm(model.InstanceId, model.WorkFlowInstanceForms);
-            return Ok();
-        }
-
-        /// <summary>
         /// 更新数据
         /// </summary>
         [HttpPut("workflowInstance")]
@@ -132,6 +110,48 @@ namespace Yu.Api.Areas.WorkFlow.Controller
             await _service.SetWorkFlowInstanceDelete(query.Id, false);
             return Ok();
         }
+
+        #endregion
+
+        #region 工作流实例表单
+
+        /// <summary>
+        /// 取得工作流实例表单数据
+        /// </summary>
+        [HttpGet("workflowInstanceForm")]
+        [Description("取得工作流实例表单数据")]
+        public IActionResult GetWorkFlowInstanceForm([FromQuery]Guid id)
+        {
+            var forms = _service.GetWorkFlowInstanceForm(id);
+            return Ok(forms);
+        }
+
+        /// <summary>
+        /// 更新工作流实例表单数据
+        /// </summary>
+        [HttpPut("workflowInstanceForm")]
+        [Description("更新工作流实例表单数据")]
+        public async Task<IActionResult> AddOrUpdateWorkFlowInstanceForm([FromBody]WorkFlowInstanceFormInputViewModel model)
+        {
+            await _service.AddOrUpdateWorkFlowInstanceForm(model.InstanceId, model.WorkFlowInstanceForms);
+            return Ok();
+        }
+
+        #endregion
+
+        #region 工作流节点处理数据
+
+        /// <summary>
+        /// 取得工作流节点处理数据
+        /// </summary>
+        [HttpGet("workflowInstanceNode")]
+        [Description("取得工作流节点处理数据")]
+        public IActionResult GetWorkFlowInstanceNode([FromQuery]Guid id)
+        {
+            var nodes = _service.GetWorkFlowInstanceNode(id);
+            return Ok(nodes);
+        }
+
 
         #endregion
     }

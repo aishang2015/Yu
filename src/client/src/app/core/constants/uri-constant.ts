@@ -107,4 +107,7 @@ export class UriConstant {
     // 回收站工作流实例
     static readonly DeletedWorkFlowInstanceUri = UriConstant.BaseApiUri + 'deltetedWorkflowInstance';
 
+    // 工作流实例节点处理数据
+    static readonly WorkFlowInstanceNodeUri = UriConstant.BaseApiUri + 'workflowInstanceNode';
+
 }

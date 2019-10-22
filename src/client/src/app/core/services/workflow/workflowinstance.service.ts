@@ -68,11 +68,24 @@ export class WorkFlowInstanceService extends BaseService {
 		return this.SafeRequest(this.http.get(uri));
 	}
 
-	instanceStatusMap={
-		'1':'开始',
-		'2':'流转中',
-		'3':'被退回',
-		'4':'结束'
+	// 取得节点处理数据
+	getInstanceNode(id) {
+		const uri = UriConstant.WorkFlowInstanceNodeUri + `?id=${id}`;
+		return this.SafeRequest(this.http.get(uri));
+	}
+
+	instanceStatusMap = {
+		'1': '开始',
+		'2': '流转中',
+		'3': '被退回',
+		'4': '结束'
+	}
+
+	handleStatusMap = {
+		'0': '未处理',
+		'1': '待处理',
+		'2': '拒绝',
+		'3': '同意'
 	}
 }
 
