@@ -27,7 +27,7 @@ export class WorkFlowDefineService extends BaseService {
 	}
 
 	// 取得全部数据
-	getAll(){
+	getAll() {
 		const uri = UriConstant.AllWorkFlowDefineUri;
 		return this.SafeRequest(this.http.get(uri));
 	}
@@ -48,6 +48,12 @@ export class WorkFlowDefineService extends BaseService {
 	delete(id) {
 		const uri = UriConstant.WorkFlowDefineUri + `?id=${id}`;
 		return this.SafeRequest(this.http.delete(uri));
+	}
+
+	// 设置发布状态
+	publish(id, ispublish) {
+		const uri = UriConstant.WorkFlowDefineUri;
+		return this.SafeRequest(this.http.patch(uri, { id: id, ispublish: ispublish }));
 	}
 }
 

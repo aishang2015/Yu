@@ -8,6 +8,7 @@ using Yu.Model.Common.InputModels;
 using Yu.Data.Entities.WorkFlow;
 using Yu.Service.WorkFlow.WorkFlowDefines;
 using Yu.Model.WorkFlow.WorkFlowDefine.InputModels;
+using Yu.Model.Message;
 
 namespace Yu.Api.Areas.WorkFlow.Controllers
 {
@@ -70,6 +71,19 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
         public async Task<IActionResult> UpdateWorkFlowDefine([FromBody]WorkFlowDefine entity)
         {
             await _service.UpdateWorkFlowDefineAsync(entity);
+            return Ok();
+        }
+
+        [HttpPatch("workflowDefine")]
+        [Description("工作流定义发布")]
+        public async Task<IActionResult> PublishWorkFlowDefine([FromBody] PublishQuery publishQuery)
+        {
+            var result = await _service.SetWorkFlowPublish(publishQuery.Id, publishQuery.IsPublish);
+            if (!result)
+            {
+                ModelState.AddModelError("IsPublish", ErrorMessages.WorkFlow_Define_E001);
+                return BadRequest(ModelState);
+            }
             return Ok();
         }
 

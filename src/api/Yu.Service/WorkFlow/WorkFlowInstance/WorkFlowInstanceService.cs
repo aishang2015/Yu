@@ -160,7 +160,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                     HandlePeoples = handlePepleIds,
                     HandlePeopleNames = handlePepleNames,
                     Explain = string.IsNullOrEmpty(handlePepleIds) ? "没有找到匹配的经办人员,略过改步骤." : string.Empty,
-                    handleStatus = 0
+                    HandleStatus = 0
                 });
 
                 var connection = _workFlowFlowConnectionRepository

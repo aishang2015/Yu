@@ -251,4 +251,8 @@ export class WfdefinitionComponent implements OnInit {
   cancel(form) {
     this.nzModal.close();
   }
+
+  publish(data) {
+    this._workflowDefineService.publish(data.id, !data.isPublish).subscribe(result => data.isPublish = !data.isPublish);
+  }
 }

@@ -26,6 +26,7 @@
                         <th nzAlign="center" nzWidth="150px">名称</th>
                         <th nzAlign="center" nzWidth="200px">类型</th>
                         <th nzAlign="center">描述</th>
+                        <th nzAlign="center" nzWidth="100px">发布</th>
                         <th nzAlign="center" nzWidth="300px">操作</th>
                     </tr>
                 </thead>
@@ -35,6 +36,10 @@
                         <td nzAlign="center" nzWidth="150px">{{ data.name }}</td>
                         <td nzAlign="center" nzWidth="200px">{{ data.typeName }}</td>
                         <td nzAlign="center">{{ data.describe }}</td>
+                        <td nzAlign="center" nzWidth="100px">
+                            <nz-switch [(ngModel)]="data.isPublish" [nzControl]="true" nzSize="small"
+                                (click)="publish(data)"></nz-switch>
+                        </td>
                         <td nzAlign="center" nzWidth="300px">
                             <a [routerLink]="[ '/workflow/form', data.id]" target="_blank">表单设计</a>&nbsp;
                             <a [routerLink]="[ '/workflow/flow', data.id]" target="_blank">流程设计</a>&nbsp;

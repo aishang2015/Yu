@@ -40,6 +40,11 @@ namespace Yu.Service.WorkFlow.WorkFlowDefines
         /// 更新数据
         /// </summary>
         Task UpdateWorkFlowDefineAsync(WorkFlowDefine entity);
+
+        /// <summary>
+        /// 设置工作流发布
+        /// </summary>
+        Task<bool> SetWorkFlowPublish(Guid id, bool isPublish);
     }
 }
 

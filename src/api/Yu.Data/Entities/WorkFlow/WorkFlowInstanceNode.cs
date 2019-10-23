@@ -25,7 +25,7 @@ namespace Yu.Data.Entities.WorkFlow
         // 1.待处理
         // 2.拒绝
         // 3.同意
-        public int handleStatus { get; set; }
+        public int HandleStatus { get; set; }
 
         // 处理说明
         public string Explain { get; set; }

@@ -125,7 +125,8 @@ namespace Yu.Service.WorkFlow.WorkFlowDefines
         /// </summary>
         public List<WorkflowDefineResult> GetAllWrokFlowDefines()
         {
-            var result = _mapper.Map<List<WorkflowDefineResult>>(_repository.GetAllNoTracking().ToList());
+            var result = _mapper.Map<List<WorkflowDefineResult>>(_repository
+                .GetByWhereNoTracking(wfd => wfd.IsPublish).ToList());
             return result;
         }
 
@@ -136,6 +137,33 @@ namespace Yu.Service.WorkFlow.WorkFlowDefines
         {
             _repository.Update(entity);
             await _unitOfWork.CommitAsync();
+        }
+
+        /// <summary>
+        /// 设置工作流发布
+        /// </summary>
+        public async Task<bool> SetWorkFlowPublish(Guid id, bool isPublish)
+        {
+            // 验证是否设置表单内容
+            var count = _workflowFormElementRepository
+                .GetByWhereNoTracking(wffe => wffe.DefineId == id).Count();
+            if (count == 0)
+            {
+                return false;
+            }
+
+            // 验证是否有流程节点 
+            // TODO 验证流程完整性
+            count = _nodeRepository.GetByWhereNoTracking(wffn => wffn.DefineId == id).Count();
+            if (count == 0)
+            {
+                return false;
+            }
+
+            var wfd = _repository.GetById(id);
+            wfd.IsPublish = isPublish;
+            await _unitOfWork.CommitAsync();
+            return true;
         }
     }
 }

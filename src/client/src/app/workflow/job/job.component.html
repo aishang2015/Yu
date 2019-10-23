@@ -51,7 +51,7 @@
 
 <ng-template #editTpl>
     <app-job-edit #edit [wfDefineId]="editingWorkFlowInstance.defineId" [wfInstanceId]="this.editingWorkFlowInstance.id"></app-job-edit>
-    <nz-table #handleTable [nzData]="workflowInstanceNodes" [nzFrontPagination]="false">
+    <nz-table #handleTable [nzData]="workflowInstanceNodes" [nzFrontPagination]="false" nzSize="small">
         <thead>
             <tr>
                 <th nzAlign="center" nzWidth="60px">序号</th>

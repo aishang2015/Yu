@@ -17,6 +17,9 @@ namespace Yu.Data.Entities.WorkFlow
 
         // 描述
         public string Describe { get; set; }
+
+        // 是否发布
+        public bool IsPublish { get; set; } = false;
     }
 }
 
