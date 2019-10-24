@@ -132,12 +132,13 @@ export class JobComponent implements OnInit {
   }
 
   // 取得处理状态
-  getHandleStatus(state){
+  getHandleStatus(state) {
     return this._workflowInstanceService.handleStatusMap[state];
   }
 
   // 编辑数据
   editData(data) {
+    this.workflowInstanceNodes = [];
     this.editingWorkFlowInstance = data;
     this._workflowInstanceService.getInstanceNode(this.editingWorkFlowInstance.id).subscribe(
       result => {

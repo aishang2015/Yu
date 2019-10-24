@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Yu.Data.Entities;
 using Yu.Data.Entities.WorkFlow;
+using Yu.Model.WorkFlow.WorkFlowInstance.OutputModels;
 
 namespace Yu.Service.WorkFlow.WorkFlowInstances
 {
@@ -38,7 +39,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         /// <summary>
         /// 取得工作流实例节点处理数据
         /// </summary>
-        List<WorkFlowInstanceNode> GetWorkFlowInstanceNode(Guid instanceId);
+        List<WorkFlowInstanceNodeResult> GetWorkFlowInstanceNode(Guid instanceId);
 
         /// <summary>
         /// 更新数据

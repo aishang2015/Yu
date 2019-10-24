@@ -32,6 +32,8 @@ namespace Yu.Data.Entities.WorkFlow
 
         // 处理时间
         public DateTime HandleDateTime { get; set; }
+
+        public DateTime CreateDateTime { get; set; }
     }
 }
 

@@ -357,7 +357,9 @@ export class FlowComponent implements OnInit {
       this._rightClickElement = startNode;
     });
     this.renderer.appendChild(this._diagram.nativeElement, startNode);
-
+    
+    // 节点基本信息
+    this.nodeInfos.push({ nodeId: 'start-node', name: '起始节点', describe: '' });
 
     // 设置元素拖拽
     this._jsPlumbInstance.draggable(startNode, {
@@ -389,6 +391,9 @@ export class FlowComponent implements OnInit {
     let endNodeFlg = this.renderer.createElement("div");
     this.renderer.addClass(endNodeFlg, "end-node-flg");
     this.renderer.appendChild(endNode, endNodeFlg);
+    
+    // 节点基本信息
+    this.nodeInfos.push({ nodeId: 'end-node', name: '结束节点', describe: '' });
 
     // 绑定右键菜单
     let that = this;
@@ -498,11 +503,12 @@ export class FlowComponent implements OnInit {
     for (let i = 0; i < elements.length; i++) {
       let element: any = elements[i];
       let nodeInfo = this.nodeInfos.find(info => info.nodeId == element.id);
-      let nodeHandle = this.nodeHandles.find(info => info.nodeId == element.id);
+      let nodeHandle = this.nodeHandles.find(info => info.nodeId == element.id);      
+      let nodeType = element.attributes.flownodetype.value;
       this.flowNodes.push({
         defineId: this.wfDefine.id,
         nodeId: element.id,
-        nodeType: element.attributes.flownodetype.value,
+        nodeType: nodeType,
         top: element.offsetTop,
         left: element.offsetLeft,
         name: nodeInfo ? nodeInfo.name : '',

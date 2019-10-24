@@ -55,6 +55,7 @@
         <thead>
             <tr>
                 <th nzAlign="center" nzWidth="60px">序号</th>
+                <th nzAlign="center" nzWidth="100px">节点名称</th>
                 <th nzAlign="center" nzWidth="100px">经办人</th>
                 <th nzAlign="center">意见</th>
                 <th nzAlign="center" nzWidth="100px">办理状态</th>
@@ -64,6 +65,7 @@
         <tbody>
             <tr *ngFor="let data of workflowInstanceNodes;let i = index">
                 <td nzAlign="center" nzWidth="75px">{{ i + 1}}</td>
+                <td nzAlign="center" nzWidth="100px">{{ data.nodeName }}</td>
                 <td nzAlign="center" nzWidth="100px">{{ data.handlePeopleNames }}</td>
                 <td nzAlign="center">{{ data.explain }}</td>
                 <td nzAlign="center" nzWidth="100px">{{ getHandleStatus(data.handleStatus) }}</td>

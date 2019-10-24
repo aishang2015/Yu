@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Yu.Core.Utils;
 using Microsoft.AspNetCore.Identity;
 using Yu.Data.Entities.Right;
+using Yu.Model.WorkFlow.WorkFlowInstance.OutputModels;
 
 namespace Yu.Service.WorkFlow.WorkFlowInstances
 {
@@ -160,11 +161,13 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                     HandlePeoples = handlePepleIds,
                     HandlePeopleNames = handlePepleNames,
                     Explain = string.IsNullOrEmpty(handlePepleIds) ? "没有找到匹配的经办人员,略过改步骤." : string.Empty,
-                    HandleStatus = 0
+                    HandleStatus = 0,
+                    CreateDateTime =DateTime.Now
                 });
 
                 var connection = _workFlowFlowConnectionRepository
-                    .GetByWhereNoTracking(wffc => wffc.SourceId == n.NodeId.ToString()).FirstOrDefault();
+                    .GetByWhereNoTracking(wffc => wffc.DefineId == entity.DefineId 
+                    && wffc.SourceId == n.NodeId.ToString()).FirstOrDefault();
                 n = connection == null ? null : nodes.FirstOrDefault(nd => nd.NodeId.ToString() == connection.TargetId);
             }
 
@@ -194,9 +197,24 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         /// <summary>
         /// 取得工作流实例节点处理数据
         /// </summary>
-        public List<WorkFlowInstanceNode> GetWorkFlowInstanceNode(Guid instanceId)
+        public List<WorkFlowInstanceNodeResult> GetWorkFlowInstanceNode(Guid instanceId)
         {
-            return _workFlowInstanceNodeRepository.GetByWhereNoTracking(wfin => wfin.InstanceId == instanceId).ToList();
+            var wfins = from wfin in _workFlowInstanceNodeRepository.GetAllNoTracking()
+                        join wffn in _workFlowFlowNodeRepository.GetAllNoTracking() on wfin.NodeId equals wffn.Id
+                        where wfin.InstanceId == instanceId
+                        orderby wfin.CreateDateTime
+                        select new WorkFlowInstanceNodeResult
+                        {
+                            NodeName = wffn.Name,
+                            HandlePeoples = wfin.HandlePeoples,
+                            HandlePeopleNames = wfin.HandlePeopleNames,
+                            HandleStatus = wfin.HandleStatus,
+                            Explain = wfin.Explain,
+                            HandleDateTime = wfin.HandleDateTime
+                        };
+
+            return wfins.ToList();
+
         }
 
         /// <summary>
@@ -218,7 +236,10 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         public PagedData<WorkFlowInstance> GetWorkFlowInstances(int pageIndex, int pageSize, string searchText = "")
         {
             // 查询过滤
-            var query = _repository.GetByWhereNoTracking(wfi => wfi.UserName == _httpContextAccessor.HttpContext.User.GetUserName() && !wfi.IsDelete);
+            var query = from instance in _repository.GetAllNoTracking()
+                        where instance.UserName == _httpContextAccessor.HttpContext.User.GetUserName() && !instance.IsDelete
+                        orderby instance.OpenDate descending
+                        select instance;
 
             // 生成结果
             return _repository.GetByPage(query, pageIndex, pageSize);
