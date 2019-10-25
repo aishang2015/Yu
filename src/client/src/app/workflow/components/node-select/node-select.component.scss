@@ -1,0 +1,24 @@
+.noderadio {
+  width: 80px;
+  border: 1px solid lightgray;
+  display: inline-block;
+  margin: 10px;
+  cursor: pointer;
+  text-align: center;
+  padding: 5px;
+  border-radius: 5%;
+}
+.noderadio:hover {
+  border: 1px solid gray;
+}
+
+.checked-radio{
+  border: 1px solid gray;
+}
+
+// 隐藏原有的radio
+input[type="radio"] {
+  position: absolute;
+  width: 0;
+  height: 0;
+}

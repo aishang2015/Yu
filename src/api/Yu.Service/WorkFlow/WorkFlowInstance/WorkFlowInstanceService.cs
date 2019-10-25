@@ -81,16 +81,16 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
             // 设置实例
             var nodes = _workFlowFlowNodeRepository.GetByWhereNoTracking(wffn => wffn.DefineId == node.DefineId).ToList();
 
-            var n = nodes.Find(wffn => wffn.NodeType == "startNode");
+            var n = nodes.Find(wffn => wffn.NodeType == 0);
             while (n != null)
             {
                 var handlePepleIds = string.Empty;
                 var handlePepleNames = string.Empty;
-                if (n.NodeType == "endNode")
+                if (n.NodeType == 99)
                 {
                     break;
                 }
-                else if (n.NodeType == "startNode")
+                else if (n.NodeType == 0)
                 {
                     // 当前登录用户
                     var userName = _httpContextAccessor.HttpContext.User.GetUserName();
@@ -162,11 +162,11 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                     HandlePeopleNames = handlePepleNames,
                     Explain = string.IsNullOrEmpty(handlePepleIds) ? "没有找到匹配的经办人员,略过改步骤." : string.Empty,
                     HandleStatus = 0,
-                    CreateDateTime =DateTime.Now
+                    CreateDateTime = DateTime.Now
                 });
 
                 var connection = _workFlowFlowConnectionRepository
-                    .GetByWhereNoTracking(wffc => wffc.DefineId == entity.DefineId 
+                    .GetByWhereNoTracking(wffc => wffc.DefineId == entity.DefineId
                     && wffc.SourceId == n.NodeId.ToString()).FirstOrDefault();
                 n = connection == null ? null : nodes.FirstOrDefault(nd => nd.NodeId.ToString() == connection.TargetId);
             }

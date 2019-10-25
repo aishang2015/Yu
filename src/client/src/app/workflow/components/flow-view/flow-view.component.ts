@@ -184,7 +184,7 @@ export class FlowViewComponent implements OnInit {
     this.renderer.addClass(workNode, "node");
     this.renderer.addClass(workNode, "work-node");
     this.renderer.setAttribute(workNode, 'id', id);
-    this.renderer.setAttribute(workNode, 'flownodetype', `workNode`);
+    this.renderer.setAttribute(workNode, 'flownodetype', `1`);
 
     let workNodeTitle = this.renderer.createElement("div");
     this.renderer.addClass(workNodeTitle, "work-node-title");
@@ -259,7 +259,7 @@ export class FlowViewComponent implements OnInit {
     this.renderer.addClass(startNode, "node");
     this.renderer.addClass(startNode, "start-node");
     this.renderer.setAttribute(startNode, 'id', `start-node`);
-    this.renderer.setAttribute(startNode, 'flownodetype', `startNode`);
+    this.renderer.setAttribute(startNode, 'flownodetype', `0`);
 
     let startNodeFlg = this.renderer.createElement("div");
     this.renderer.addClass(startNodeFlg, "start-node-flg");
@@ -288,7 +288,7 @@ export class FlowViewComponent implements OnInit {
     this.renderer.addClass(endNode, "node");
     this.renderer.addClass(endNode, "end-node");
     this.renderer.setAttribute(endNode, 'id', `end-node`);
-    this.renderer.setAttribute(endNode, 'flownodetype', `endNode`);
+    this.renderer.setAttribute(endNode, 'flownodetype', `99`);
 
     let endNodeFlg = this.renderer.createElement("div");
     this.renderer.addClass(endNodeFlg, "end-node-flg");

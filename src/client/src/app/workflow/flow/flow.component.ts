@@ -206,7 +206,19 @@ export class FlowComponent implements OnInit {
 
   //编辑节点
   editNode() {
-
+    let id = this._rightClickElement.id;
+    this.nodeInfo = this.nodeInfos.find(n => n.nodeId == id);
+    this.nodeHandle = this.nodeHandles.find(n => n.nodeId == id);
+    this._userService.getUserOutlinesById(this.nodeHandle.handlePeople.join(',')).subscribe(
+      result => this.userList = result
+    );
+    this._modal = this.modalService.create({
+      nzTitle: null,
+      nzContent: this._nodeEditTpl,
+      nzFooter: null,
+      nzClosable: false,
+      nzMaskClosable: false
+    });
   }
 
   // 删除节点
@@ -217,13 +229,13 @@ export class FlowComponent implements OnInit {
   // 确认选择
   confirm(value) {
     switch (value) {
-      case 'startNode':
+      case '0':
         this.addStartNode();
         break;
-      case 'endNode':
+      case '99':
         this.addEndNode();
         break;
-      case 'workNode':
+      case '1':
         this.addWorkNode("工作节点", "这是一个工作节点");
         break;
     }
@@ -264,7 +276,7 @@ export class FlowComponent implements OnInit {
     this.renderer.addClass(workNode, "node");
     this.renderer.addClass(workNode, "work-node");
     this.renderer.setAttribute(workNode, 'id', id);
-    this.renderer.setAttribute(workNode, 'flownodetype', `workNode`);
+    this.renderer.setAttribute(workNode, 'flownodetype', `1`);
 
     let workNodeTitle = this.renderer.createElement("div");
     this.renderer.addClass(workNodeTitle, "work-node-title");
@@ -317,7 +329,7 @@ export class FlowComponent implements OnInit {
     // 配置为源
     this._jsPlumbInstance.makeSource(id, {
       anchor: 'Continuous',
-      maxConnections: -1,
+      maxConnections: 1,
       allowLoopback: false,
       filter: (event, element) => {
         return event.target.classList.contains('work-node-title');
@@ -326,7 +338,7 @@ export class FlowComponent implements OnInit {
 
     this._jsPlumbInstance.makeTarget(id, {
       anchor: 'Continuous',
-      maxConnections: -1,
+      maxConnections: 1,
       allowLoopback: false,
       filter: (event, element) => {
         return event.target.classList.contains('work-node-title');
@@ -343,7 +355,7 @@ export class FlowComponent implements OnInit {
     this.renderer.addClass(startNode, "node");
     this.renderer.addClass(startNode, "start-node");
     this.renderer.setAttribute(startNode, 'id', `start-node`);
-    this.renderer.setAttribute(startNode, 'flownodetype', `startNode`);
+    this.renderer.setAttribute(startNode, 'flownodetype', `0`);
 
     let startNodeFlg = this.renderer.createElement("div");
     this.renderer.addClass(startNodeFlg, "start-node-flg");
@@ -386,7 +398,7 @@ export class FlowComponent implements OnInit {
     this.renderer.addClass(endNode, "node");
     this.renderer.addClass(endNode, "end-node");
     this.renderer.setAttribute(endNode, 'id', `end-node`);
-    this.renderer.setAttribute(endNode, 'flownodetype', `endNode`);
+    this.renderer.setAttribute(endNode, 'flownodetype', `99`);
 
     let endNodeFlg = this.renderer.createElement("div");
     this.renderer.addClass(endNodeFlg, "end-node-flg");
@@ -432,14 +444,14 @@ export class FlowComponent implements OnInit {
   handleNodes(nodes) {
     this.flowNodes = nodes;
     this.flowNodes.forEach(node => {
-      switch (node.nodeType) {
-        case 'startNode':
+      switch (node.nodeType.toString()) {
+        case '0':
           this.addStartNode(node.top, node.left);
           break;
-        case 'endNode':
+        case '99':
           this.addEndNode(node.top, node.left);
           break;
-        case 'workNode':
+        case '1':
           this.addWorkNode(node.name, node.describe, node.nodeId, node.top, node.left, node.handlePeoples.split(','));
           break;
       }

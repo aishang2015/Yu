@@ -19,7 +19,6 @@ import { DragDirective } from './directives/drag.directive';
 registerLocaleData(zh);
 
 import { DragDropModule } from '@angular/cdk/drag-drop'; 
-import { NodeSelectComponent } from './components/node-select/node-select.component';
 import { HtmlPipe } from './pipes/html.pipe';
 
 @NgModule({
@@ -30,7 +29,6 @@ import { HtmlPipe } from './pipes/html.pipe';
   ],
   declarations: [
     AppRuleComponent, // 规则编辑组件
-    NodeSelectComponent, // 流程图节点选择组件
 
     GenderPipe, // 性别转换管道
     ImageUriPipe, // 图片地址转换
@@ -49,7 +47,6 @@ import { HtmlPipe } from './pipes/html.pipe';
     ReactiveFormsModule,
     NgZorroAntdModule,
     AppRuleComponent,
-    NodeSelectComponent,
     GenderPipe,
     ImageUriPipe,
     HtmlPipe,

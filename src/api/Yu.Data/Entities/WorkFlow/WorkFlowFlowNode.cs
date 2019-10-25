@@ -16,7 +16,10 @@ namespace Yu.Data.Entities.WorkFlow
         public string NodeId { get; set; }
 
         // 节点类型
-        public string NodeType { get; set; }
+        // 0开始节点
+        // 1工作节点
+        // 99结束节点
+        public int NodeType { get; set; }
 
         // 上边距
         public string Top { get; set; }

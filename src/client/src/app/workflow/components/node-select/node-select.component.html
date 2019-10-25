@@ -1,0 +1,5 @@
+<div class="noderadio" [ngClass]="{'checked-radio': checkedValue == node.value}" (click)="checked(node)"
+    *ngFor="let node of nodes" onselectstart="return false">
+    <input type="radio" name="noderadio" [value]="node.value" [(ngModel)]="checkedValue" />
+    <div class="nodename">{{node.display}}</div>
+</div>

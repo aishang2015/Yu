@@ -8,12 +8,12 @@ import { DomSanitizer } from "@angular/platform-browser";
 })
 export class NodeSelectComponent implements OnInit {
 
-  checkedValue = 'startNode';
+  checkedValue = '0';
 
   nodes = [
-    { value: 'startNode', display: '开始节点', html: this.transform('<div style="background:black;border-radius:10px;width:20px;height:20px;"></div>') },
-    { value: 'endNode', display: '结束节点', html: this.transform('<div style="background:black;width:20px;height:20px;"></div>') },
-    { value: 'workNode', display: '工作节点', html: this.transform('<div style="background:black;width:20px;height:20px;"></div>') }
+    { value: '0', display: '开始节点', html: this.transform('<div style="background:black;border-radius:10px;width:20px;height:20px;"></div>') },
+    { value: '99', display: '结束节点', html: this.transform('<div style="background:black;width:20px;height:20px;"></div>') },
+    { value: '1', display: '工作节点', html: this.transform('<div style="background:black;width:20px;height:20px;"></div>') }
   ]
 
   constructor(private sanitizer: DomSanitizer) { }

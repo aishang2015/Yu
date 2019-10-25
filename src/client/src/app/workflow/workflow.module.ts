@@ -12,6 +12,7 @@ import { RecyclebinComponent } from './recyclebin/recyclebin.component';
 import { WorkflowSelectedComponent } from './components/workflow-selected/workflow-selected.component';
 import { JobEditComponent } from './components/job-edit/job-edit.component';
 import { FlowViewComponent } from './components/flow-view/flow-view.component';
+import { NodeSelectComponent } from './components/node-select/node-select.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { FlowViewComponent } from './components/flow-view/flow-view.component';
     JobComponent,
     RecyclebinComponent,
     WorkflowSelectedComponent,
+    NodeSelectComponent,
     JobEditComponent,
     FlowViewComponent
   ],
