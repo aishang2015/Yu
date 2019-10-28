@@ -152,6 +152,16 @@ namespace Yu.Api.Areas.WorkFlow.Controller
             return Ok(nodes);
         }
 
+        /// <summary>
+        /// 更新工作流节点
+        /// </summary>
+        [HttpPatch("workflowInstanceNode")]
+        public IActionResult HandleWorkFlowInstanceNode([FromBody]WorkFlowInstanceHandleModel model)
+        {
+            _service.HandleWorkFlowInstance(model.InstanceId, model.HandleStatus, model.Explain);
+            return Ok();
+        }
+
 
         #endregion
     }

@@ -13,6 +13,7 @@ using Yu.Core.Utils;
 using Microsoft.AspNetCore.Identity;
 using Yu.Data.Entities.Right;
 using Yu.Model.WorkFlow.WorkFlowInstance.OutputModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Yu.Service.WorkFlow.WorkFlowInstances
 {
@@ -84,8 +85,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
             var n = nodes.Find(wffn => wffn.NodeType == 0);
             while (n != null)
             {
-                var handlePepleIds = string.Empty;
-                var handlePepleNames = string.Empty;
+                var users = new List<BaseIdentityUser>();
                 if (n.NodeType == 99)
                 {
                     break;
@@ -95,8 +95,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                     // 当前登录用户
                     var userName = _httpContextAccessor.HttpContext.User.GetUserName();
                     var currentUser = await _userManager.FindByNameAsync(userName);
-                    handlePepleIds = currentUser.Id.ToString();
-                    handlePepleNames = currentUser.FullName;
+                    users.Add(currentUser);
                 }
                 else
                 {
@@ -104,17 +103,15 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                     if (n.HandleType == 1)
                     {
                         // 指定人员办理
-                        handlePepleIds = n.HandlePeoples;
-                        handlePepleNames = string.Join(",", from user in _userManager.Users
-                                                            where handlePepleIds.Contains(user.Id.ToString())
-                                                            select user.FullName);
+                        users = (from user in _userManager.Users
+                                 where n.HandlePeoples.Contains(user.Id.ToString())
+                                 select user).ToList();
                     }
                     else if (n.HandleType == 2)
                     {
                         // 当前登录用户
                         var userName = _httpContextAccessor.HttpContext.User.GetUserName();
                         var currentUser = await _userManager.FindByNameAsync(userName);
-                        var users = new List<BaseIdentityUser>();
 
                         // 指定岗位人员办理
                         switch (n.PositionGroup)
@@ -147,22 +144,22 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                             default:
                                 break;
                         }
-                        handlePepleIds = string.Join(",", users.Select(u => u.Id));
-                        handlePepleNames = string.Join(",", users.Select(u => u.FullName));
                     }
 
                 }
 
-
-                await _workFlowInstanceNodeRepository.InsertAsync(new WorkFlowInstanceNode
+                users.ForEach(async user =>
                 {
-                    InstanceId = entity.Id,
-                    NodeId = n.Id,
-                    HandlePeoples = handlePepleIds,
-                    HandlePeopleNames = handlePepleNames,
-                    Explain = string.IsNullOrEmpty(handlePepleIds) ? "没有找到匹配的经办人员,略过改步骤." : string.Empty,
-                    HandleStatus = 0,
-                    CreateDateTime = DateTime.Now
+                    await _workFlowInstanceNodeRepository.InsertAsync(new WorkFlowInstanceNode
+                    {
+                        InstanceId = entity.Id,
+                        NodeId = n.Id,
+                        HandlePeople = user.Id.ToString(),
+                        HandlePeopleName = user.FullName,
+                        Explain = string.Empty,
+                        HandleStatus = n.NodeType == 0 ? 1 : 0,
+                        CreateDateTime = DateTime.Now
+                    });
                 });
 
                 var connection = _workFlowFlowConnectionRepository
@@ -206,8 +203,8 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                         select new WorkFlowInstanceNodeResult
                         {
                             NodeName = wffn.Name,
-                            HandlePeoples = wfin.HandlePeoples,
-                            HandlePeopleNames = wfin.HandlePeopleNames,
+                            HandlePeople = wfin.HandlePeople,
+                            HandlePeopleName = wfin.HandlePeopleName,
                             HandleStatus = wfin.HandleStatus,
                             Explain = wfin.Explain,
                             HandleDateTime = wfin.HandleDateTime
@@ -282,6 +279,113 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
             _repository.Update(instance);
             await _unitOfWork.CommitAsync();
             return true;
+        }
+
+        /// <summary>
+        /// 处理工作流状态
+        /// </summary>
+        public async Task HandleWorkFlowInstance(Guid instanceId, int handleStatus, string explain)
+        {
+            // 当前登录用户
+            var userName = _httpContextAccessor.HttpContext.User.GetUserName();
+            var currentUser = _userManager.Users.AsNoTracking().FirstOrDefault(u => u.UserName == userName);
+
+            // 获取实例对象
+            var instance = _repository.GetByWhereNoTracking(i => i.Id == instanceId).FirstOrDefault();
+
+            // 取得待处理节点数据
+            var result = (from instanceNode in _workFlowInstanceNodeRepository.GetAllNoTracking()
+                          where instanceNode.InstanceId == instanceId && instanceNode.HandleStatus == 1
+                                 && instanceNode.HandlePeople == currentUser.Id.ToString()
+                          select instanceNode).FirstOrDefault();
+            if (result != null)
+            {
+                result.HandleStatus = handleStatus;
+                result.Explain = explain;
+                result.HandleDateTime = DateTime.Now;
+                switch (handleStatus)
+                {
+                    // 拒绝
+                    case 2:
+
+                        // 重置所有处理状态回到开始节点
+                        // 所有实例节点
+                        var instanceNodes = _workFlowInstanceNodeRepository.GetByWhere(n => n.InstanceId == instanceId);
+
+                        // 开始节点数据
+                        var startNode = (from node in _workFlowFlowNodeRepository.GetAllNoTracking()
+                                         where node.DefineId == instance.DefineId && node.NodeType == 0
+                                         select node).FirstOrDefault();
+
+
+                        // 实例设置
+                        instance.NodeId = startNode.Id;
+                        instance.State = 3;
+
+                        foreach (var n in instanceNodes)
+                        {
+                            if (n.NodeId == startNode.Id)
+                            {
+                                n.HandleStatus = 1;
+                            }
+                            else
+                            {
+                                n.HandleStatus = 0;
+                            }
+                        }
+                        _workFlowInstanceNodeRepository.UpdateRange(instanceNodes);
+                        break;
+
+                    // 同意
+                    case 3:
+
+                        // 查找当前节点会签情况
+                        var count = (from instanceNode in _workFlowInstanceNodeRepository.GetAllNoTracking()
+                                     where instanceNode.InstanceId == instanceId &&
+                                             instanceNode.NodeId == result.NodeId &&
+                                             instanceNode.HandleStatus == 1
+                                     select instanceNode).Count();
+
+                        // 只剩当前处理则直接进入下一个节点
+                        if (count == 1)
+                        {
+                            // 当前节点
+                            var currentNode = _workFlowFlowNodeRepository.GetByWhereNoTracking(n => n.Id == result.NodeId)
+                                .FirstOrDefault();
+
+                            // 下一个节点id
+                            var nextNodeId = (from wffc in _workFlowFlowConnectionRepository.GetAllNoTracking()
+                                              join wffn in _workFlowFlowNodeRepository.GetAllNoTracking() on wffc.TargetId equals wffn.NodeId
+                                              where wffc.DefineId == instance.DefineId && wffc.SourceId == currentNode.NodeId
+                                              select wffn.Id).FirstOrDefault();
+
+                            // 实例设置
+                            instance.NodeId = nextNodeId;
+                            instance.State = 2;
+
+                            // 下一步要处理的节点
+                            var nextInstanceNodes = from instanceNode in _workFlowInstanceNodeRepository.GetAllNoTracking()
+                                                    where instanceNode.InstanceId == instanceId
+                                                            && instanceNode.NodeId == nextNodeId
+                                                            && instanceNode.HandleStatus == 0
+                                                    select instanceNode;
+
+                            // 更新成待处理
+                            foreach (var instanceNode in nextInstanceNodes)
+                            {
+                                instanceNode.HandleStatus = 1;
+                            }
+
+                            _workFlowInstanceNodeRepository.UpdateRange(nextInstanceNodes);
+                        }
+
+                        break;
+                }
+
+                _repository.Update(instance);
+                _workFlowInstanceNodeRepository.Update(result);
+                await _unitOfWork.CommitAsync();
+            }
         }
     }
 }

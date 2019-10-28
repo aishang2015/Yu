@@ -55,6 +55,11 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         /// 设置工作流实例删除位
         /// </summary>
         Task<bool> SetWorkFlowInstanceDelete(Guid id, bool isDelete);
+
+        /// <summary>
+        /// 控制工作流实例状态
+        /// </summary>
+        Task HandleWorkFlowInstance(Guid instanceId, int handleStatus, string explain);
     }
 }
 

@@ -183,9 +183,11 @@ export class JobComponent implements OnInit {
 
   // 提交数据
   submit(edit) {
-    edit.saveContent().subscribe(result => {
+    this._workflowInstanceService.handle(this.editingWorkFlowInstance.id,3,'').subscribe(result=>{
+      this._messageService.success('提交成功！');
       this._nzModal.close();
       this._nzModal = null;
+      this.initJobList();
     });
   }
 

@@ -8,9 +8,9 @@ namespace Yu.Model.WorkFlow.WorkFlowInstance.OutputModels
     {
         public string NodeName { get; set; }
 
-        public string HandlePeoples { get; set; }
+        public string HandlePeople { get; set; }
 
-        public string HandlePeopleNames { get; set; }
+        public string HandlePeopleName { get; set; }
 
         public int HandleStatus { get; set; }
 

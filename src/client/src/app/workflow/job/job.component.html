@@ -50,7 +50,8 @@
 </ng-template>
 
 <ng-template #editTpl>
-    <app-job-edit #edit [wfDefineId]="editingWorkFlowInstance.defineId" [wfInstanceId]="this.editingWorkFlowInstance.id"></app-job-edit>
+    <app-job-edit #edit [wfDefineId]="editingWorkFlowInstance.defineId"
+        [wfInstanceId]="this.editingWorkFlowInstance.id"></app-job-edit>
     <nz-table #handleTable [nzData]="workflowInstanceNodes" [nzFrontPagination]="false" nzSize="small">
         <thead>
             <tr>
@@ -59,25 +60,26 @@
                 <th nzAlign="center" nzWidth="100px">经办人</th>
                 <th nzAlign="center">意见</th>
                 <th nzAlign="center" nzWidth="100px">办理状态</th>
-                <th nzAlign="center" nzWidth="100px">处理时间</th>
+                <th nzAlign="center" nzWidth="150px">处理时间</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let data of workflowInstanceNodes;let i = index">
                 <td nzAlign="center" nzWidth="75px">{{ i + 1}}</td>
                 <td nzAlign="center" nzWidth="100px">{{ data.nodeName }}</td>
-                <td nzAlign="center" nzWidth="100px">{{ data.handlePeopleNames }}</td>
+                <td nzAlign="center" nzWidth="100px">{{ data.handlePeopleName }}</td>
                 <td nzAlign="center">{{ data.explain }}</td>
                 <td nzAlign="center" nzWidth="100px">{{ getHandleStatus(data.handleStatus) }}</td>
-                <td nzAlign="center" nzWidth="100px" *ngIf="data.handleStatus!=0&&data.handleStatus!=1">{{ data.handleDateTime | date:"yyyy/MM/dd HH:mm" }}</td>
-                <td nzAlign="center" nzWidth="100px" *ngIf="data.handleStatus==0||data.handleStatus==1"></td>
+                <td nzAlign="center" nzWidth="100px" *ngIf="data.handleStatus!=0&&data.handleStatus!=1">
+                    {{ data.handleDateTime | date:"yyyy/MM/dd HH:mm" }}</td>
+                <td nzAlign="center" nzWidth="150px" *ngIf="data.handleStatus==0||data.handleStatus==1"></td>
             </tr>
         </tbody>
     </nz-table>
     <div nz-row class="mt-5">
-        <button class="mr-5 fr" nz-button (click)="submit(edit)">提交</button>
-        <button class="mr-5 fr" nz-button (click)="confirmEdit(edit)">暂存</button>
-        <button class="mr-5 fr" nz-button (click)="cancel()">取消</button>
+        <button *ngIf="this.editingWorkFlowInstance.state==1||this.editingWorkFlowInstance.state==3" class="mr-5 fr" nz-button (click)="submit(edit)">提交</button>
+        <button *ngIf="this.editingWorkFlowInstance.state==1||this.editingWorkFlowInstance.state==3" class="mr-5 fr" nz-button (click)="confirmEdit(edit)">暂存</button>
+        <button class="mr-5 fr" nz-button (click)="cancel()">关闭</button>
         <button class="mr-5" nz-button (click)="print()">打印</button>
     </div>
 </ng-template>

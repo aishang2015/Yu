@@ -15,10 +15,10 @@ namespace Yu.Data.Entities.WorkFlow
         public Guid NodeId { get; set; }
 
         // 处理人ID
-        public string HandlePeoples { get; set; }
+        public string HandlePeople { get; set; }
 
         // 处理人ID
-        public string HandlePeopleNames { get; set; }
+        public string HandlePeopleName { get; set; }
 
         // 处理结果
         // 0.未处理

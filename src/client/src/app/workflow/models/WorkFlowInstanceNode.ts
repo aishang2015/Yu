@@ -1,8 +1,8 @@
 export class WorkFlowInstanceNode{
     instanceId:string;
     nodeId:string;
-    handlePeoples:string;
-    handlePeopleNames:string;
+    handlePeople:string;
+    handlePeopleName:string;
     handleStatus:string;
     explain:string;
     handleDateTime:string;
