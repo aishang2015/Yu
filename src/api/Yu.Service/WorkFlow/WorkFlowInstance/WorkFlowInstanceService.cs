@@ -310,7 +310,8 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
 
                         // 重置所有处理状态回到开始节点
                         // 所有实例节点
-                        var instanceNodes = _workFlowInstanceNodeRepository.GetByWhere(n => n.InstanceId == instanceId);
+                        var instanceNodes = _workFlowInstanceNodeRepository.GetByWhere(n => n.InstanceId == instanceId && n.Id != result.Id)
+                            .ToList();
 
                         // 开始节点数据
                         var startNode = (from node in _workFlowFlowNodeRepository.GetAllNoTracking()
@@ -333,6 +334,8 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                                 n.HandleStatus = 0;
                             }
                         }
+
+                        instanceNodes.Add(result);
                         _workFlowInstanceNodeRepository.UpdateRange(instanceNodes);
                         break;
 
@@ -364,18 +367,19 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                             instance.State = 2;
 
                             // 下一步要处理的节点
-                            var nextInstanceNodes = from instanceNode in _workFlowInstanceNodeRepository.GetAllNoTracking()
-                                                    where instanceNode.InstanceId == instanceId
-                                                            && instanceNode.NodeId == nextNodeId
-                                                            && instanceNode.HandleStatus == 0
-                                                    select instanceNode;
+                            var nextInstanceNodes = (from instanceNode in _workFlowInstanceNodeRepository.GetAllNoTracking()
+                                                     where instanceNode.InstanceId == instanceId
+                                                             && instanceNode.NodeId == nextNodeId
+                                                     select instanceNode).ToList();
 
                             // 更新成待处理
                             foreach (var instanceNode in nextInstanceNodes)
                             {
                                 instanceNode.HandleStatus = 1;
+                                instanceNode.Explain = string.Empty;
                             }
 
+                            nextInstanceNodes.Add(result);
                             _workFlowInstanceNodeRepository.UpdateRange(nextInstanceNodes);
                         }
 
@@ -383,9 +387,31 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                 }
 
                 _repository.Update(instance);
-                _workFlowInstanceNodeRepository.Update(result);
                 await _unitOfWork.CommitAsync();
             }
+        }
+
+        /// <summary>
+        /// 取得待办数据
+        /// </summary>
+        public PagedData<WorkFlowInstance> GetHandleWorkFlowInstances(int pageIndex, int pageSize, string searchText)
+        {
+            // 当前登录用户
+            var userName = _httpContextAccessor.HttpContext.User.GetUserName();
+            var currentUser = _userManager.Users.AsNoTracking().FirstOrDefault(u => u.UserName == userName);
+
+            // 取得结果
+            var result = from instance in _repository.GetAllNoTracking()
+                         join node in _workFlowInstanceNodeRepository.GetAllNoTracking() on instance.Id equals node.InstanceId
+                         where node.HandleStatus == 1 && node.HandlePeople == currentUser.Id.ToString() && instance.State == 2
+                         orderby instance.OpenDate
+                         select instance;
+
+            return new PagedData<WorkFlowInstance>
+            {
+                Data = result.Skip((pageIndex - 1) * pageSize).ToList(),
+                Total = result.Count()
+            };
         }
     }
 }

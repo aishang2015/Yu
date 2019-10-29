@@ -142,14 +142,14 @@ export class FlowViewComponent implements OnInit {
   handleNodes(nodes) {
     this._flowNodes = nodes;
     this._flowNodes.forEach(node => {
-      switch (node.nodeType) {
-        case 'startNode':
+      switch (node.nodeType.toString()) {
+        case '0':
           this.addStartNode(node.top, node.left);
           break;
-        case 'endNode':
+        case '99':
           this.addEndNode(node.top, node.left);
           break;
-        case 'workNode':
+        case '1':
           this.addWorkNode(node.name, node.describe, node.nodeId, node.top, node.left, node.handlePeoples.split(','));
           break;
       }

@@ -164,6 +164,19 @@ namespace Yu.Api.Areas.WorkFlow.Controller
 
 
         #endregion
+
+
+        #region 取得待办工作流
+
+        [HttpGet("handleWorkflowInstance")]
+        [Description("取得待办工作流实例数据")]
+        public IActionResult GetHandleWorkflowInstance([FromQuery] PagedQuery query)
+        {
+            var result = _service.GetHandleWorkFlowInstances(query.PageIndex, query.PageSize, query.SearchText);
+            return Ok(result);
+        }
+
+        #endregion
     }
 }
 

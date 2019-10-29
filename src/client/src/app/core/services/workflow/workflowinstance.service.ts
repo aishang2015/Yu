@@ -20,6 +20,12 @@ export class WorkFlowInstanceService extends BaseService {
 		return this.SafeRequest(this.http.get(uri));
 	}
 
+	// 取得待办数据
+	getHandle(pageIndex, pageSize) {
+		const uri = UriConstant.HandleWorkFlowInstanceUri + `?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+		return this.SafeRequest(this.http.get(uri));
+	}
+
 	// 添加数据
 	add(data) {
 		const uri = UriConstant.WorkFlowInstanceUri;

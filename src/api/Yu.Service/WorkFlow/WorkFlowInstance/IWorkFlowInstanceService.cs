@@ -60,6 +60,11 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         /// 控制工作流实例状态
         /// </summary>
         Task HandleWorkFlowInstance(Guid instanceId, int handleStatus, string explain);
+
+        /// <summary>
+        /// 取得待办数据
+        /// </summary>
+        PagedData<WorkFlowInstance> GetHandleWorkFlowInstances(int pageIndex, int pageSize, string searchText);
     }
 }
 
