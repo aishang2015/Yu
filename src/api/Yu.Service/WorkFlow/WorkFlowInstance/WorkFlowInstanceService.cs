@@ -34,6 +34,9 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         // 工作流节点定义
         private IRepository<WorkFlowFlowNode, Guid> _workFlowFlowNodeRepository;
 
+        // 工作流节点定义
+        private IRepository<WorkFlowFlowNodeElement, Guid> _workflowFlowNodeElementRepository;
+
         // 工作流连接仓储
         private IRepository<WorkFlowFlowConnection, Guid> _workFlowFlowConnectionRepository;
 
@@ -50,6 +53,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
             IRepository<WorkFlowInstanceForm, Guid> workflowInstanceFormRepository,
             IRepository<WorkFlowInstanceNode, Guid> workFlowInstanceNodeRepository,
             IRepository<WorkFlowFlowNode, Guid> workFlowFlowNodeRepository,
+            IRepository<WorkFlowFlowNodeElement, Guid> workflowFlowNodeElementRepository,
             IRepository<WorkFlowFlowConnection, Guid> workFlowFlowConnectionRepository,
             IRepository<GroupTree, Guid> groupTreeRepository,
             IUnitOfWork<BaseIdentityDbContext> unitOfWork,
@@ -60,6 +64,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
             _workflowInstanceFormRepository = workflowInstanceFormRepository;
             _workFlowInstanceNodeRepository = workFlowInstanceNodeRepository;
             _workFlowFlowNodeRepository = workFlowFlowNodeRepository;
+            _workflowFlowNodeElementRepository = workflowFlowNodeElementRepository;
             _workFlowFlowConnectionRepository = workFlowFlowConnectionRepository;
             _groupTreeRepository = groupTreeRepository;
             _unitOfWork = unitOfWork;
@@ -356,31 +361,46 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                             var currentNode = _workFlowFlowNodeRepository.GetByWhereNoTracking(n => n.Id == result.NodeId)
                                 .FirstOrDefault();
 
-                            // 下一个节点id
-                            var nextNodeId = (from wffc in _workFlowFlowConnectionRepository.GetAllNoTracking()
-                                              join wffn in _workFlowFlowNodeRepository.GetAllNoTracking() on wffc.TargetId equals wffn.NodeId
-                                              where wffc.DefineId == instance.DefineId && wffc.SourceId == currentNode.NodeId
-                                              select wffn.Id).FirstOrDefault();
+                            // 下一个节点
+                            var nextNode = (from wffc in _workFlowFlowConnectionRepository.GetAllNoTracking()
+                                            join wffn in _workFlowFlowNodeRepository.GetAllNoTracking() on wffc.TargetId equals wffn.NodeId
+                                            where wffc.DefineId == instance.DefineId && wffc.SourceId == currentNode.NodeId
+                                            select wffn).FirstOrDefault();
 
-                            // 实例设置
-                            instance.NodeId = nextNodeId;
-                            instance.State = 2;
-
-                            // 下一步要处理的节点
-                            var nextInstanceNodes = (from instanceNode in _workFlowInstanceNodeRepository.GetAllNoTracking()
-                                                     where instanceNode.InstanceId == instanceId
-                                                             && instanceNode.NodeId == nextNodeId
-                                                     select instanceNode).ToList();
-
-                            // 更新成待处理
-                            foreach (var instanceNode in nextInstanceNodes)
+                            // 不存在
+                            if (nextNode == null)
                             {
-                                instanceNode.HandleStatus = 1;
-                                instanceNode.Explain = string.Empty;
+                                break;
                             }
 
-                            nextInstanceNodes.Add(result);
-                            _workFlowInstanceNodeRepository.UpdateRange(nextInstanceNodes);
+                            instance.NodeId = nextNode.Id;
+
+                            // 如果下个节点是结束节点
+                            if (nextNode.NodeType == 99)
+                            {
+                                instance.State = 4;
+                                _workFlowInstanceNodeRepository.Update(result);
+                            }
+                            else
+                            {
+                                instance.State = 2;
+
+                                // 下一步要处理的节点
+                                var nextInstanceNodes = (from instanceNode in _workFlowInstanceNodeRepository.GetAllNoTracking()
+                                                         where instanceNode.InstanceId == instanceId
+                                                                 && instanceNode.NodeId == nextNode.Id
+                                                         select instanceNode).ToList();
+
+                                // 更新成待处理
+                                foreach (var instanceNode in nextInstanceNodes)
+                                {
+                                    instanceNode.HandleStatus = 1;
+                                    instanceNode.Explain = string.Empty;
+                                }
+
+                                nextInstanceNodes.Add(result);
+                                _workFlowInstanceNodeRepository.UpdateRange(nextInstanceNodes);
+                            }
                         }
 
                         break;
@@ -413,6 +433,26 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                 Total = result.Count()
             };
         }
+
+        /// <summary>
+        /// 取得工作流节点元素设置
+        /// </summary>
+        /// <returns></returns>
+        public List<WorkFlowFlowNodeElement> GetWorkFlowNodeElements(Guid instanceId)
+        {
+            var node = (from instance in _repository.GetAllNoTracking()
+                        join n in _workFlowFlowNodeRepository.GetAllNoTracking() on instance.NodeId equals n.Id
+                        where instance.Id == instanceId
+                        select n).FirstOrDefault();
+
+            var result = from ne in _workflowFlowNodeElementRepository.GetAllNoTracking()
+                         where ne.DefineId == node.DefineId && ne.FlowNodeId == node.NodeId
+                         select ne;
+            return result.ToList();
+        }
+
+
+
     }
 }
 

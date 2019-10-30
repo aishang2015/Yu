@@ -314,9 +314,10 @@ export class FlowComponent implements OnInit {
       that._modal = that.modalService.create({
         nzTitle: null,
         nzContent: that._nodeEditTpl,
-        nzFooter: null,
         nzClosable: false,
-        nzMaskClosable: false
+        nzMaskClosable: false,
+        nzOnOk: () => { this.saveChange() },
+        nzOnCancel: () => { this.cancel() },
       });
     });
 
@@ -369,7 +370,7 @@ export class FlowComponent implements OnInit {
       this._rightClickElement = startNode;
     });
     this.renderer.appendChild(this._diagram.nativeElement, startNode);
-    
+
     // 节点基本信息
     this.nodeInfos.push({ nodeId: 'start-node', name: '起始节点', describe: '' });
 
@@ -403,7 +404,7 @@ export class FlowComponent implements OnInit {
     let endNodeFlg = this.renderer.createElement("div");
     this.renderer.addClass(endNodeFlg, "end-node-flg");
     this.renderer.appendChild(endNode, endNodeFlg);
-    
+
     // 节点基本信息
     this.nodeInfos.push({ nodeId: 'end-node', name: '结束节点', describe: '' });
 
@@ -515,7 +516,7 @@ export class FlowComponent implements OnInit {
     for (let i = 0; i < elements.length; i++) {
       let element: any = elements[i];
       let nodeInfo = this.nodeInfos.find(info => info.nodeId == element.id);
-      let nodeHandle = this.nodeHandles.find(info => info.nodeId == element.id);      
+      let nodeHandle = this.nodeHandles.find(info => info.nodeId == element.id);
       let nodeType = element.attributes.flownodetype.value;
       this.flowNodes.push({
         defineId: this.wfDefine.id,
@@ -546,7 +547,9 @@ export class FlowComponent implements OnInit {
   }
 
   // 提交数据
-  basicInfoSubmit(form) {
+  saveChange() {
+
+
     let element = document.getElementById(this.nodeInfo.nodeId);
 
     // 设置名称
@@ -560,12 +563,7 @@ export class FlowComponent implements OnInit {
     if (describeElement) {
       describeElement.innerHTML = this.nodeInfo.describe;
     }
-    this._modal.close();
 
-    this.saveFlow();
-  }
-
-  saveChange() {
     this._modal.close();
     this._modal = null;
     this.saveFlow();

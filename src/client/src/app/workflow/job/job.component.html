@@ -23,10 +23,10 @@
                 <td nzAlign="center" nzWidth="200px">{{ data.openDate | date:"yyyy/MM/dd HH:mm" }}</td>
                 <td nzAlign="center" nzWidth="200px">{{ getStatusName(data.state)}}</td>
                 <td nzAlign="center">
-                    <a *ngIf="data.state==2" (click)="editData(data)">查看</a>&nbsp;
-                    <a *ngIf="data.state==1||data.state==3" (click)="editData(data)">处理</a>&nbsp;
-                    <a [routerLink]="[ '/workflow/flowview', data.defineId]" target="_blank">流程</a>&nbsp;
-                    <a *ngIf="data.state==1||data.state==3" (click)="deleteData(data)">删除</a>
+                    <a *ngIf="data.state==2||data.state==4" (click)="editData(data)">查看&nbsp;</a>
+                    <a *ngIf="data.state==1||data.state==3" (click)="editData(data)">处理&nbsp;</a>
+                    <a [routerLink]="[ '/workflow/flowview', data.defineId]" target="_blank">流程&nbsp;</a>
+                    <a *ngIf="data.state==1||data.state==3||data.state==4" (click)="deleteData(data)">删除</a>
                 </td>
             </tr>
         </tbody>

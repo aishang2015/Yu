@@ -177,6 +177,19 @@ namespace Yu.Api.Areas.WorkFlow.Controller
         }
 
         #endregion
+
+
+        #region 取得工作流节点元素设定
+
+        [HttpGet("workflowNodeElement")]
+        [Description("取得工作流节点元素设定")]
+        public IActionResult GetWorkFlowNodeElements([FromQuery]IdQuery query)
+        {
+            var nodeElements = _service.GetWorkFlowNodeElements(query.Id);
+            return Ok(nodeElements);
+        }
+
+        #endregion
     }
 }
 

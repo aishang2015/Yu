@@ -65,6 +65,12 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         /// 取得待办数据
         /// </summary>
         PagedData<WorkFlowInstance> GetHandleWorkFlowInstances(int pageIndex, int pageSize, string searchText);
+
+        /// <summary>
+        /// 取得工作流节点元素设置
+        /// </summary>
+        /// <returns></returns>
+        List<WorkFlowFlowNodeElement> GetWorkFlowNodeElements(Guid id);
     }
 }
 

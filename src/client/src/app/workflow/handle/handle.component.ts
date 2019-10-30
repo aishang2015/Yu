@@ -7,6 +7,7 @@ import { WorkFlowDefineService } from 'src/app/core/services/workflow/workflowde
 import { WorkFlowTypeService } from 'src/app/core/services/workflow/workflowtype.service';
 import { WorkFlowInstanceNode } from '../models/WorkFlowInstanceNode';
 import { NzModalService, NzMessageService } from 'ng-zorro-antd';
+import { WorkflowFlowNodeElement } from '../models/workflowFlowNodeElement';
 
 @Component({
   selector: 'app-handle',
@@ -41,6 +42,7 @@ export class HandleComponent implements OnInit {
 
   // 编辑中的工作流
   editingWorkFlowInstance: WorkFlowInstance = new WorkFlowInstance();
+
 
   constructor(
     private _messageService: NzMessageService,
@@ -110,6 +112,7 @@ export class HandleComponent implements OnInit {
         this.workflowInstanceNodes = result;
       }
     );
+
     this._nzModal = this._modalService.create({
       nzTitle: null,
       nzContent: this.editTpl,
@@ -122,7 +125,7 @@ export class HandleComponent implements OnInit {
 
   // 提交数据
   submit(flg) {
-    this._workflowInstanceService.handle(this.editingWorkFlowInstance.id, flg?3:2, this.explain).subscribe(result => {
+    this._workflowInstanceService.handle(this.editingWorkFlowInstance.id, flg ? 3 : 2, this.explain).subscribe(result => {
       this._messageService.success('提交成功！');
       this._nzModal.close();
       this._nzModal = null;

@@ -86,6 +86,12 @@ export class WorkFlowInstanceService extends BaseService {
 		return this.SafeRequest(this.http.patch(uri, { 'InstanceId': instanceId, 'HandleStatus': status, 'Explain': explain }));
 	}
 
+	// 取得工作流节点元素
+	getFlowNodeElement(id) {
+		const uri = UriConstant.WorkFlowNodeElement + `?id=${id}`;
+		return this.SafeRequest(this.http.get(uri));
+	}
+
 	instanceStatusMap = {
 		'1': '开始',
 		'2': '流转中',

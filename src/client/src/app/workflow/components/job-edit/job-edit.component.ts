@@ -6,6 +6,7 @@ import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { WorkFlowInstanceService } from 'src/app/core/services/workflow/workflowinstance.service';
 import { FormGroup, ReactiveFormsModule, FormBuilder, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { WorkflowFlowNodeElement } from '../../models/workflowFlowNodeElement';
 
 @Component({
   selector: 'app-job-edit',
@@ -31,6 +32,9 @@ export class JobEditComponent implements OnInit {
 
   // 表单元素
   workflowFormElements: WorkFlowFormElement[] = [];
+
+  // 工作流节点表单元素状态
+  workflowFlowNodeElements: WorkflowFlowNodeElement[] = [];
 
   // 动态组件对象
   dynamicComponentRef;
@@ -62,7 +66,13 @@ export class JobEditComponent implements OnInit {
           }
         });
       });
-      this.htmlEdit();
+
+      this._workflowInstanceService.getFlowNodeElement(this.wfInstanceId).subscribe(
+        result => {
+          this.workflowFlowNodeElements = result;
+          this.htmlEdit();
+        }
+      );
     });
   }
 
@@ -71,8 +81,10 @@ export class JobEditComponent implements OnInit {
     for (let i = 0; i < this.workflowFormElements.length; i++) {
       let element: any = this.workflowFormElements[i];
 
+      let nodeElement = this.workflowFlowNodeElements.find(wffne => wffne.formElementId == element.id);
+
       // 正则替换真正页面的标签
-      let newhtml = this.getEditHtml(element.elementId, element.type, element.width, element.line, element.options);
+      let newhtml = this.getEditHtml(element.elementId, element.type, element.width, element.line, element.options, nodeElement ? nodeElement.isEditable : true, nodeElement ? nodeElement.isVisible : true);
       //newhtml = '<form nz-form [formGroup]="editForm">'+ newhtml + '</form>';
       let regex = new RegExp(`<input id="${element.elementId}".*?/>`);
       this.dataModel = this.dataModel.replace(regex, newhtml);
@@ -81,8 +93,9 @@ export class JobEditComponent implements OnInit {
   }
 
   // 替换html的内容
-  getEditHtml(id, key, width, rows, ops) {
-    let style = width ? `style="width:${width}px;"` : '';
+  getEditHtml(id, key, width, rows, ops, editable, visible) {
+    let style = width ? `style="width:${width}px;` : '';
+    style = style.concat(visible ? '"' : 'display: none;"');
     let row = `rows="${rows ? rows : 1}"`;
     let options = '';
     ops.split(',').forEach(str => {
@@ -91,22 +104,22 @@ export class JobEditComponent implements OnInit {
     let html = '';
     switch (key) {
       case 'datepicker':
-        html = `<nz-date-picker [(ngModel)]="values['${id}']"  id="${id}" ${style}></nz-date-picker>`;
+        html = `<nz-date-picker [(ngModel)]="values['${id}']" [disabled]="${!editable}" id="${id}" ${style}></nz-date-picker>`;
         break;
       case 'timepicker':
-        html = `<nz-time-picker [(ngModel)]="values['${id}']"  id="${id}" ${style}></nz-time-picker>`;
+        html = `<nz-time-picker [(ngModel)]="values['${id}']" [disabled]="${!editable}"  id="${id}" ${style}></nz-time-picker>`;
         break;
       case 'inputnumber':
-        html = `<nz-input-number [(ngModel)]="values['${id}']"  id="${id}" ${style}></nz-input-number>`;
+        html = `<nz-input-number [(ngModel)]="values['${id}']" [disabled]="${!editable}"  id="${id}" ${style}></nz-input-number>`;
         break;
       case 'input':
-        html = `<input id="${id}" [(ngModel)]="values['${id}']" nz-input ${style}/>`;
+        html = `<input id="${id}" [(ngModel)]="values['${id}']" [disabled]="${!editable}"  nz-input ${style}/>`;
         break;
       case 'textarea':
-        html = `<textarea [(ngModel)]="values['${id}']"  id="${id}" ${row} nz-input ${style}></textarea>`;
+        html = `<textarea [(ngModel)]="values['${id}']" [disabled]="${!editable}"  id="${id}" ${row} nz-input ${style}></textarea>`;
         break;
       case 'selecter':
-        html = `<nz-select [(ngModel)]="values['${id}']"  id="${id}" ${style}>${options}</nz-select>`;
+        html = `<nz-select [(ngModel)]="values['${id}']" [disabled]="${!editable}"  id="${id}" ${style}>${options}</nz-select>`;
         break;
       case 'upload':
         html = `<button nz-button><i nz-icon nzType="upload"></i><span>点击上传文件</span></button>`;

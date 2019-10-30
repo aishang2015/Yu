@@ -39,7 +39,7 @@
 <ng-template #editTpl>
     <nz-tabset>
         <nz-tab nzTitle="基本信息">
-            <form nz-form #basicinfoform="ngForm" (ngSubmit)="basicInfoSubmit(basicinfoform)">
+            <form nz-form #basicinfoform="ngForm" (ngSubmit)="saveChange()">
                 <nz-form-item>
                     <nz-form-label [nzSpan]="5">节点名称</nz-form-label>
                     <nz-form-control [nzSpan]="19" [nzErrorTip]="nameErrorTpl">
@@ -63,11 +63,6 @@
                             </ng-container>
                         </ng-template>
                     </nz-form-control>
-                </nz-form-item>
-                <nz-form-item>
-                    <div class="mt-10" style="float: right">
-                        <button class="mr-5" nz-button type="submit">确定</button>
-                    </div>
                 </nz-form-item>
             </form>
         </nz-tab>
@@ -95,10 +90,6 @@
                 </tbody>
             </nz-table>
 
-            <div class="mt-10" style="float: right">
-                <button class="mr-5" nz-button type="button" (click)="saveChange()">确定</button>
-            </div>
-
         </nz-tab>
         <nz-tab nzTitle="人员设置">
             <form nz-form #peopleForm="ngForm" (ngSubmit)="peopleSubmit(peopleForm)">
@@ -117,7 +108,7 @@
                     <nz-form-label [nzSpan]="5">指定人员</nz-form-label>
                     <nz-form-control [nzSpan]="19">
                         <nz-select [(ngModel)]="nodeHandle.handlePeople" name="handlePeople" nzShowSearch nzServerSearch
-                            nzMode="multiple" (nzOnSearch)="searchPeople($event)">
+                            nzMode="multiple" (nzOnSearch)="searchPeople($event)" nzPlaceHolder="输入搜索关键字">
                             <nz-option *ngFor="let user of userList" [nzLabel]="getUserLabel(user)" [nzValue]="user.id">
                             </nz-option>
                         </nz-select>
@@ -144,10 +135,6 @@
                         </nz-select>
                     </nz-form-control>
                 </nz-form-item>
-
-                <div class="mt-10" style="float: right">
-                    <button class="mr-5" nz-button type="button" (click)="saveChange()">确定</button>
-                </div>
 
             </form>
         </nz-tab>
