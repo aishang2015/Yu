@@ -501,24 +501,30 @@ export class FlowComponent implements OnInit {
   // 保存流程图
   saveFlow() {
     this.isLoading = true;
-    this.flowConnections = [];
+    let flowConnections = [];
     let connections = this._jsPlumbInstance.getAllConnections();
     connections.forEach(element => {
-      this.flowConnections.push({
+      let connection = this.flowConnections.find(fc => fc.sourceId == element.sourceId && fc.targetId == element.targetId);
+      flowConnections.push({
+        id: connection ? connection.id : '00000000-0000-0000-0000-000000000000',
         defineId: this.wfDefine.id,
         sourceId: element.sourceId,
         targetId: element.targetId,
       });
     });
 
-    this.flowNodes = [];
+    this.flowNodes;
+    let flowNodes = [];
     let elements = document.getElementsByClassName('node');
     for (let i = 0; i < elements.length; i++) {
+
       let element: any = elements[i];
+      let sourceNode = this.flowNodes.find(n => n.nodeId == element.id);
       let nodeInfo = this.nodeInfos.find(info => info.nodeId == element.id);
       let nodeHandle = this.nodeHandles.find(info => info.nodeId == element.id);
       let nodeType = element.attributes.flownodetype.value;
-      this.flowNodes.push({
+      flowNodes.push({
+        id: sourceNode ? sourceNode.id : '00000000-0000-0000-0000-000000000000',
         defineId: this.wfDefine.id,
         nodeId: element.id,
         nodeType: nodeType,
@@ -534,8 +540,8 @@ export class FlowComponent implements OnInit {
     }
 
     this._workFlowFlowService.addOrUpdate({
-      nodes: this.flowNodes,
-      connections: this.flowConnections,
+      nodes: flowNodes,
+      connections: flowConnections,
       nodeElements: this.flowNodeElements,
       defineId: this.wfDefine.id,
     }).subscribe(result => {

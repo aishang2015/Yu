@@ -402,6 +402,12 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                                 _workFlowInstanceNodeRepository.UpdateRange(nextInstanceNodes);
                             }
                         }
+                        else if (count > 1)
+                        {
+                            // 会签的情况
+                            // 只更新当前节点状态
+                            _workFlowInstanceNodeRepository.Update(result);
+                        }
 
                         break;
                 }
@@ -444,11 +450,14 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                         join n in _workFlowFlowNodeRepository.GetAllNoTracking() on instance.NodeId equals n.Id
                         where instance.Id == instanceId
                         select n).FirstOrDefault();
-
-            var result = from ne in _workflowFlowNodeElementRepository.GetAllNoTracking()
-                         where ne.DefineId == node.DefineId && ne.FlowNodeId == node.NodeId
-                         select ne;
-            return result.ToList();
+            if (node != null)
+            {
+                var result = from ne in _workflowFlowNodeElementRepository.GetAllNoTracking()
+                             where ne.DefineId == node.DefineId && ne.FlowNodeId == node.NodeId
+                             select ne;
+                return result.ToList();
+            }
+            return null;
         }
 
 

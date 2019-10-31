@@ -1,4 +1,6 @@
 export class WorkflowFlowNode {
+    id?:string;          // id
+
     defineId: string;   // 流程图定义ID
     nodeId: string;     // 节点ID
     nodeType: string;   // 节点类型

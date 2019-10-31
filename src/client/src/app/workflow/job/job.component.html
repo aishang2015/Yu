@@ -77,8 +77,10 @@
         </tbody>
     </nz-table>
     <div nz-row class="mt-5">
-        <button *ngIf="this.editingWorkFlowInstance.state==1||this.editingWorkFlowInstance.state==3" class="mr-5 fr" nz-button (click)="submit(edit)">提交</button>
-        <button *ngIf="this.editingWorkFlowInstance.state==1||this.editingWorkFlowInstance.state==3" class="mr-5 fr" nz-button (click)="confirmEdit(edit)">暂存</button>
+        <button *ngIf="this.editingWorkFlowInstance.state==1||this.editingWorkFlowInstance.state==3" class="mr-5 fr"
+            nz-button (click)="submit(edit)">提交</button>
+        <button *ngIf="this.editingWorkFlowInstance.state==1||this.editingWorkFlowInstance.state==3" class="mr-5 fr"
+            nz-button (click)="confirmEdit(edit)">暂存</button>
         <button class="mr-5 fr" nz-button (click)="cancel()">关闭</button>
         <button class="mr-5" nz-button (click)="print()">打印</button>
     </div>
