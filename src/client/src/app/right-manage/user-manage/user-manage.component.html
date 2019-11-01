@@ -38,7 +38,7 @@
       <tr *ngFor="let data of listOfData;let i = index">
         <td nzAlign="center" nzWidth="75px">{{ i + 1 + (pageIndex - 1) * pageSize }}</td>
         <td nzAlign="center" nzWidth="75px">
-          <nz-avatar nzIcon="user" [nzSrc]="data.avatar | imageUri" nzSize="large"></nz-avatar>
+          <nz-avatar nzIcon="user" [nzSrc]="data.avatar | avatarUri" nzSize="large"></nz-avatar>
         </td>
         <td nzAlign="center" nzWidth="150px">{{ data.userName }}</td>
         <td nzAlign="center" nzWidth="150px">{{ data.fullName }}</td>
@@ -65,7 +65,7 @@
 <!-- 用户详细信息 -->
 <ng-template #viewContentTpl>
   <div style="text-align: center">
-    <nz-avatar nzIcon="user" [nzSrc]="userDetail.avatar | imageUri" nzSize="large"></nz-avatar>
+    <nz-avatar nzIcon="user" [nzSrc]="userDetail.avatar | avatarUri" nzSize="large"></nz-avatar>
   </div>
   <nz-divider nzText="认证信息"></nz-divider>
 

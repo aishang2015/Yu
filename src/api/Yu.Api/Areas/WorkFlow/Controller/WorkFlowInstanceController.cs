@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Yu.Model.WorkFlow.WorkFlowInstance.InputModels;
 using System;
 using Yu.Model.Message;
+using Microsoft.AspNetCore.Http;
 
 namespace Yu.Api.Areas.WorkFlow.Controller
 {
@@ -134,6 +135,28 @@ namespace Yu.Api.Areas.WorkFlow.Controller
         public async Task<IActionResult> AddOrUpdateWorkFlowInstanceForm([FromBody]WorkFlowInstanceFormInputViewModel model)
         {
             await _service.AddOrUpdateWorkFlowInstanceForm(model.InstanceId, model.WorkFlowInstanceForms);
+            return Ok();
+        }
+
+        /// <summary>
+        /// 工作流表单数据
+        /// </summary>
+        [HttpPost("workFlowInstanceFormFile")]
+        [Description("更新工作流实例表单文件数据")]
+        public async Task<IActionResult> AddWorkFlowInstanceFormFile([FromForm]IFormFile file)
+        {
+            var newName = await _service.AddWorkFlowInstanceFormFile(file);
+            return Ok(new { name = newName });
+        }
+
+        /// <summary>
+        /// 工作流表单数据
+        /// </summary>
+        [HttpDelete("workFlowInstanceFormFile")]
+        [Description("更新工作流实例表单文件数据")]
+        public IActionResult RemoveWorkFlowInstanceFormFile([FromQuery]string fileName)
+        {
+            _service.RemoveWorkFlowInstanceFormFile(fileName);
             return Ok();
         }
 

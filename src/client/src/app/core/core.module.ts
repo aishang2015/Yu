@@ -6,7 +6,7 @@ import { GenderPipe } from './pipes/gender.pipe';
 import { TelephoneValidatorDirective } from './validators/telephone-validator.directive';
 import { DebounceClickDirective } from './directives/debounce-click.directive';
 import { ThrottleClickDirective } from './directives/throttle-click.directive';
-import { ImageUriPipe } from './pipes/image-uri.pipe';
+import { AvatarImagePipe } from './pipes/image-uri.pipe';
 import { AppRuleComponent } from './components/app-rule/app-rule.component';
 import { UserNameValidatorDirective } from './validators/username-validator.directive';
 import { ConfirmPasswordValidatorDirective } from './validators/confirm-password.directive';
@@ -31,7 +31,7 @@ import { HtmlPipe } from './pipes/html.pipe';
     AppRuleComponent, // 规则编辑组件
 
     GenderPipe, // 性别转换管道
-    ImageUriPipe, // 图片地址转换
+    AvatarImagePipe, // 图片地址转换
     HtmlPipe, // html安全转换
 
     TelephoneValidatorDirective, // 电话号码验证器
@@ -48,7 +48,7 @@ import { HtmlPipe } from './pipes/html.pipe';
     NgZorroAntdModule,
     AppRuleComponent,
     GenderPipe,
-    ImageUriPipe,
+    AvatarImagePipe,
     HtmlPipe,
     TelephoneValidatorDirective,
     UserNameValidatorDirective,

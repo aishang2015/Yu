@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Identity;
 using Yu.Data.Entities.Right;
 using Yu.Model.WorkFlow.WorkFlowInstance.OutputModels;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
+using Yu.Core.FileManage;
 
 namespace Yu.Service.WorkFlow.WorkFlowInstances
 {
@@ -46,6 +48,9 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         // 工作单元
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
+        // 文件管理
+        private IFileStore _fileStore;
+
         IHttpContextAccessor _httpContextAccessor;
 
         public WorkFlowInstanceService(UserManager<BaseIdentityUser> userManager,
@@ -57,7 +62,8 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
             IRepository<WorkFlowFlowConnection, Guid> workFlowFlowConnectionRepository,
             IRepository<GroupTree, Guid> groupTreeRepository,
             IUnitOfWork<BaseIdentityDbContext> unitOfWork,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IFileStore fileStore)
         {
             _userManager = userManager;
             _repository = repository;
@@ -69,6 +75,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
             _groupTreeRepository = groupTreeRepository;
             _unitOfWork = unitOfWork;
             _httpContextAccessor = httpContextAccessor;
+            _fileStore = fileStore;
         }
 
         /// <summary>
@@ -458,6 +465,24 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                 return result.ToList();
             }
             return null;
+        }
+
+        /// <summary>
+        /// 上传文件
+        /// </summary>
+        public async Task<string> AddWorkFlowInstanceFormFile(IFormFile file)
+        {
+            var endfix = file.FileName.Split('.').Last();
+            var newName = Path.Combine(DateTime.Now.ToString("MMddHHmmssfff") + '.' + endfix);
+            await _fileStore.CreateFile(newName, @"C:\temp\files\wf", file.OpenReadStream());
+            return newName;
+        }
+
+        /// <summary>
+        /// 删除文件
+        /// </summary>
+        public void RemoveWorkFlowInstanceFormFile(string fileName){
+            _fileStore.DeleteFile(fileName, @"C:\temp\files\wf");
         }
 
 

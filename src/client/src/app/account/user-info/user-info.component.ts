@@ -3,7 +3,7 @@ import { UriConstant } from 'src/app/core/constants/uri-constant';
 import { Observable, Observer } from 'rxjs';
 import { NzMessageService, UploadFile } from 'ng-zorro-antd';
 import { UserService } from 'src/app/core/services/rightmanage/user.service';
-import { ImageUriPipe } from 'src/app/core/pipes/image-uri.pipe';
+import { AvatarImagePipe } from 'src/app/core/pipes/image-uri.pipe';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { ChangePwd } from '../models/change-pwd';
 import { AccountService } from 'src/app/core/services/account.service';
@@ -50,7 +50,7 @@ export class UserInfoComponent implements OnInit {
     this._userService.getUserInfo().subscribe(
       (result: any) => {
         this.userInfo = result;
-        this.avatarUrl = new ImageUriPipe().transform(result.avatar);
+        this.avatarUrl = new AvatarImagePipe().transform(result.avatar);
       }
     );
   }

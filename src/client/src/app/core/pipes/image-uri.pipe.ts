@@ -2,9 +2,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { UriConstant } from '../constants/uri-constant';
 
 @Pipe({
-  name: 'imageUri'
+  name: 'avatarUri'
 })
-export class ImageUriPipe implements PipeTransform {
+export class AvatarImagePipe implements PipeTransform {
 
   transform(value: string, args?: any): any {
     if (value) {

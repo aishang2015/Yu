@@ -2,11 +2,16 @@ import { Component, OnInit, Input, NgModule, Compiler, ViewChild, ViewContainerR
 import { WorkFlowDefineService } from 'src/app/core/services/workflow/workflowdefine.service';
 import { WorkFlowFormService } from 'src/app/core/services/workflow/workflowform.service';
 import { WorkFlowFormElement } from '../../models/workflowFormElement';
-import { NgZorroAntdModule } from 'ng-zorro-antd';
+import { NgZorroAntdModule, UploadFile } from 'ng-zorro-antd';
 import { WorkFlowInstanceService } from 'src/app/core/services/workflow/workflowinstance.service';
 import { FormGroup, ReactiveFormsModule, FormBuilder, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { WorkflowFlowNodeElement } from '../../models/workflowFlowNodeElement';
+
+import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
+import { CoreModule } from 'src/app/core/core.module';
+import { UriConstant } from 'src/app/core/constants/uri-constant';
+import { stringify } from 'querystring';
 
 @Component({
   selector: 'app-job-edit',
@@ -36,11 +41,15 @@ export class JobEditComponent implements OnInit {
   // 工作流节点表单元素状态
   workflowFlowNodeElements: WorkflowFlowNodeElement[] = [];
 
+
   // 动态组件对象
   dynamicComponentRef;
 
   // 值
   values: { [code: string]: object } = {};
+
+  // 上传文件初始值
+  fileListMap: { [id: string]: UploadFile[] } = {};
 
   constructor(
     private fb: FormBuilder,
@@ -61,20 +70,41 @@ export class JobEditComponent implements OnInit {
           let form = result.find(f => f.elementId == wffe.id);
           if (wffe.type == 'timepicker' || wffe.type == 'datepicker') {
             this.values[wffe.elementId] = (form && form.value != '') ? new Date(form.value) : new Date();
-          } else {
+          }
+          else if (wffe.type == 'upload') {
+            this.fileListMap[wffe.elementId] = [];
+            var fileNames = form ? (form.value ? form.value.split(',') : []) : [];
+            fileNames.forEach(fileName => {
+              this.fileListMap[wffe.elementId].push({
+                uid: (this.fileListMap[wffe.elementId].length + 1).toString(),
+                name: fileName,
+                status: 'done',
+                size: 0,
+                type: '',
+                url: UriConstant.ServerUri + 'wf/' + fileName
+              })
+            });
+          }
+          else {
             this.values[wffe.elementId] = form ? form.value : null;
           }
         });
+
+        this._workflowInstanceService.getFlowNodeElement(this.wfInstanceId).subscribe(
+          result => {
+            this.workflowFlowNodeElements = result;
+            this.htmlEdit();
+          }
+        );
+
+
       });
 
-      this._workflowInstanceService.getFlowNodeElement(this.wfInstanceId).subscribe(
-        result => {
-          this.workflowFlowNodeElements = result;
-          this.htmlEdit();
-        }
-      );
+
     });
   }
+
+
 
   // 编辑html
   htmlEdit() {
@@ -122,7 +152,9 @@ export class JobEditComponent implements OnInit {
         html = `<nz-select [(ngModel)]="values['${id}']" [disabled]="${!editable}"  id="${id}" ${style}>${options}</nz-select>`;
         break;
       case 'upload':
-        html = `<button nz-button><i nz-icon nzType="upload"></i><span>点击上传文件</span></button>`;
+        html = `<nz-upload (nzChange)="handleChange($event)" [(nzFileList)]="fileListMap['${id}']" [nzShowButton]="fileListMap['${id}'].length < 3" [nzAction]="uploadUrl" (click)="setId('${id}')" id="${id}">` +
+          `<button nz-button><i nz-icon nzType="upload"></i><span>请选择上传文件</span></button>` +
+          `</nz-upload>`;
         break;
     }
     return html;
@@ -130,11 +162,48 @@ export class JobEditComponent implements OnInit {
 
   // 创建动态组件
   createComponent(template) {
-
     @Component({ template })
-    class TemplateComponent { values: { [code: string]: string } = {}; }
+    class TemplateComponent {
 
-    @NgModule({ declarations: [TemplateComponent], imports: [NgZorroAntdModule, FormsModule] })
+      currentId;
+
+      uploadUrl = UriConstant.BaseApiUri + 'workFlowInstanceFormFile';
+
+      values: { [code: string]: string } = {};
+
+      // 上传文件列表
+      fileListMap: { [id: string]: UploadFile[] } = {};
+
+      constructor(private _workflowInstanceService: WorkFlowInstanceService) { }
+
+      beforeUpload = (file: UploadFile): boolean => {
+        this.fileListMap[this.currentId] = this.fileListMap[this.currentId].concat(file);
+        return false;
+      };
+
+      handleChange(info: any): void {
+        switch (info.file.status) {
+          case 'uploading':
+            break;
+          case 'done':
+            let fileinfo = this.fileListMap[this.currentId].find(f => f.uid == info.file.uid);
+            fileinfo.name = info.file.response.name;
+            fileinfo.url = UriConstant.ServerUri + 'wf/' + info.file.response.name;
+            break;
+          case 'error':
+            break;
+          case 'removed':
+            this._workflowInstanceService.deleteFormFile(info.file.name).toPromise();
+            break;
+        }
+      }
+
+      setId(id) {
+        this.currentId = id;
+      }
+    }
+
+    @NgModule({ declarations: [TemplateComponent], imports: [NgZorroAntdModule, FormsModule, CoreModule] })
     class TemplateModule { }
 
     const mod = this._compiler.compileModuleAndAllComponentsSync(TemplateModule);
@@ -148,22 +217,39 @@ export class JobEditComponent implements OnInit {
 
     // 初始化动态组件的表单数据
     this.dynamicComponentRef.instance.values = this.values;
+    this.dynamicComponentRef.instance.fileListMap = this.fileListMap;
   }
 
   // 保存内容
   saveContent() {
     let values = this.dynamicComponentRef.instance.values;
+    let fileListMap = this.dynamicComponentRef.instance.fileListMap;
     let forms = [];
+    let files = [];
+
     for (const element of this.workflowFormElements) {
-      let value = values[element.elementId];
-      forms.push({
-        elementID: element.id,
-        value: value
-      });
+      if (element.type != 'upload') {
+        let value = values[element.elementId];
+        forms.push({
+          elementID: element.id,
+          value: value
+        });
+      } else {
+        let fileList = fileListMap[element.elementId];
+        let names = [];
+        fileList.forEach(element => {
+          names.push(element.name);
+        });
+        forms.push({
+          elementID: element.id,
+          value: names.join(',')
+        });
+      }
     }
     return this._workflowInstanceService.putForm({
       instanceId: this.wfInstanceId,
-      workFlowInstanceForms: forms
+      workFlowInstanceForms: forms,
     });
   }
+
 }

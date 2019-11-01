@@ -7,7 +7,7 @@ import { CommonConstant } from 'src/app/core/constants/common-constant';
 import { UriConstant } from 'src/app/core/constants/uri-constant';
 import { RoleService } from 'src/app/core/services/rightmanage/role.service';
 import { GroupService } from 'src/app/core/services/rightmanage/group.service';
-import { ImageUriPipe } from 'src/app/core/pipes/image-uri.pipe';
+import { AvatarImagePipe } from 'src/app/core/pipes/image-uri.pipe';
 import { PositionService } from 'src/app/core/services/rightmanage/position.service';
 
 @Component({
@@ -224,7 +224,7 @@ export class UserManageComponent implements OnInit {
 
   // 编辑用户头像
   editAvatar(userOutline) {
-    this.avatarUrl = new ImageUriPipe().transform(userOutline.avatar);
+    this.avatarUrl = new AvatarImagePipe().transform(userOutline.avatar);
     this.uploadUrl = UriConstant.ManageAvatarUri + `?userId=${userOutline.id}`;
     this.editModal = this._modalService.create({
       nzContent: this.avatarEditTpl, // 模板

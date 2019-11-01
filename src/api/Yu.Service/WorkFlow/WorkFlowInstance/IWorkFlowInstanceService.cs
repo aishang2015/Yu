@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -71,6 +72,16 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         /// </summary>
         /// <returns></returns>
         List<WorkFlowFlowNodeElement> GetWorkFlowNodeElements(Guid id);
+
+        /// <summary>
+        /// 上传文件
+        /// </summary>
+        Task<string> AddWorkFlowInstanceFormFile(IFormFile file);
+
+        /// <summary>
+        /// 删除文件
+        /// </summary>
+        void RemoveWorkFlowInstanceFormFile(string fileName);
     }
 }
 
