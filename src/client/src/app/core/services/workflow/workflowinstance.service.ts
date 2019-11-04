@@ -109,7 +109,8 @@ export class WorkFlowInstanceService extends BaseService {
 		'0': '未处理',
 		'1': '待处理',
 		'2': '拒绝',
-		'3': '同意'
+		'3': '同意',
+		'4': '略过'
 	}
 }
 

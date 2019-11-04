@@ -253,6 +253,10 @@ export class WfdefinitionComponent implements OnInit {
   }
 
   publish(data) {
-    this._workflowDefineService.publish(data.id, !data.isPublish).subscribe(result => data.isPublish = !data.isPublish);
+    this._workflowDefineService.publish(data.id, !data.isPublish).subscribe(result => 
+      { 
+        data.isPublish = !data.isPublish; 
+        this._messageService.success('状态修改成功!');
+      });
   }
 }

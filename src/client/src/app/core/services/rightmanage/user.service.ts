@@ -20,8 +20,14 @@ export class UserService extends BaseService {
   }
 
   // 通过id取得用户概要数据
-  getUserOutlinesById(ids){
+  getUserOutlinesById(ids) {
     let uri = `${UriConstant.AssignOutlineUri}?ids=${ids}`;
+    return this.SafeRequest(this.http.get(uri));
+  }
+
+  // 通过岗位信息取得用户
+  getUserOutlinesByPosition(userName, positionId, positionGroup) {
+    let uri = `${UriConstant.PositionOutlineUri}?userName=${userName}&positionId=${positionId}&positionGroup=${positionGroup}`;
     return this.SafeRequest(this.http.get(uri));
   }
 

@@ -25,7 +25,7 @@
                 <td nzAlign="center">
                     <a *ngIf="data.state==2||data.state==4" (click)="editData(data)">查看&nbsp;</a>
                     <a *ngIf="data.state==1||data.state==3" (click)="editData(data)">处理&nbsp;</a>
-                    <a [routerLink]="[ '/workflow/flowview', data.defineId]" target="_blank">流程&nbsp;</a>
+                    <a [routerLink]="[ '/workflow/flowview', data.defineId,data.userName]" target="_blank">流程&nbsp;</a>
                     <a *ngIf="data.state==1||data.state==3||data.state==4" (click)="deleteData(data)">删除</a>
                 </td>
             </tr>

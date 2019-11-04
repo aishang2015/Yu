@@ -26,6 +26,13 @@ namespace Yu.Service.WebAdmin.User
         /// <returns>用户数据</returns>
         Task<List<UserOutline>> GetUserOutlinesByIds(List<Guid> ids);
 
+
+        /// <summary>
+        /// 取得用户概要数据
+        /// </summary>
+        /// <returns>用户数据</returns>
+        Task<List<UserOutline>> GetUserOutlinesByPositions(string userName, string positionId, int positionGroup);
+
         /// <summary>
         /// 取得用户详细数据
         /// </summary>

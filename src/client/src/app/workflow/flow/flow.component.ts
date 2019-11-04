@@ -266,7 +266,8 @@ export class FlowComponent implements OnInit {
   //#region 添加节点操作合集
 
   // 工作节点
-  addWorkNode(title, describe, id = `work-node-${Date.now().toString(36)}`, top = '200', left = '200', people = []) {
+  addWorkNode(title, describe, id = `work-node-${Date.now().toString(36)}`, top = '200', left = '200',
+    handleType = 1, people = [], positionId = '', positionGroup = 1) {
 
     // 渲染元素
     // 此处要写完整的值，render不会自动补全值（譬如不能设置0要设置为0px）
@@ -291,10 +292,11 @@ export class FlowComponent implements OnInit {
     this.renderer.appendChild(workNode, workNodeDescribe);
 
     // 节点基本信息
-    this.nodeInfos.push({ nodeId: id, name: '工作节点', describe: '这是一个工作节点' });
+    this.nodeInfos.push({ nodeId: id, name: title, describe: describe });
 
     // 节点人员信息
-    this.nodeHandles.push({ nodeId: id, handleType: 1, handlePeople: people, positionGroup: 1, positionId: null });
+    this.nodeHandles.push({ nodeId: id, handleType: handleType, handlePeople: people, 
+      positionGroup: positionGroup, positionId: positionId });
 
     // 绑定右键菜单
     let that = this;
@@ -453,7 +455,8 @@ export class FlowComponent implements OnInit {
           this.addEndNode(node.top, node.left);
           break;
         case '1':
-          this.addWorkNode(node.name, node.describe, node.nodeId, node.top, node.left, node.handlePeoples.split(','));
+          this.addWorkNode(node.name, node.describe, node.nodeId, node.top, node.left,
+            node.handleType, node.handlePeoples.split(','), node.positionId, node.positionGroup);
           break;
       }
     });

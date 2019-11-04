@@ -84,7 +84,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         public async Task AddWorkFlowInstanceAsync(WorkFlowInstance entity)
         {
             // 取得开始节点的数据
-            var node = _workFlowFlowNodeRepository.GetByWhereNoTracking(wfn => wfn.DefineId == entity.DefineId)
+            var node = _workFlowFlowNodeRepository.GetByWhereNoTracking(wfn => wfn.DefineId == entity.DefineId && wfn.NodeType == 0)
                 .FirstOrDefault();
             entity.Id = GuidUtil.NewSquentialGuid();
             entity.NodeId = node == null ? Guid.NewGuid() : node.Id;
@@ -143,7 +143,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                             // 发起人部门上一级部门的指定岗位
                             case 3:
                                 var upperGroupId = _groupTreeRepository
-                                    .GetByWhereNoTracking(gt => gt.Descendant.ToString() == currentUser.UserGroupId)
+                                    .GetByWhereNoTracking(gt => gt.Descendant.ToString() == currentUser.UserGroupId && gt.Length == 1)
                                     .FirstOrDefault()?.Ancestor;
                                 if (upperGroupId != null)
                                 {
@@ -173,6 +173,20 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                         CreateDateTime = DateTime.Now
                     });
                 });
+
+                if (users.Count == 0)
+                {
+                    await _workFlowInstanceNodeRepository.InsertAsync(new WorkFlowInstanceNode
+                    {
+                        InstanceId = entity.Id,
+                        NodeId = n.Id,
+                        HandlePeople = string.Empty,
+                        HandlePeopleName = "没有找到符合条件的办理人",
+                        Explain = string.Empty,
+                        HandleStatus = n.NodeType == 0 ? 1 : 0,
+                        CreateDateTime = DateTime.Now
+                    });
+                }
 
                 var connection = _workFlowFlowConnectionRepository
                     .GetByWhereNoTracking(wffc => wffc.DefineId == entity.DefineId
@@ -364,50 +378,70 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
                         // 只剩当前处理则直接进入下一个节点
                         if (count == 1)
                         {
-                            // 当前节点
-                            var currentNode = _workFlowFlowNodeRepository.GetByWhereNoTracking(n => n.Id == result.NodeId)
-                                .FirstOrDefault();
+                            //// 当前节点
+                            //var currentNode = _workFlowFlowNodeRepository.GetByWhereNoTracking(n => n.Id == result.NodeId)
+                            //    .FirstOrDefault();
 
-                            // 下一个节点
-                            var nextNode = (from wffc in _workFlowFlowConnectionRepository.GetAllNoTracking()
-                                            join wffn in _workFlowFlowNodeRepository.GetAllNoTracking() on wffc.TargetId equals wffn.NodeId
-                                            where wffc.DefineId == instance.DefineId && wffc.SourceId == currentNode.NodeId
-                                            select wffn).FirstOrDefault();
+                            //// 下一个节点
+                            //var nextNode = (from wffc in _workFlowFlowConnectionRepository.GetAllNoTracking()
+                            //                join wffn in _workFlowFlowNodeRepository.GetAllNoTracking() on wffc.TargetId equals wffn.NodeId
+                            //                where wffc.DefineId == instance.DefineId && wffc.SourceId == currentNode.NodeId
+                            //                select wffn).FirstOrDefault();
 
-                            // 不存在
-                            if (nextNode == null)
+                            //// 不存在
+                            //if (nextNode == null)
+                            //{
+                            //    break;
+                            //}
+
+                            //instance.NodeId = nextNode.Id;
+
+                            //// 如果下个节点是结束节点
+                            //if (nextNode.NodeType == 99)
+                            //{
+                            //    instance.State = 4;
+                            //    _workFlowInstanceNodeRepository.Update(result);
+                            //}
+                            //else
+                            //{
+                            //    instance.State = 2;
+
+                            //    // 下一步要处理的节点
+                            //    var nextInstanceNodes = (from instanceNode in _workFlowInstanceNodeRepository.GetAllNoTracking()
+                            //                             where instanceNode.InstanceId == instanceId
+                            //                                     && instanceNode.NodeId == nextNode.Id
+                            //                             select instanceNode).ToList();
+
+                            //    // 更新成待处理
+                            //    foreach (var instanceNode in nextInstanceNodes)
+                            //    {
+                            //        if (string.IsNullOrEmpty(instanceNode.HandlePeople))
+                            //        {
+                            //            instanceNode.HandleStatus = 4;
+                            //            instanceNode.Explain = "没有找到符合条件的办理人";
+                            //        }
+                            //        else
+                            //        {
+                            //            instanceNode.HandleStatus = 1;
+                            //            instanceNode.Explain = string.Empty;
+                            //        }
+                            //    }
+
+                            //    nextInstanceNodes.Add(result);
+                            //    _workFlowInstanceNodeRepository.UpdateRange(nextInstanceNodes);
+                            //}
+                            Guid handleNodeid = new Guid();
+                            int handleState = 0;
+                            var nextInstanceNodes = GetNextInstanceNodes(instance.DefineId, instance.NodeId, instance.Id, ref handleNodeid,
+                                ref handleState);
+                            if (nextInstanceNodes.Count > 0)
                             {
-                                break;
-                            }
-
-                            instance.NodeId = nextNode.Id;
-
-                            // 如果下个节点是结束节点
-                            if (nextNode.NodeType == 99)
-                            {
-                                instance.State = 4;
-                                _workFlowInstanceNodeRepository.Update(result);
-                            }
-                            else
-                            {
-                                instance.State = 2;
-
-                                // 下一步要处理的节点
-                                var nextInstanceNodes = (from instanceNode in _workFlowInstanceNodeRepository.GetAllNoTracking()
-                                                         where instanceNode.InstanceId == instanceId
-                                                                 && instanceNode.NodeId == nextNode.Id
-                                                         select instanceNode).ToList();
-
-                                // 更新成待处理
-                                foreach (var instanceNode in nextInstanceNodes)
-                                {
-                                    instanceNode.HandleStatus = 1;
-                                    instanceNode.Explain = string.Empty;
-                                }
-
                                 nextInstanceNodes.Add(result);
                                 _workFlowInstanceNodeRepository.UpdateRange(nextInstanceNodes);
                             }
+                            instance.NodeId = handleNodeid;
+                            instance.State = handleState;
+
                         }
                         else if (count > 1)
                         {
@@ -421,6 +455,77 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
 
                 _repository.Update(instance);
                 await _unitOfWork.CommitAsync();
+            }
+        }
+
+        /// <summary>
+        /// 处理自动略过节点的数据
+        /// </summary>
+        private List<WorkFlowInstanceNode> GetNextInstanceNodes(
+            Guid defineId, Guid currentNodeId, Guid instanceId, ref Guid handleNodeId, ref int handleState)
+        {
+
+            // 当前节点
+            var currentNode = _workFlowFlowNodeRepository.GetByWhereNoTracking(n => n.Id == currentNodeId)
+                .FirstOrDefault();
+
+            // 下一个节点
+            var nextNode = (from wffc in _workFlowFlowConnectionRepository.GetAllNoTracking()
+                            join wffn in _workFlowFlowNodeRepository.GetAllNoTracking() on wffc.TargetId equals wffn.NodeId
+                            where wffc.DefineId == defineId && wffc.SourceId == currentNode.NodeId
+                            select wffn).FirstOrDefault();
+
+            // 不存在
+            if (nextNode == null)
+            {
+                return null;
+            }
+
+            handleNodeId = nextNode.Id;
+
+            // 如果下个节点是结束节点
+            if (nextNode.NodeType == 99)
+            {
+                handleState = 4;
+                return null;
+            }
+            else
+            {
+                handleState = 2;
+
+                // 下一步要处理的节点
+                var nextInstanceNodes = (from instanceNode in _workFlowInstanceNodeRepository.GetAllNoTracking()
+                                         where instanceNode.InstanceId == instanceId
+                                                 && instanceNode.NodeId == nextNode.Id
+                                         select instanceNode).ToList();
+
+                // 更新成待处理
+                foreach (var instanceNode in nextInstanceNodes)
+                {
+                    if (string.IsNullOrEmpty(instanceNode.HandlePeople))
+                    {
+                        instanceNode.HandleStatus = 4;
+                        instanceNode.Explain = "系统自动处理";
+                        instanceNode.HandleDateTime = DateTime.Now;
+                    }
+                    else
+                    {
+                        instanceNode.HandleStatus = 1;
+                        instanceNode.Explain = string.Empty;
+                    }
+                }
+
+                // 此节点全部办理为略过状态时
+                if (nextInstanceNodes.Where(wfin => wfin.HandleStatus == 4).Count() == nextInstanceNodes.Count())
+                {
+                    var nodes = GetNextInstanceNodes(defineId, nextNode.Id, instanceId, ref handleNodeId, ref handleState);
+                    if (nodes != null)
+                    {
+                        nextInstanceNodes.AddRange(nodes);
+                    }
+                }
+
+                return nextInstanceNodes;
             }
         }
 
@@ -481,7 +586,8 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         /// <summary>
         /// 删除文件
         /// </summary>
-        public void RemoveWorkFlowInstanceFormFile(string fileName){
+        public void RemoveWorkFlowInstanceFormFile(string fileName)
+        {
             _fileStore.DeleteFile(fileName, @"C:\temp\files\wf");
         }
 

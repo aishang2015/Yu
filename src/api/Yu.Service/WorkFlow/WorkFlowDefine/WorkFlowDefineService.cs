@@ -152,8 +152,36 @@ namespace Yu.Service.WorkFlow.WorkFlowDefines
                 return false;
             }
 
+            var nodes = _nodeRepository.GetByWhereNoTracking(wffn => wffn.DefineId == id).ToList();
+            WorkFlowFlowNode node = nodes.Where(wffn => wffn.NodeType == 0).FirstOrDefault();
+            while (true)
+            {
+                if (node == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    if (node.NodeType == 99)
+                    {
+                        break;
+                    }
+
+                    // 到下一个节点的连接
+                    var connection = _connectionRepository.GetByWhereNoTracking(c => c.DefineId == id && c.SourceId == node.NodeId)
+                        .FirstOrDefault();
+
+                    if (connection == null)
+                    {
+                        return false;
+                    }
+
+                    // 下一个节点
+                    node = nodes.Where(wffn => wffn.NodeId == connection.TargetId).FirstOrDefault();
+                }
+            }
+
             // 验证是否有流程节点 
-            // TODO 验证流程完整性
             count = _nodeRepository.GetByWhereNoTracking(wffn => wffn.DefineId == id).Count();
             if (count == 0)
             {

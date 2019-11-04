@@ -63,6 +63,14 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
             return Ok(result);
         }
 
+        [HttpGet("positionOutline")]
+        [Description("取得用户概要情报")]
+        public async Task<IActionResult> GetPositionOutlines([FromQuery]string userName, [FromQuery]string positionId, [FromQuery]int positionGroup)
+        {
+            var result = await _userService.GetUserOutlinesByPositions(userName, positionId, positionGroup);
+            return Ok(result);
+        }
+
         /// <summary>
         /// 取得用户详细数据
         /// </summary>

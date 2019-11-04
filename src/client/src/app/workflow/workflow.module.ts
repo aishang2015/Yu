@@ -34,7 +34,7 @@ import { NodeSelectComponent } from './components/node-select/node-select.compon
     RouterModule.forChild([
       { path: 'definition', component: WfdefinitionComponent },
       { path: 'flow/:id', component: FlowComponent },
-      { path: 'flowview/:id', component: FlowViewComponent },
+      { path: 'flowview/:id/:userName', component: FlowViewComponent },
       { path: 'form/:id', component: WfformComponent },
       { path: 'wfform', component: WfformComponent },
       { path: 'handle', component: HandleComponent },

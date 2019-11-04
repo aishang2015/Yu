@@ -36,6 +36,7 @@ export class FlowViewComponent implements OnInit {
   userList = [];
 
   private _id;
+  private _userName;
   private _wfDefine: WorkFlowDefine = new WorkFlowDefine();
   private _positions = [];
   private _jsPlumb = jp.jsPlumb;
@@ -78,6 +79,7 @@ export class FlowViewComponent implements OnInit {
 
     // 取得工作流状态
     this._id = this.routeInfo.snapshot.params['id'];
+    this._userName = this.routeInfo.snapshot.params['userName'];
     this._workflowDefineService.getbyid(this._id).subscribe(result => {
       this._wfDefine = result;
       this.initFlowData();
@@ -150,7 +152,8 @@ export class FlowViewComponent implements OnInit {
           this.addEndNode(node.top, node.left);
           break;
         case '1':
-          this.addWorkNode(node.name, node.describe, node.nodeId, node.top, node.left, node.handlePeoples.split(','));
+          this.addWorkNode(node.name, node.describe, node.nodeId, node.top, node.left,
+            node.handleType, node.handlePeoples.split(','), node.positionId, node.positionGroup);
           break;
       }
     });
@@ -174,7 +177,8 @@ export class FlowViewComponent implements OnInit {
   }
 
   // 工作节点
-  addWorkNode(title, describe, id = `work-node-${Date.now().toString(36)}`, top = '200', left = '200', people = []) {
+  addWorkNode(title, describe, id = `work-node-${Date.now().toString(36)}`, top = '200', left = '200',
+    handleType = 1, people = [], positionId = '', positionGroup = 1) {
 
     // 渲染元素
     // 此处要写完整的值，render不会自动补全值（譬如不能设置0要设置为0px）
@@ -201,14 +205,17 @@ export class FlowViewComponent implements OnInit {
     this.renderer.appendChild(this._diagram.nativeElement, workNode);
 
     // 节点基本信息
-    this._nodeInfos.push({ nodeId: id, name: '工作节点', describe: '这是一个工作节点' });
+    this._nodeInfos.push({ nodeId: id, name: title, describe: describe });
 
     // 节点人员信息
-    this._nodeHandles.push({ nodeId: id, handleType: 1, handlePeople: people, positionGroup: 1, positionId: null });
+    this._nodeHandles.push({
+      nodeId: id, handleType: handleType, handlePeople: people,
+      positionGroup: positionGroup, positionId: positionId
+    });
 
     let that = this;
 
-    // 绑定双击
+    // TODO 绑定双击
     this.renderer.listen(workNode, 'dblclick', event => {
       that._nodeInfo = that._nodeInfos.find(n => n.nodeId == id);
       that._nodeHandle = that._nodeHandles.find(n => n.nodeId == id);
@@ -217,9 +224,11 @@ export class FlowViewComponent implements OnInit {
         that._userService.getUserOutlinesById(that._nodeHandle.handlePeople.join(',')).subscribe(
           result => that.userList = result
         );
-      }else if(this._nodeHandle.handleType == 2) {
-        // TODO根据当前用户的数据取得对应的办理人信息。
-
+      } else if (this._nodeHandle.handleType == 2) {
+        // 根据当前用户的数据取得对应的办理人信息。
+        that._userService.getUserOutlinesByPosition(this._userName, this._nodeHandle.positionId, that._nodeHandle.positionGroup).subscribe(
+          result => that.userList = result
+        );
       }
       that._nzModal = that.modalService.create({
         nzTitle: null,

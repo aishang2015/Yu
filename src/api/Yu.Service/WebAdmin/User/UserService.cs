@@ -13,6 +13,7 @@ using Yu.Core.Expressions;
 using Yu.Core.FileManage;
 using Yu.Core.Jwt;
 using Yu.Data.Entities;
+using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures.BaseIdentity;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.User.OutputModels;
@@ -25,6 +26,9 @@ namespace Yu.Service.WebAdmin.User
     public class UserService : IUserService
     {
         private UserManager<BaseIdentityUser> _userManager;
+
+        // 组织树仓储
+        private IRepository<GroupTree, Guid> _groupTreeRepository;
 
         private IGroupService _groupService;
 
@@ -40,6 +44,7 @@ namespace Yu.Service.WebAdmin.User
 
         public UserService(
             UserManager<BaseIdentityUser> userManager,
+            IRepository<GroupTree, Guid> groupTreeRepository,
             IGroupService groupService,
             IPositionService positionService,
             IJwtFactory jwtFactory,
@@ -48,6 +53,7 @@ namespace Yu.Service.WebAdmin.User
             IMapper mapper)
         {
             _userManager = userManager;
+            _groupTreeRepository = groupTreeRepository;
             _positionService = positionService;
             _groupService = groupService;
             _jwtFactory = jwtFactory;
@@ -101,7 +107,7 @@ namespace Yu.Service.WebAdmin.User
         public async Task<UserDetail> GetUserDetailAsync(Guid userId)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            
+
             // 组织名称
             user.GroupName = string.IsNullOrEmpty(user.UserGroupId) ? string.Empty : _groupService.GetGroupNameById(Guid.Parse(user.UserGroupId));
 
@@ -182,7 +188,7 @@ namespace Yu.Service.WebAdmin.User
         /// <returns>用户数据</returns>
         public async Task<List<UserOutline>> GetUserOutlinesByIds(List<Guid> ids)
         {
-            var users = await _userManager.Users.Where(u=> ids.Contains(u.Id)).ToListAsync();
+            var users = await _userManager.Users.Where(u => ids.Contains(u.Id)).ToListAsync();
             users.ForEach(user =>
             {
                 user.GroupName = string.IsNullOrEmpty(user.UserGroupId) ? string.Empty : _groupService.GetGroupNameById(Guid.Parse(user.UserGroupId));
@@ -190,6 +196,56 @@ namespace Yu.Service.WebAdmin.User
             });
 
             // 结果数据
+            var userOutlines = _mapper.Map<List<UserOutline>>(users);
+            return userOutlines;
+        }
+
+        /// <summary>
+        /// 取得用户概要数据
+        /// </summary>
+        /// <returns>用户数据</returns>
+        public async Task<List<UserOutline>> GetUserOutlinesByPositions(string userName, string positionId, int positionGroup)
+        {
+            var u = await _userManager.FindByNameAsync(userName);
+
+            var users = new List<BaseIdentityUser>();
+
+            // 指定岗位人员办理
+            switch (positionGroup)
+            {
+                // 不指定部门
+                case 1:
+                    // 直接根据岗位信息查找人员
+                    users.AddRange(_userManager.Users.Where(user => user.PositionId == positionId));
+                    break;
+                // 发起人部门的指定岗位
+                case 2:
+                    users.AddRange(from user in _userManager.Users
+                                   where user.PositionId == positionId &&
+                                       user.UserGroupId == u.UserGroupId
+                                   select user);
+                    break;
+                // 发起人部门上一级部门的指定岗位
+                case 3:
+                    var upperGroupId = _groupTreeRepository
+                        .GetByWhereNoTracking(gt => gt.Descendant.ToString() == u.UserGroupId && gt.Length == 1)
+                        .FirstOrDefault()?.Ancestor;
+                    if (upperGroupId != null)
+                    {
+                        users.AddRange(from user in _userManager.Users
+                                       where user.PositionId == positionId &&
+                                           user.UserGroupId == upperGroupId.ToString()
+                                       select user);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            users.ForEach(user =>
+            {
+                user.GroupName = _groupService.GetGroupNameById(Guid.Parse(user.UserGroupId));
+                user.PositionName = _positionService.GetPositionNameById(Guid.Parse(user.PositionId));
+            });
             var userOutlines = _mapper.Map<List<UserOutline>>(users);
             return userOutlines;
         }
