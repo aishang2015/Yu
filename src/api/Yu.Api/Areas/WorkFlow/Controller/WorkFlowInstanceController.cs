@@ -3,12 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Yu.Core.Mvc;
-using Yu.Data.Entities;
 using Yu.Model.Common.InputModels;
 using Yu.Data.Entities.WorkFlow;
 using Yu.Service.WorkFlow.WorkFlowInstances;
 using Yu.Core.Extensions;
-using System.Collections.Generic;
 using Yu.Model.WorkFlow.WorkFlowInstance.InputModels;
 using System;
 using Yu.Model.Message;
@@ -142,7 +140,7 @@ namespace Yu.Api.Areas.WorkFlow.Controller
         /// 工作流表单数据
         /// </summary>
         [HttpPost("workFlowInstanceFormFile")]
-        [Description("更新工作流实例表单文件数据")]
+        [Description("更新工作流实例表单文件")]
         public async Task<IActionResult> AddWorkFlowInstanceFormFile([FromForm]IFormFile file)
         {
             var newName = await _service.AddWorkFlowInstanceFormFile(file);
@@ -153,7 +151,7 @@ namespace Yu.Api.Areas.WorkFlow.Controller
         /// 工作流表单数据
         /// </summary>
         [HttpDelete("workFlowInstanceFormFile")]
-        [Description("更新工作流实例表单文件数据")]
+        [Description("删除工作流实例表单文件")]
         public IActionResult RemoveWorkFlowInstanceFormFile([FromQuery]string fileName)
         {
             _service.RemoveWorkFlowInstanceFormFile(fileName);
@@ -179,6 +177,7 @@ namespace Yu.Api.Areas.WorkFlow.Controller
         /// 更新工作流节点
         /// </summary>
         [HttpPatch("workflowInstanceNode")]
+        [Description("处理工作流节点")]
         public IActionResult HandleWorkFlowInstanceNode([FromBody]WorkFlowInstanceHandleModel model)
         {
             _service.HandleWorkFlowInstance(model.InstanceId, model.HandleStatus, model.Explain);

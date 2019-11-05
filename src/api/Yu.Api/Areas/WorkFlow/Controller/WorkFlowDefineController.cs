@@ -27,7 +27,7 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
         /// 取得数据
         /// </summary>
         [HttpGet("workflowDefine")]
-        [Description("取得工作流定义数据")]
+        [Description("取得工作流定义")]
         public IActionResult GetWorkFlowDefineById([FromQuery] IdQuery query)
         {
             var result = _service.GetWorkFlowById(query.Id);
@@ -38,7 +38,7 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
         /// 取得数据
         /// </summary>
         [HttpGet("workflowDefines")]
-        [Description("取得工作流定义数据")]
+        [Description("取得工作流定义列表")]
         public IActionResult GetWorkFlowDefines([FromQuery] WorkflowDefineQuery query)
         {
             var result = _service.GetWorkFlowDefines(query.PageIndex, query.PageSize, query.TypeId);
@@ -56,7 +56,7 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
         /// 创建数据
         /// </summary>
         [HttpPost("workflowDefine")]
-        [Description("添加工作流定义数据")]
+        [Description("添加工作流定义")]
         public async Task<IActionResult> AddWorkFlowDefine([FromBody]WorkFlowDefine entity)
         {
             await _service.AddWorkFlowDefineAsync(entity);
@@ -67,7 +67,7 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
         /// 更新数据
         /// </summary>
         [HttpPut("workflowDefine")]
-        [Description("更新工作流定义数据")]
+        [Description("更新工作流定义")]
         public async Task<IActionResult> UpdateWorkFlowDefine([FromBody]WorkFlowDefine entity)
         {
             await _service.UpdateWorkFlowDefineAsync(entity);

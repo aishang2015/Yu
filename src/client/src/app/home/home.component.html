@@ -12,7 +12,7 @@
                         (click)="setBreadCrumb('权限管理','角色管理')"><i nz-icon nzType="audit" nzTheme="outline"></i>角色管理</li>
                     <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('groupmanage')" [routerLink]="[ '/right/group' ]"
                         (click)="setBreadCrumb('权限管理','组织管理')"><i nz-icon nzType="team" nzTheme="outline"></i>组织管理</li>
-                    <li nz-menu-item nzMatchRouter [routerLink]="[ '/right/position' ]"
+                    <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('positionmanage')" [routerLink]="[ '/right/position' ]"
                         (click)="setBreadCrumb('权限管理','岗位管理')"><i nz-icon nzType="team" nzTheme="outline"></i>岗位管理</li>
                     <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('elementmanage')"
                         [routerLink]="[ '/right/menu' ]" (click)="setBreadCrumb('权限管理','页面元素管理')"><i nz-icon
@@ -28,11 +28,11 @@
                             nzType="profile" nzTheme="outline"></i>实体数据管理</li>
                 </ul>
             </li>
-            <li nz-submenu nzTitle="工作流(施工中)" nzIcon="apartment">
+            <li nz-submenu *ngIf="isCanOperate('workflow')" nzTitle="工作流" nzIcon="apartment">
                 <ul>
-                    <li nz-menu-group nzTitle="使用">
+                    <li nz-menu-group *ngIf="isCanOperate('wfuse')"  nzTitle="使用">
                         <ul>
-                            <li nz-menu-item nzMatchRouter [routerLink]="[ '/workflow/job' ]">
+                            <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('mywf')" [routerLink]="[ '/workflow/job' ]">
                                 <i nz-icon style="font-size: 14px;">
                                     <svg>
                                         <path
@@ -40,7 +40,7 @@
                                             p-id="1220"></path>
                                     </svg>
                                 </i>我的工作</li>
-                            <li nz-menu-item nzMatchRouter [routerLink]="[ '/workflow/handle' ]">
+                            <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('myhandle')"  [routerLink]="[ '/workflow/handle' ]">
                                 <i nz-icon style="font-size: 14px;">
                                     <svg>
                                         <path
@@ -48,14 +48,14 @@
                                             p-id="2396"></path>
                                     </svg>
                                 </i>我的待办</li>
-                            <li nz-menu-item nzMatchRouter [routerLink]="[ '/workflow/recycle' ]">
+                            <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('wfrecyclebin')"  [routerLink]="[ '/workflow/recycle' ]">
                                 <i nz-icon nzType="delete" nzTheme="outline"></i>回收站
                             </li>
                         </ul>
                     </li>
-                    <li nz-menu-group nzTitle="管理">
+                    <li nz-menu-group *ngIf="isCanOperate('wfm')"  nzTitle="管理">
                         <ul>
-                            <li nz-menu-item nzMatchRouter [routerLink]="[ '/workflow/definition' ]"
+                            <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('wfmanage')"  [routerLink]="[ '/workflow/definition' ]"
                                 (click)="setBreadCrumb('工作流','工作流管理')">
                                 <i nz-icon style="font-size: 14px;">
                                     <svg>

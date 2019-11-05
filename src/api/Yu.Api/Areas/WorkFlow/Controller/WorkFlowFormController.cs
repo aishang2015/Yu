@@ -24,7 +24,7 @@ namespace Yu.Api.Areas.WorkFlow.Controller
         /// 取得数据
         /// </summary>
         [HttpGet("workflowForm")]
-        [Description("取得工作流表单数据")]
+        [Description("取得工作流表单")]
         public IActionResult GetWorkFlowForm([FromQuery]IdQuery query)
         {
             var formContent = _workFlowFormService.GetWorkFlowFormContent(query.Id);
@@ -41,7 +41,7 @@ namespace Yu.Api.Areas.WorkFlow.Controller
         /// 取得元素数据
         /// </summary>
         [HttpGet("workflowFormElement")]
-        [Description("取得工作流表单元素数据")]
+        [Description("取得工作流表单元素")]
         public IActionResult GetWorkFlowFormElement([FromQuery]IdQuery query)
         {
             var formElements = _workFlowFormService.GetWorkFlowFormElements(query.Id);
@@ -49,7 +49,7 @@ namespace Yu.Api.Areas.WorkFlow.Controller
         }
 
         [HttpPut("workflowForm")]
-        [Description("更新添加表单内容")]
+        [Description("更新工作流表单")]
         public async Task<IActionResult> AddOrUpdateWorkFlowForm([FromBody]WorkFlowFormViewModel model)
         {
             await _workFlowFormService.AddOrUpdateWorkFlowFormAsync(model.DefineId, model.FormContent, model.FormElements);

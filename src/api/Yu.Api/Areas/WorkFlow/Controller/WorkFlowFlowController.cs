@@ -24,7 +24,7 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
         /// 取得数据
         /// </summary>
         [HttpGet("workflowFlow")]
-        [Description("取得工作流流程数据")]
+        [Description("取得工作流流程节点和连接")]
         public IActionResult GetWorkFlowFlowNodes([FromQuery] WorkFlowFlowQuery query)
         {
             var nodes = _workFlowFlowService.GetWorkFlowFlowNodes(query.DefineId);
@@ -44,7 +44,7 @@ namespace Yu.Api.Areas.WorkFlow.Controllers
         /// 创建更新数据
         /// </summary>
         [HttpPut("workflowFlow")]
-        [Description("添加工作流流程节点数据")]
+        [Description("更新工作流流程节点和连接")]
         public async Task<IActionResult> AddOrUpdateWorkFlowFlowNode([FromBody]WorkFlowFlowViewModel model)
         {
             await _workFlowFlowService.AddOrUpdateFlow(model.DefineId, model.Nodes, model.Connections, model.NodeElements);

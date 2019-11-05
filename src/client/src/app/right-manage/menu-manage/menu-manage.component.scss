@@ -1,5 +1,6 @@
 // 父元素只设置minheight的情况下，子元素设置height：100%不会起作用。需要父元素设置height属性；
 .explorer{
+    min-height: 800px;
     height: 800px;
 
     .tree{
@@ -14,6 +15,7 @@
         border-left: none;
         height: 100%;
         padding: 10px;
+        overflow: auto;
     }
 }
 
