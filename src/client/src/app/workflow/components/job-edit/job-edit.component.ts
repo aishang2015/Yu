@@ -2,7 +2,7 @@ import { Component, OnInit, Input, NgModule, Compiler, ViewChild, ViewContainerR
 import { WorkFlowDefineService } from 'src/app/core/services/workflow/workflowdefine.service';
 import { WorkFlowFormService } from 'src/app/core/services/workflow/workflowform.service';
 import { WorkFlowFormElement } from '../../models/workflowFormElement';
-import { NgZorroAntdModule, UploadFile } from 'ng-zorro-antd';
+import { NgZorroAntdModule, UploadFile, NzMessageService } from 'ng-zorro-antd';
 import { WorkFlowInstanceService } from 'src/app/core/services/workflow/workflowinstance.service';
 import { FormGroup, ReactiveFormsModule, FormBuilder, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -12,6 +12,7 @@ import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
 import { CoreModule } from 'src/app/core/core.module';
 import { UriConstant } from 'src/app/core/constants/uri-constant';
 import { stringify } from 'querystring';
+import { Observable, Observer } from 'rxjs';
 
 @Component({
   selector: 'app-job-edit',
@@ -152,7 +153,7 @@ export class JobEditComponent implements OnInit {
         html = `<nz-select [(ngModel)]="values['${id}']" [disabled]="${!editable}"  id="${id}" ${style}>${options}</nz-select>`;
         break;
       case 'upload':
-        html = `<nz-upload (nzChange)="handleChange($event)" [(nzFileList)]="fileListMap['${id}']" [nzShowButton]="fileListMap['${id}'].length < 3" [nzAction]="uploadUrl" (click)="setId('${id}')" id="${id}">` +
+        html = `<nz-upload (nzChange)="handleChange($event)" [(nzFileList)]="fileListMap['${id}']" [nzBeforeUpload]="beforeUpload" [nzShowButton]="fileListMap['${id}'].length < 3" [nzAction]="uploadUrl" (click)="setId('${id}')" id="${id}">` +
           `<button nz-button><i nz-icon nzType="upload"></i><span>请选择上传文件</span></button>` +
           `</nz-upload>`;
         break;
@@ -174,11 +175,15 @@ export class JobEditComponent implements OnInit {
       // 上传文件列表
       fileListMap: { [id: string]: UploadFile[] } = {};
 
-      constructor(private _workflowInstanceService: WorkFlowInstanceService) { }
+      constructor(private _workflowInstanceService: WorkFlowInstanceService,
+        private _message:NzMessageService) { }
 
-      beforeUpload = (file: UploadFile): boolean => {
-        this.fileListMap[this.currentId] = this.fileListMap[this.currentId].concat(file);
-        return false;
+      beforeUpload = (file: File) => {
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+          this._message.error('文件必须小于 2MB!');
+          return false;
+        }
       };
 
       handleChange(info: any): void {

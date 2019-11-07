@@ -93,7 +93,8 @@ namespace Yu.Api
 
             app.UseSignalR(); // 使用signalr
 
-            app.UseStaticFiles(Configuration, "AvatarFileOption"); // 配置静态文件访问路径和服务器目录
+            app.UseStaticFiles(Configuration, "AvatarFileOption"); // 头像文件
+            app.UseStaticFiles(Configuration, "WorkFlowFileOption"); // 工作流上传文件
 
             app.UserSwaggerConfiguration(); // 使用Swagger
 

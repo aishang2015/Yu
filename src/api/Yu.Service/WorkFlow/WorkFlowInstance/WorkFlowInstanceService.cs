@@ -579,7 +579,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         {
             var endfix = file.FileName.Split('.').Last();
             var newName = Path.Combine(DateTime.Now.ToString("MMddHHmmssfff") + '.' + endfix);
-            await _fileStore.CreateFile(newName, @"C:\temp\files\wf", file.OpenReadStream());
+            await _fileStore.CreateFile(newName, @"C:\yu\files\wf", file.OpenReadStream());
             return newName;
         }
 
@@ -588,7 +588,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         /// </summary>
         public void RemoveWorkFlowInstanceFormFile(string fileName)
         {
-            _fileStore.DeleteFile(fileName, @"C:\temp\files\wf");
+            _fileStore.DeleteFile(fileName, @"C:\yu\files\wf");
         }
 
 
