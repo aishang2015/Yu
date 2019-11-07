@@ -48,7 +48,12 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
         [Description("删除角色数据")]
         public async Task<IActionResult> DeleteRole([FromQuery]IdQuery query)
         {
-            await _roleService.DeleteRoleAsync(query.Id);
+            var isSuccess = await _roleService.DeleteRoleAsync(query.Id);
+            if (!isSuccess)
+            {
+                ModelState.AddModelError("RoleName", ErrorMessages.WebAdmin_Role_E002);
+                return BadRequest(ModelState);
+            }
             return Ok();
         }
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Yu.Core.Expressions;
 using Yu.Data.Entities;
 using Yu.Data.Infrasturctures.BaseIdentity;
+using Yu.Data.Infrasturctures.BaseIdentity.Pemission;
 using Yu.Data.Repositories;
 using ApiEntity = Yu.Data.Entities.Right.Api;
 
@@ -14,12 +15,18 @@ namespace Yu.Service.WebAdmin.Api
         // API仓储类
         private IRepository<ApiEntity, Guid> _apiRepository;
 
+        // 权限缓存
+        private readonly IPermissionCacheService _permissionCacheService;
+
         // 工作单元
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
-        public ApiService(IRepository<ApiEntity, Guid> apiRepository, IUnitOfWork<BaseIdentityDbContext> unitOfWork)
+        public ApiService(IRepository<ApiEntity, Guid> apiRepository,
+            IPermissionCacheService permissionCacheService,
+            IUnitOfWork<BaseIdentityDbContext> unitOfWork)
         {
             _apiRepository = apiRepository;
+            _permissionCacheService = permissionCacheService;
             _unitOfWork = unitOfWork;
         }
 
@@ -72,6 +79,7 @@ namespace Yu.Service.WebAdmin.Api
         {
             _apiRepository.Update(api);
             await _unitOfWork.CommitAsync();
+            _permissionCacheService.ClearApiCache();
         }
 
         /// <summary>

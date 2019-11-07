@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Yu.Core.Mvc;
+using Yu.Data.Infrasturctures.BaseIdentity.Mvc;
 using Yu.Model.Common.InputModels;
 using Yu.Model.WorkFlow.WorkFlowForm;
 using Yu.Service.WorkFlow.WorkFlowForm;
@@ -11,7 +12,7 @@ namespace Yu.Api.Areas.WorkFlow.Controller
 {
     [Route("api")]
     [Description("工作流表单管理")]
-    public class WorkFlowFormController : AuthorizeController
+    public class WorkFlowFormController : ApiAuthorizeController
     {
         private readonly IWorkFlowFormService _workFlowFormService;
 

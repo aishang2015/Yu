@@ -39,28 +39,22 @@ namespace Yu.Data.Repositories
             _dataSet = _context.Set<TEntity>();
 
             var userName = httpContextAccessor.HttpContext.User.GetClaimValue(CustomClaimTypes.UserName);
-            var userRoles = httpContextAccessor.HttpContext.User.GetClaimValue(CustomClaimTypes.Role).Split(',', StringSplitOptions.RemoveEmptyEntries);
             if (!string.IsNullOrEmpty(userName))
             {
                 // 表达式合集
                 var expressionList = new List<LambdaExpression>();
 
                 // 取得用户的数据规则
-                var permissions = permissionCacheService.GetUserRuleAsync(userName, userRoles).Result;
+                var permissions = permissionCacheService.GetRuleAsync(typeof(TDbContext).Name, typeof(TEntity).Name).Result;
 
                 // 所有规则组
-                foreach (var group in permissions)
+                foreach (var groupRuleStr in permissions)
                 {
-                    // 找到符合当前实体的规则
-                    var items = group.Split('|');
-                    if (items[0] == typeof(TDbContext).Name && items[1] == typeof(TEntity).Name)
-                    {
-                        // 表达式反序列化
-                        var serializer = new ExpressionSerializer(new JsonSerializer());
-                        serializer.AddKnownType(typeof(Core.Expressions.ExpressionType));
-                        var lambda = (LambdaExpression)serializer.DeserializeText(items[2]);
-                        expressionList.Add(lambda);
-                    }
+                    // 表达式反序列化
+                    var serializer = new ExpressionSerializer(new JsonSerializer());
+                    serializer.AddKnownType(typeof(Core.Expressions.ExpressionType));
+                    var lambda = (LambdaExpression)serializer.DeserializeText(groupRuleStr);
+                    expressionList.Add(lambda);
                 }
 
                 // 连接lambda表达式生成统一条件

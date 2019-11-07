@@ -145,7 +145,7 @@
     <nz-divider nzText="认证信息"></nz-divider>
 
     <nz-form-item>
-      <nz-form-label [nzSpan]="5">用户名</nz-form-label>
+      <nz-form-label [nzSpan]="5" nzRequired>用户名</nz-form-label>
       <nz-form-control [nzSpan]="12" [nzErrorTip]="nameErrorTpl">
         <input nz-input autocomplete="off" type="text" name="userName" #userName="ngModel" style="color: black;"
           [(ngModel)]="editUserDetail.userName" required appUserName [disabled]="editUserDetail.id" />
@@ -226,11 +226,16 @@
     <nz-divider nzText="基本信息"></nz-divider>
 
     <nz-form-item>
-      <nz-form-label [nzSpan]="5">姓名</nz-form-label>
-      <nz-form-control [nzSpan]="12">
+      <nz-form-label [nzSpan]="5" nzRequired>姓名</nz-form-label>
+      <nz-form-control [nzSpan]="12" [nzErrorTip]="fulNameErrorTpl">
         <input nz-input placeholder="请输入姓名" autocomplete="off" type="text" name="fullName"
-          [(ngModel)]="editUserDetail.fullName" />
-      </nz-form-control>
+          [(ngModel)]="editUserDetail.fullName" required>
+          <ng-template #fulNameErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">
+              请输入用户名
+            </ng-container>
+          </ng-template>
+      </nz-form-control>      
     </nz-form-item>
 
     <nz-form-item>

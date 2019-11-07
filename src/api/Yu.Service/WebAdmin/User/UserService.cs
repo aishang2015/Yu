@@ -68,6 +68,7 @@ namespace Yu.Service.WebAdmin.User
         public async Task<bool> AddUserAsync(UserDetail userDetail)
         {
             var user = _mapper.Map<BaseIdentityUser>(userDetail);
+            user.CreateTime = DateTime.Now;
             var result = await _userManager.CreateAsync(user, CommonConstants.Password);
 
             if (!result.Succeeded)
@@ -162,7 +163,7 @@ namespace Yu.Service.WebAdmin.User
 
             // 分页取得用户
             var skip = pageSize * (pageIndex - 1);
-            var users = await _userManager.Users.Where(filter).Skip(skip).Take(pageSize).ToListAsync();
+            var users = await _userManager.Users.Where(filter).OrderByDescending(u => u.CreateTime).Skip(skip).Take(pageSize).ToListAsync();
 
             users.ForEach(user =>
             {

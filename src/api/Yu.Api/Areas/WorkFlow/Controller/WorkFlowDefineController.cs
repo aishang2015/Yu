@@ -9,12 +9,13 @@ using Yu.Data.Entities.WorkFlow;
 using Yu.Service.WorkFlow.WorkFlowDefines;
 using Yu.Model.WorkFlow.WorkFlowDefine.InputModels;
 using Yu.Model.Message;
+using Yu.Data.Infrasturctures.BaseIdentity.Mvc;
 
 namespace Yu.Api.Areas.WorkFlow.Controllers
 {
     [Route("api")]
     [Description("工作流定义")]
-    public class WorkFlowDefineController : AuthorizeController
+    public class WorkFlowDefineController : ApiAuthorizeController
     {
         private readonly IWorkFlowDefineService _service;
 

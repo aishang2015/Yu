@@ -2,19 +2,17 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using Yu.Core.Mvc;
-using Yu.Data.Entities;
-using Yu.Data.Entities.Right;
 using Yu.Model.Common.InputModels;
 using Yu.Data.Entities.WorkFlow;
 using Yu.Service.WorkFlow.WorkFlowTypes;
 using Yu.Model.Message;
+using Yu.Data.Infrasturctures.BaseIdentity.Mvc;
 
 namespace Yu.Api.Areas.WorkFlow.Controllers
 {
     [Route("api")]
     [Description("工作流管理")]
-    public class WorkFlowTypeController : AuthorizeController
+    public class WorkFlowTypeController : ApiAuthorizeController
     {
         private readonly IWorkFlowTypeService _service;
 

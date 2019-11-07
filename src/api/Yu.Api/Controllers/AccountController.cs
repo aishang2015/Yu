@@ -163,20 +163,12 @@ namespace Yu.Api.Controllers
         /// </summary>
         private async Task<LoginResult> GetLoginResult(BaseIdentityUser user)
         {
-            // 根据用户的角色获取用户页面侧的权限内容
-            List<string> identities = new List<string> { }, routes = new List<string> { };
-
             // 用户的角色
             var userRoles = await _userService.GetUserRolesAsync(user);
 
-            foreach (var role in userRoles)
-            {
-                var identificationStr = await _permissionCacheService.GetRoleIdentificationAsync(role);
-                identities.AddRange(identificationStr.Split(CommonConstants.StringConnectChar, StringSplitOptions.RemoveEmptyEntries));
-
-                var routeStr = await _permissionCacheService.GetRoleRoutesAsync(role);
-                routes.AddRange(routeStr.Split(CommonConstants.StringConnectChar, StringSplitOptions.RemoveEmptyEntries));
-            }
+            // 根据用户的角色获取用户页面侧的权限内容
+            var identities = await _permissionCacheService.GetRoleIdentificationAsync(userRoles);
+            var routes = await _permissionCacheService.GetRoleRoutesAsync(userRoles);
 
             // 生成JwtToken
             var token = _jwtFactory.GenerateJwtToken(new List<(string, string)>{

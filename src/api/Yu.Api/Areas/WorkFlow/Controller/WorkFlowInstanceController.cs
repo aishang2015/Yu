@@ -11,12 +11,13 @@ using Yu.Model.WorkFlow.WorkFlowInstance.InputModels;
 using System;
 using Yu.Model.Message;
 using Microsoft.AspNetCore.Http;
+using Yu.Data.Infrasturctures.BaseIdentity.Mvc;
 
 namespace Yu.Api.Areas.WorkFlow.Controller
 {
     [Route("api")]
     [Description("工作流实例")]
-    public class WorkFlowInstanceController : AuthorizeController
+    public class WorkFlowInstanceController : ApiAuthorizeController
     {
         private readonly IWorkFlowInstanceService _service;
 

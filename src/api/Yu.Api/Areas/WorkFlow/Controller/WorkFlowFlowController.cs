@@ -6,12 +6,13 @@ using Yu.Core.Mvc;
 using Yu.Model.WorkFlow.WorkFlowFlowNodes.InputModels;
 using Yu.Model.WorkFlow.WorkFlowFlow;
 using Yu.Service.WorkFlow.WorkFlowFlow;
+using Yu.Data.Infrasturctures.BaseIdentity.Mvc;
 
 namespace Yu.Api.Areas.WorkFlow.Controllers
 {
     [Route("api")]
     [Description("工作流流程节点管理")]
-    public class WorkFlowFlowController : AuthorizeController
+    public class WorkFlowFlowController : ApiAuthorizeController
     {
         private readonly IWorkFlowFlowService _workFlowFlowService;
 

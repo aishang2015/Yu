@@ -39,11 +39,11 @@ namespace Yu.Service.WebAdmin.Role
         private readonly IMapper _mapper;
 
         public RoleService(RoleManager<BaseIdentityRole> roleManager,
-            IRepository<ElementEntity, Guid> elementRepository, 
+            IRepository<ElementEntity, Guid> elementRepository,
             IRepository<ElementTree, Guid> elementTreeRepository,
             IRepository<ElementApi, Guid> elementApiRepository,
-            IRepository<ApiEntity, Guid> apiRepository, 
-            IPermissionCacheService permissionCacheService, 
+            IRepository<ApiEntity, Guid> apiRepository,
+            IPermissionCacheService permissionCacheService,
             IMemoryCache memoryCache,
             IMapper mapper)
         {
@@ -120,38 +120,45 @@ namespace Yu.Service.WebAdmin.Role
             await _roleManager.UpdateAsync(identityRole);
 
             // 找到关联元素
-            var elements = new List<string>();
+            var elementIds = new List<Guid>();
             foreach (var element in role.Elements)
             {
-                var ancestorElements = _elementTreeRepository.GetByWhereNoTracking(e => e.Descendant == Guid.Parse(element));
-                elements.AddRange(ancestorElements.Select(e => e.Ancestor.ToString()));
-                var descendantElemnts = _elementTreeRepository.GetByWhereNoTracking(e => e.Ancestor == Guid.Parse(element));
-                elements.AddRange(descendantElemnts.Select(e => e.Descendant.ToString()));
+                var ancestorIds = from et in _elementTreeRepository.GetAllNoTracking()
+                                  where et.Descendant.ToString() == element
+                                  select et.Ancestor;
+                elementIds.AddRange(ancestorIds);
+                var descendantIds = from et in _elementTreeRepository.GetAllNoTracking()
+                                    where et.Ancestor.ToString() == element
+                                    select et.Descendant;
+                elementIds.AddRange(descendantIds);
             }
-            elements = elements.Distinct().ToList();
+            var ids = from id in elementIds.Distinct().ToList()
+                      select id.ToString();
 
             // 更新声明
-            await UpdateRoleClaimAsync(identityRole, elements.ToArray(), CustomClaimTypes.Element);
+            await UpdateRoleClaimAsync(identityRole, ids.ToArray(), CustomClaimTypes.Element);
             await UpdateRoleClaimAsync(identityRole, role.Elements.ToArray(), CustomClaimTypes.DisPlayElement);
             await UpdateRoleClaimAsync(identityRole, role.DataRules, CustomClaimTypes.Rule);
-
-            // 清理当前角色的权限缓存
-            await _permissionCacheService.ClearRolePermissionCache(identityRole.Name);
         }
 
         /// <summary>
         /// 删除角色
         /// </summary>
         /// <param name="id">角色id</param>
-        public async Task DeleteRoleAsync(Guid id)
+        public async Task<bool> DeleteRoleAsync(Guid id)
         {
             var role = await _roleManager.FindByIdAsync(id.ToString());
+            if (CommonConstants.SystemManagerRole.Equals(role.Name))
+            {
+                return false;
+            }
             var claims = await _roleManager.GetClaimsAsync(role);
             foreach (var claim in claims)
             {
                 await _roleManager.RemoveClaimAsync(role, claim);
             }
             await _roleManager.DeleteAsync(role);
+            return true;
         }
 
         /// <summary>
@@ -240,9 +247,12 @@ namespace Yu.Service.WebAdmin.Role
             {
                 await _roleManager.AddClaimAsync(identityRole, new Claim(claimType, value));
             }
+
+            // 清理当前角色的权限缓存
+            _permissionCacheService.ClearRoleClaimCache(identityRole.Name);
         }
 
-        
+
 
 
     }

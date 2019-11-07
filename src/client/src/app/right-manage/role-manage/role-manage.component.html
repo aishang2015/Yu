@@ -54,7 +54,7 @@
   <form nz-form #form="ngForm" (ngSubmit)="submit(form)">
 
     <nz-form-item>
-      <nz-form-label [nzSpan]="5">名称</nz-form-label>
+      <nz-form-label [nzSpan]="5" nzRequired>名称</nz-form-label>
       <nz-form-control [nzSpan]="12" [nzErrorTip]="nameErrorTpl">
         <input class="w250 cb" nz-input autocomplete="off" type="text" name="name" [(ngModel)]="editedRole.name"
           #name="ngModel" required />
@@ -67,7 +67,7 @@
     </nz-form-item>
 
     <nz-form-item>
-      <nz-form-label [nzSpan]="5">描述</nz-form-label>
+      <nz-form-label [nzSpan]="5" nzRequired>描述</nz-form-label>
       <nz-form-control [nzSpan]="12" [nzErrorTip]="describeErrorTpl">
         <input class="w350 cb" nz-input autocomplete="off" type="text" name="describe" [(ngModel)]="editedRole.describe"
           #describe="ngModel" required />

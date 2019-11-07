@@ -11,17 +11,13 @@
 
         public const string RoleMemoryCacheKey = "RoleCache:";
 
-        // roleClaim缓存key
         public const string RoleClaimsMemoryCacheKey = "RoleClaimsCache:";
 
-        // roleapi缓存key
-        public const string RoleApisMemoryCacheKey = "RoleApisCache:";
+        public const string ElementCacheKey = "ElementCache";
 
-        // roleidentification缓存key
-        public const string RoleIdentificationMemoryCacheKey = "RoleIdentificationCache:";
+        public const string ElementApiCacheKey = "ElementApiCache";
 
-        // roleroute缓存key
-        public const string RoleRouteMemoryCacheKey = "RoleRouteCache:";
+        public const string ApiCacheKey = "ApiCache";
 
         public const string RuleMemoryCacheKey = "RuleCache:";
 

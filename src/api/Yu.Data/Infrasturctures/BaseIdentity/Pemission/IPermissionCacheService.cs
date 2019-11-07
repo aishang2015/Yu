@@ -8,11 +8,6 @@ namespace Yu.Data.Infrasturctures.BaseIdentity.Pemission
 {
     public interface IPermissionCacheService
     {
-        /// <summary>
-        /// 获取角色的Claim
-        /// </summary>
-        /// <param name="roleName">角色名</param>
-        Task<List<Claim>> GetRoleClaimAsync(string roleName);
 
         /// <summary>
         /// 获取角色的Claim
@@ -22,37 +17,29 @@ namespace Yu.Data.Infrasturctures.BaseIdentity.Pemission
         Task<List<string>> GetRoleClaimValuesAsync(string roleName, string claimType);
 
         /// <summary>
-        /// 取得角色的api权限
+        /// 判断当前用户是否有该api权限
         /// </summary>
-        /// <returns></returns>
-        Task<string> GetRoleApiAsync(string roleName);
+        Task<bool> HaveApiRight(string address, string type);
 
         /// <summary>
         /// 取得角色拥有的前端识别
         /// </summary>
-        /// <param name="roleName">角色名称</param>
-        Task<string> GetRoleIdentificationAsync(string roleName);
+        Task<List<string>> GetRoleIdentificationAsync(List<string> roles);
 
         /// <summary>
         /// 取得角色拥有的前端路由
         /// </summary>
-        /// <param name="roleName">角色名称</param>
-        Task<string> GetRoleRoutesAsync(string roleName);
+        Task<List<string>> GetRoleRoutesAsync(List<string> roles);
 
         /// <summary>
-        /// 清除角色的权限缓存
+        /// 取得用户的数据规则
         /// </summary>
-        /// <param name="roleName">角色名称</param>
-        Task ClearRolePermissionCache(string roleName);
+        Task<List<string>> GetRuleAsync(string dbContextName, string entityName);
 
-        /// <summary>
-        /// 清除所有角色的权限缓存
-        /// </summary>
-        Task ClearAllRolePermissionCache();
-
-        /// <summary>
-        /// 更新角色拥有的所有权限的缓存
-        /// </summary>
-        Task<List<string>> GetUserRuleAsync(string userName,string[] userRoles);
+        // 清除缓存操作
+        void ClearRoleClaimCache(string roleName);
+        void ClearElementCache();
+        void ClearElementApiCache();
+        void ClearApiCache();
     }
 }

@@ -172,7 +172,8 @@ namespace Yu.Data.Infrasturctures
                     UserName = $"admin{i}",
                     NormalizedUserName = $"ADMIN{i}",
                     Roles = "系统管理员",
-                    FullName = xing[random.Next(0, xing.Count)] + xing[random.Next(0, xing.Count)]
+                    FullName = xing[random.Next(0, xing.Count)] + xing[random.Next(0, xing.Count)],
+                    CreateTime = DateTime.Now
                 };
                 userManager.CreateAsync(user, CommonConstants.Password).Wait();
                 userManager.AddToRoleAsync(user, "系统管理员").Wait();

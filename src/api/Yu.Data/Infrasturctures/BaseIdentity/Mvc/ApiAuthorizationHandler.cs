@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Yu.Core.Constants;
@@ -37,29 +36,18 @@ namespace Yu.Data.Infrasturctures.BaseIdentity.Mvc
             var requestPath = httpContext.Request.Path.Value;
             var requestMethod = httpContext.Request.Method;
 
-            var roles = context.User.GetClaimValue(CustomClaimTypes.Role).Split(',', StringSplitOptions.RemoveEmptyEntries);
+            // 取得用户角色
+            var checkResult = await _permissionCacheService.HaveApiRight(requestPath, requestMethod);
 
-            if (roles.Contains("系统管理员"))
+            if (checkResult)
             {
                 context.Succeed(requirement);
-                return;
             }
             else
             {
-                var api = requestPath + '|' + requestMethod;
-                foreach (var role in roles)
-                {
-                    var apis = (await _permissionCacheService.GetRoleApiAsync(role)).Split(CommonConstants.StringConnectChar);
-                    if (apis.Contains(api))
-                    {
-                        context.Succeed(requirement);
-                        return;
-                    }
-                }
-
+                context.Fail();
             }
 
-            context.Fail();
         }
     }
 }

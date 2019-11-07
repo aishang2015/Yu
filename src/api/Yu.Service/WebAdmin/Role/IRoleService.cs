@@ -39,7 +39,7 @@ namespace Yu.Service.WebAdmin.Role
         /// 删除角色
         /// </summary>
         /// <param name="id">角色id</param>
-        Task DeleteRoleAsync(Guid id);
+        Task<bool> DeleteRoleAsync(Guid id);
 
         /// <summary>
         /// 更新角色

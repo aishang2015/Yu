@@ -41,6 +41,8 @@ namespace Yu.Data.Infrasturctures.BaseIdentity
 
         #endregion
 
+        public DateTime CreateTime { get; set; }
+
         #region 权限管理模块字段
         
         public string UserGroupId { get; set; }

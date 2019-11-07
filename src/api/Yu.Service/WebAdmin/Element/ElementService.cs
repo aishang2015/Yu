@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Yu.Data.Entities.Right;
 using Yu.Data.Infrasturctures.BaseIdentity;
+using Yu.Data.Infrasturctures.BaseIdentity.Pemission;
 using Yu.Data.Repositories;
 using Yu.Model.WebAdmin.Element.InputModels;
 using Yu.Model.WebAdmin.Element.OutputModels;
@@ -27,18 +28,23 @@ namespace Yu.Service.WebAdmin.Element
         // 工作单元
         private readonly IUnitOfWork<BaseIdentityDbContext> _unitOfWork;
 
+        // 权限缓存
+        private readonly IPermissionCacheService _permissionCacheService;
+
         private readonly IMapper _mapper;
 
         public ElementService(IRepository<Ele, Guid> elementRepository,
             IRepository<EleTree, Guid> elementTreeRepository,
             IRepository<ElementApi, Guid> elementApiRepository,
             IUnitOfWork<BaseIdentityDbContext> unitOfWork,
+            IPermissionCacheService permissionCacheService,
             IMapper mapper)
         {
             _elementRepository = elementRepository;
             _elementTreeRepository = elementTreeRepository;
             _elementApiRepository = elementApiRepository;
             _unitOfWork = unitOfWork;
+            _permissionCacheService = permissionCacheService;
             _mapper = mapper;
         }
 
@@ -169,6 +175,9 @@ namespace Yu.Service.WebAdmin.Element
                 });
             }
             await _unitOfWork.CommitAsync();
+
+            _permissionCacheService.ClearElementCache();
+            _permissionCacheService.ClearElementApiCache();
         }
     }
 }
