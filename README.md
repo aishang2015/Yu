@@ -1,12 +1,20 @@
 # YU
 
-基于aspnetcore 2.2 和angular8 开发，在asp net core identity权限框架基础上添加了组织，界面以及数据管理的可扩展的权限管理系统。
+基于aspnetcore 2.2 和angular8 开发，在asp net core identity权限框架基础上开发的权限管理系统。
 
 ### 示例
 
-测试地址: [http://140.143.189.32:8081] 测试账号管理员：admin1-10 普通用户：user1-10，密码均为P@ssword1
+[http://140.143.189.32] 
 
-*展示程序使用的是sample分支，在master基础上添加了展示数据和定时刷新数据库的功能。sample分支版本落后于master。*
+服务器使用windows server 2012，api在 Kestrel 运行 ，web运行在iis。
+
+数据库使用PostgreSQL，任务计划会在每天早晨重置数据。
+
+### 实现功能
+
+- 权限管理
+- 简单工作流
+- to do。。
 
 ### 技术框架
 
@@ -50,11 +58,9 @@
 
 ### 安装运行
 
-web端和api端分开开发。示例程序服务器中使用了sql server 2012。本地开发环境使用了vs2017自带的SQL Server Express LocalDb(SqlLocalDb)，可以根据需要自行修改appsettings.json的配置，数据会在数据库自动创建时自动插入。
-
 **api端**
 
-确保安装了net core2.2 sdk，使用vs2017打开，vs会自动还原所有包，f5直接运行。
+用vs打开，f5运行。
 
 **web端**
 
