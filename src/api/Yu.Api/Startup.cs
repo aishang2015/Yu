@@ -2,8 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NLog;
-using NLog.Config;
+using Microsoft.Extensions.Hosting;
 using System;
 using Yu.Core.AutoMapper;
 using Yu.Core.Captcha;
@@ -48,7 +47,7 @@ namespace Yu.Api
 
             services.AddScopedBatch("Yu.Service.dll"); // 批量注入service
 
-            services.AddMvc(ops =>
+            services.AddControllers(ops =>
             {
                 ops.ModelBindingMessageProvider.SetAttemptedValueIsInvalidAccessor((value, name) => $"值'{value}'不是合法的'{name}'(SYSTEM)");
             }).AddFluentValidators(); // 添加fluentvalidation支持
@@ -71,9 +70,8 @@ namespace Yu.Api
         }
 
         // 构建管道
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            LogManager.Configuration.Install(new InstallationContext());
             if (env.IsDevelopment())
             {
                 app.UseDevelopExceptionHandler();
@@ -84,7 +82,7 @@ namespace Yu.Api
             }
 
             app.UseMqtt(); // 解析mqtt请求。
-                       
+
             app.UseCustomCors();    // 使用自定义跨域策略
 
             app.SeedIdentityDbData<BaseIdentityDbContext>();   // 初始化BaseIdentityDbContext数据
@@ -99,7 +97,15 @@ namespace Yu.Api
             app.UserSwaggerConfiguration(); // 使用Swagger
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

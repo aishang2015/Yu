@@ -1,6 +1,6 @@
 # YU
 
-基于aspnetcore 2.2 和angular8 开发，在asp net core identity权限框架基础上开发的权限管理系统。
+基于aspnetcore 和angular8 开发，在asp net core identity权限框架基础上开发的权限管理系统。
 
 ### 示例
 
@@ -16,32 +16,36 @@
 - 简单工作流
 - to do。。
 
+### 重要记录
+
+- 2019/11/12 api升级到net core 3.0 （使用了一些预览版的包）
+
 ### 技术框架
 
 - api
-  - 核心框架：AspNetCore 2.2
-  - 持久层框架：Entity Framework 2.2
+  - 核心框架：AspNetCore 3.0
+  - 持久层框架：Entity Framework 3.0
   - 缓存：MemroyCache
-  - 日志：Nlog.Web.AspNetCore 4.8.2
-  - 对象映射：AutoMapper 8.1.0
-  - 模型验证：FluentValidation.AspNetCore 8.4.0
-  - Expression序列化和反序列化：Serialize.Linq 1.8.1 
-  - API文档：Swashbuckle.AspNetCore 4.0.1
-  - 作业调度：Quartz.Net 3.0.7
-  - PostgreSQL支持：Npgsql.EntityFrameworkCore.PostgreSQL 2.2.4
-  - MySQL支持：Pomelo.EntityFrameworkCore.MySql 2.2.0
-  - SQLite支持：Microsoft.EntityFrameworkCore.Sqlite 2.2.6
-  - Redis：StackExchange.Redis 2.0.601
-  - MongoDB：MongoDB.Driver 2.9.0
-  - MQTT：MQTTNet.AspNetCore 3.0.8
-  - SignalR: Microsoft.AspNet.SignalR 2.4.1
+  - 日志：Nlog.Web.AspNetCore 
+  - 对象映射：AutoMapper
+  - 模型验证：FluentValidation.AspNetCore 
+  - Expression序列化和反序列化：Serialize.Linq 
+  - API文档：Swashbuckle.AspNetCore 
+  - 作业调度：Quartz.Net 
+  - PostgreSQL支持：Npgsql.EntityFrameworkCore.PostgreSQL 
+  - MySQL支持：Pomelo.EntityFrameworkCore.MySql
+  - SQLite支持：Microsoft.EntityFrameworkCore.Sqlite 
+  - Redis：StackExchange.Redis 
+  - MongoDB：MongoDB.Driver 
+  - MQTT：MQTTNet.AspNetCore 
+  - SignalR: Microsoft.AspNet.SignalR 
 - web
-  - 核心框架：angular 8.1.3
-  - UI框架：ng-zorro-antd 8.1.2
-  - jwt：angular-jwt 2.1.0
-  - 流程图：jsplumb 2.11.2
-  - 缩放：panzoom 8.1.2
-  - aspnet/signalr 1.1.4
+  - 核心框架：angular 
+  - UI框架：ng-zorro-antd 
+  - jwt：angular-jwt
+  - 流程图：jsplumb
+  - 缩放：panzoom 
+  - aspnet/signalr
 
 ### 开发环境
 
@@ -53,7 +57,7 @@
 
 ### 开发工具
 
-- visual studio 2017
+- visual studio 2019
 - visual code
 
 ### 安装运行
@@ -77,7 +81,7 @@ src
 	├───Yu.Api  接口层，只有controller
 	├───Yu.Model 模型层，所有的验证数据映射放在这里
 	├───Yu.Service 业务处理层，所有的业务处理放在这里
-	├───Yu.Data 实体层，包含实体定义，仓储实现等
+	└───Yu.Data 实体层，包含实体定义，仓储实现等
 		├───Configurations 实体配置
 		├───Entities 实体定义
 		├───Infrasturctures 基础设施
@@ -109,14 +113,13 @@ src
 			├───home 根基础页面组件
 			├───workflow 工作流模块
 			└───core 共享功能模块
-				└───core 共享功能模块
-					├───Interceptors  http拦截器
-					├───components 共享组件
-					├───constants 常量
-					├───directives 指令
-					├───pipes 管道
-					├───services 服务
-					├───utils 帮助类
-					└───validators 表单验证器
+				├───Interceptors  http拦截器
+				├───components 共享组件
+				├───constants 常量
+				├───directives 指令
+				├───pipes 管道
+				├───services 服务
+				├───utils 帮助类
+				└───validators 表单验证器
 ```
 

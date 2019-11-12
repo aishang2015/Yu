@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Yu.Core.Emails
 {
@@ -7,7 +6,7 @@ namespace Yu.Core.Emails
     {
         public static void AddEmailSender(this IServiceCollection services)
         {
-            services.AddSingleton<IEmailSender>();
+            //services.AddSingleton<IEmailSender>();
         }
     }
 }

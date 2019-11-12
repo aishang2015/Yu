@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MQTTnet.AspNetCore;
+using Microsoft.AspNetCore;
 using NLog.Web;
 using System;
+using MQTTnet.AspNetCore;
 
 namespace Yu.Api
 {
@@ -16,7 +17,7 @@ namespace Yu.Api
             try
             {
                 logger.Debug("init main");
-                CreateWebHostBuilder(args).Build().Run();
+                CreateHostBuilder(args).Build().Run();
             }
             catch (Exception ex)
             {
@@ -30,20 +31,23 @@ namespace Yu.Api
             }
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseKestrel(o =>
-                {
-                    o.ListenAnyIP(1883, l => l.UseMqtt());
-                    o.ListenAnyIP(5001, l => l.UseHttps());
-                    o.ListenAnyIP(5000);
-                })
-                .UseStartup<Startup>()
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                    {
+                        webBuilder.UseKestrel(o =>
+                        {
+                            o.ListenAnyIP(1883, l => l.UseMqtt());
+                            o.ListenAnyIP(5001, l => l.UseHttps());
+                            o.ListenAnyIP(5000);
+                        })
+                        .UseStartup<Startup>();
+                    })
                 .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.SetMinimumLevel(LogLevel.Trace);
-                })
+                    {
+                        logging.ClearProviders();
+                        logging.SetMinimumLevel(LogLevel.Trace);
+                    })
                 .UseNLog();
     }
 }

@@ -15,22 +15,22 @@ namespace Yu.Data.Infrasturctures.BaseIdentity.Mvc
     // 由于要访问roleservice临时将文件放在这里
     public class ApiAuthorizationHandler : AuthorizationHandler<ApiAuthorizationRequirement>
     {
-        private readonly IMemoryCache _memoryCache;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         private readonly IPermissionCacheService _permissionCacheService;
 
-        public ApiAuthorizationHandler(IMemoryCache memoryCache,
+        public ApiAuthorizationHandler(IHttpContextAccessor httpContextAccessor,
             IPermissionCacheService permissionCacheService)
         {
-            _memoryCache = memoryCache;
+            _httpContextAccessor = httpContextAccessor;
             _permissionCacheService = permissionCacheService;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ApiAuthorizationRequirement requirement)
         {
             // 转化为HTTPCONTEXT
-            AuthorizationFilterContext filterContext = context.Resource as AuthorizationFilterContext;
-            HttpContext httpContext = filterContext.HttpContext;
+            //AuthorizationFilterContext filterContext = context.Resource as AuthorizationFilterContext;
+            HttpContext httpContext = _httpContextAccessor.HttpContext;
 
             // 取得请求路径和请求方法
             var requestPath = httpContext.Request.Path.Value;

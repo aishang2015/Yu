@@ -9,7 +9,7 @@ namespace Yu.Core.SignalR
     {
         public static void UseSignalR(this IApplicationBuilder app)
         {
-            app.UseSignalR(options =>
+            app.UseEndpoints(options =>
             {
                 options.MapHub<SignalRHub>("/hub");
             });

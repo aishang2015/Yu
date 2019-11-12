@@ -11,7 +11,8 @@ namespace Yu.Core.MQTT
     {
         public static void UseMqtt(this IApplicationBuilder app)
         {
-            app.UseConnections(builder =>
+            app.UseRouting();
+            app.UseEndpoints(builder =>
             {
                 builder.MapConnectionHandler<MqttConnectionHandler>("/mqtt", options =>
                 {

@@ -8,12 +8,13 @@ using Yu.Model.Common.InputModels;
 using Yu.Data.Entities.WebAdmin;
 using Yu.Service.WebAdmin.Positions;
 using Yu.Model.Message;
+using Yu.Data.Infrasturctures.BaseIdentity.Mvc;
 
 namespace Yu.Api.Areas.WebAdmin.Controllers
 {
     [Route("api")]
     [Description("岗位管理")]
-    public class PositionController : AuthorizeController
+    public class PositionController : ApiAuthorizeController
     {
         private readonly IPositionService _service;
 
@@ -22,7 +23,7 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
             _service = service;
         }
 
-		/// <summary>
+        /// <summary>
         /// 取得数据
         /// </summary>
         [HttpGet("position")]
@@ -90,6 +91,6 @@ namespace Yu.Api.Areas.WebAdmin.Controllers
             await _service.DeletePositionAsync(query.Id);
             return Ok();
         }
-	}
+    }
 }
 

@@ -70,7 +70,7 @@ namespace Yu.Core.Extensions
         public static List<Type> GetAllChildType(this Type type, string assemblyName = null)
         {
             // 过滤系统包和nuget包
-            var libs = DependencyContext.Default.CompileLibraries.Where(lib => !lib.Serviceable && lib.Type != "package").ToList();
+            var libs = DependencyContext.Default.CompileLibraries.Where(lib => lib.Name.Contains("Yu")).ToList();
 
             // 指定程序集不为空时
             if (!string.IsNullOrEmpty(assemblyName))

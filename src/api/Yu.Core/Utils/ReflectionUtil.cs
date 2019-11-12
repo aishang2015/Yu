@@ -19,7 +19,7 @@ namespace Yu.Core.Utils
         public static List<Type> GetInterfaces(string assemblyName)
         {
             // 过滤系统包和nuget包
-            var libs = DependencyContext.Default.CompileLibraries.Where(lib => !lib.Serviceable && lib.Type != "package");
+            var libs = DependencyContext.Default.CompileLibraries.Where(lib => lib.Name.Contains("Yu"));
 
             // 指定程序集的包
             var serviceLib = libs.Where(c => c.Assemblies.Contains(assemblyName)).FirstOrDefault();
@@ -38,7 +38,7 @@ namespace Yu.Core.Utils
         public static List<Type> GetClasses(string assemblyName)
         {
             // 过滤系统包和nuget包
-            var libs = DependencyContext.Default.CompileLibraries.Where(lib => !lib.Serviceable && lib.Type != "package");
+            var libs = DependencyContext.Default.CompileLibraries.Where(lib => lib.Name.Contains("Yu"));
 
             // 指定程序集的包
             var serviceLib = libs.Where(c => c.Assemblies.Contains(assemblyName)).FirstOrDefault();
@@ -56,7 +56,7 @@ namespace Yu.Core.Utils
         public static List<Assembly> GetAssemblies()
         {
             // 过滤系统包和nuget包
-            var libs = DependencyContext.Default.CompileLibraries.Where(lib => !lib.Serviceable && lib.Type != "package");
+            var libs = DependencyContext.Default.CompileLibraries.Where(lib => lib.Name.Contains("Yu"));
 
             // 结果集合
             var result = new List<Assembly>();
