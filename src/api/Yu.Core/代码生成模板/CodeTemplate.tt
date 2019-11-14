@@ -11,20 +11,20 @@
 <# var manager2 = new Manager(Host, GenerationEnvironment, true) { OutputPath = Path.GetDirectoryName(Host.TemplateFile)}; #>
 
 
-<# var EntityName = "Position"; #>
-<# var EntityKeyType = "Guid"; #>
-<# var EntityDescribe = "岗位"; #>
-<# var ModuleName = "WebAdmin"; #>
-<# var ControllerDescribe = "岗位管理"; #>
-<# var Route = "position"; #>
-<# var DbContextName = "BaseIdentityDbContext";#>
-<# var otherRepository = new System.Collections.Generic.List<string[]>()
+<# var EntityName = "Position"; #>											// 实体名
+<# var EntityKeyType = "Guid"; #>											// 实体主键名
+<# var EntityDescribe = "岗位"; #>											// 实体中文描述
+<# var ModuleName = "WebAdmin"; #>											// 实体所属模块
+<# var ControllerDescribe = "岗位管理"; #>									// 实体控制器描述
+<# var Route = "position"; #>												// 控制器路由
+<# var DbContextName = "BaseIdentityDbContext";#>							// 所属数据库上下文
+<# var otherRepository = new System.Collections.Generic.List<string[]>()	// 服务类中相关的其他仓储
 	{
 		// {"元素名"，"主键名"，"元素实例名"}
 	    // new string[]{"ElementTree","Guid","elementTree"}
 	};	
 #>
-<# var entityProperties = new System.Collections.Generic.List<string[]>()
+<# var entityProperties = new System.Collections.Generic.List<string[]>()	// 实体字段描述
 	{
 		// {"Name"，"Type"，"Describe"}
 	    // new string[]{"","",""}
@@ -32,10 +32,10 @@
 	};	
 #>
 
-<# var EntityNamespace = "Yu.Data.Entities." + ModuleName; #>
-<# var ServiceNamespace = "Yu.Service." + ModuleName + "." + EntityName + "s"; #>
-<# var ControllerNamespace = "Yu.Api.Areas." + ModuleName + "." + "Controllers"; #>
-<# var ModelNamespace = "Yu.Model.Areas." + ModuleName + "." + EntityName + "s"; #>
+<# var EntityNamespace = "Yu.Data.Entities." + ModuleName; #>							// 实体命名空间
+<# var ServiceNamespace = "Yu.Service." + ModuleName + "." + EntityName + "s"; #>		// 服务类命名空间
+<# var ControllerNamespace = "Yu.Api.Areas." + ModuleName + "." + "Controllers"; #>		// 控制器命名空间
+<# var ModelNamespace = "Yu.Model.Areas." + ModuleName + "." + EntityName + "s"; #>		// 模块命名空间
 
 
 <# 

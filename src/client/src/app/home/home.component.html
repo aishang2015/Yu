@@ -32,7 +32,8 @@
                 <ul>
                     <li nz-menu-group *ngIf="isCanOperate('wfuse')"  nzTitle="使用">
                         <ul>
-                            <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('mywf')" [routerLink]="[ '/workflow/job' ]">
+                            <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('mywf')" [routerLink]="[ '/workflow/job' ]"
+                                (click)="setBreadCrumb('工作流','我的工作')">
                                 <i nz-icon style="font-size: 14px;">
                                     <svg>
                                         <path
@@ -40,7 +41,8 @@
                                             p-id="1220"></path>
                                     </svg>
                                 </i>我的工作</li>
-                            <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('myhandle')"  [routerLink]="[ '/workflow/handle' ]">
+                            <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('myhandle')"  [routerLink]="[ '/workflow/handle' ]"
+                                (click)="setBreadCrumb('工作流','我的待办')">
                                 <i nz-icon style="font-size: 14px;">
                                     <svg>
                                         <path
@@ -48,7 +50,8 @@
                                             p-id="2396"></path>
                                     </svg>
                                 </i>我的待办</li>
-                            <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('wfrecyclebin')"  [routerLink]="[ '/workflow/recycle' ]">
+                            <li nz-menu-item nzMatchRouter *ngIf="isCanOperate('wfrecyclebin')"  [routerLink]="[ '/workflow/recycle' ]"
+                                (click)="setBreadCrumb('工作流','回收站')">
                                 <i nz-icon nzType="delete" nzTheme="outline"></i>回收站
                             </li>
                         </ul>
@@ -72,6 +75,12 @@
     </nz-sider>
     <nz-layout>
         <nz-header style="background: #fff; padding:0;" *ngIf="isMenuVisible">
+            <i
+            class="trigger"
+            nz-icon
+            [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
+            (click)="isCollapsed = !isCollapsed"
+          ></i>
             <div style="line-height: 64px;float: right;padding:0 16px;">
 
                 <a nz-dropdown [nzTrigger]="'click'" [nzDropdownMenu]="menu">

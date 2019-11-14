@@ -16,6 +16,7 @@ using Yu.Model.WorkFlow.WorkFlowInstance.OutputModels;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
 using Yu.Core.FileManage;
+using Microsoft.Extensions.Configuration;
 
 namespace Yu.Service.WorkFlow.WorkFlowInstances
 {
@@ -51,6 +52,8 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         // 文件管理
         private IFileStore _fileStore;
 
+        private string _serverFileRootPath;
+
         IHttpContextAccessor _httpContextAccessor;
 
         public WorkFlowInstanceService(UserManager<BaseIdentityUser> userManager,
@@ -63,7 +66,8 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
             IRepository<GroupTree, Guid> groupTreeRepository,
             IUnitOfWork<BaseIdentityDbContext> unitOfWork,
             IHttpContextAccessor httpContextAccessor,
-            IFileStore fileStore)
+            IFileStore fileStore,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _repository = repository;
@@ -76,6 +80,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
             _unitOfWork = unitOfWork;
             _httpContextAccessor = httpContextAccessor;
             _fileStore = fileStore;
+            _serverFileRootPath = configuration["WorkFlowFileOption:ServerFileStorePath"];
         }
 
         /// <summary>
@@ -579,7 +584,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         {
             var endfix = file.FileName.Split('.').Last();
             var newName = Path.Combine(DateTime.Now.ToString("MMddHHmmssfff") + '.' + endfix);
-            await _fileStore.CreateFile(newName, @"C:\yu\files\wf", file.OpenReadStream());
+            await _fileStore.CreateFile(newName, _serverFileRootPath, file.OpenReadStream());
             return newName;
         }
 
@@ -588,7 +593,7 @@ namespace Yu.Service.WorkFlow.WorkFlowInstances
         /// </summary>
         public void RemoveWorkFlowInstanceFormFile(string fileName)
         {
-            _fileStore.DeleteFile(fileName, @"C:\yu\files\wf");
+            _fileStore.DeleteFile(fileName, _serverFileRootPath);
         }
 
 

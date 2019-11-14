@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,6 +14,15 @@ namespace Yu.Core.SignalR
             {
                 options.MapHub<SignalRHub>("/hub");
             });
+        }
+
+        public static void UseSignalR<T>(this IApplicationBuilder app, string pattern) where T : Hub
+        {
+            app.UseEndpoints(options =>
+            {
+                options.MapHub<T>(pattern);
+            });
+
         }
     }
 }
