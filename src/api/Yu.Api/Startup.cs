@@ -50,7 +50,7 @@ namespace Yu.Api
             services.AddControllers(ops =>
             {
                 ops.ModelBindingMessageProvider.SetAttemptedValueIsInvalidAccessor((value, name) => $"值'{value}'不是合法的'{name}'(SYSTEM)");
-            }).AddFluentValidators(); // 添加fluentvalidation支持
+            }).AddNewtonsoftJson().AddFluentValidators(); // 添加fluentvalidation支持
 
             services.ConfigureFluentValidationModelErrors(); // 统一模型验证结果
 

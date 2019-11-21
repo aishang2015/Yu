@@ -179,9 +179,9 @@ namespace Yu.Api.Areas.WorkFlow.Controller
         /// </summary>
         [HttpPatch("workflowInstanceNode")]
         [Description("处理工作流节点")]
-        public IActionResult HandleWorkFlowInstanceNode([FromBody]WorkFlowInstanceHandleModel model)
+        public async Task<IActionResult> HandleWorkFlowInstanceNode([FromBody]WorkFlowInstanceHandleModel model)
         {
-            _service.HandleWorkFlowInstance(model.InstanceId, model.HandleStatus, model.Explain);
+            await _service.HandleWorkFlowInstance(model.InstanceId, model.HandleStatus, model.Explain);
             return Ok();
         }
 
