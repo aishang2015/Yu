@@ -85,8 +85,6 @@ namespace Yu.Api
 
             app.UseCustomCors();    // 使用自定义跨域策略
 
-            app.SeedIdentityDbData<BaseIdentityDbContext>();   // 初始化BaseIdentityDbContext数据
-
             app.UseAuthentication(); // 使用认证策略
 
             app.UseSignalR(); // 使用signalr

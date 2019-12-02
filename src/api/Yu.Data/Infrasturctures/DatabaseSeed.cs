@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,21 +20,29 @@ namespace Yu.Data.Infrasturctures
     public static class DatabaseSeed
     {
         /// <summary>
+        /// 初始化数据库
+        /// </summary>
+        /// <param name="host"></param>
+        public static void InitialDataBase(this IHost host)
+        {
+            host.SeedIdentityDbData<BaseIdentityDbContext>();
+        }
+
+        /// <summary>
         /// 初始化认证数据库数据
         /// </summary>
         /// <param name="app"></param>
-        public static void SeedIdentityDbData<TDbContext>(this IApplicationBuilder app, Action<TDbContext> dataSeed = null) where TDbContext : BaseIdentityDbContext
+        public static void SeedIdentityDbData<TDbContext>(this IHost host, Action<TDbContext> dataSeed = null) where TDbContext : BaseIdentityDbContext
         {
-            using (var serviceScope = app.ApplicationServices.CreateScope())
+            using (var serviceScope = host.Services.CreateScope())
             {
-                // 检查数据库状态
-                if (serviceScope.ServiceProvider.GetRequiredService<TDbContext>().Database.EnsureCreated())
-                {
-                    // 初始化数据
-                    var dbContext = serviceScope.ServiceProvider.GetRequiredService<TDbContext>();
+                var dbContext = serviceScope.ServiceProvider.GetRequiredService<TDbContext>();
 
+                // 检查数据库状态
+                if (dbContext.Database.EnsureCreated())
+                {
                     // 初始化API数据
-                    InitApi(dbContext, app);
+                    InitApi(dbContext, host);
 
                     // 初始化其他数据
                     InitOtherData(dbContext);
@@ -83,9 +92,9 @@ namespace Yu.Data.Infrasturctures
         }
 
         // 初始化API数据
-        private static void InitApi<TDbContext>(TDbContext dbContext, IApplicationBuilder app) where TDbContext : DbContext
+        private static void InitApi<TDbContext>(TDbContext dbContext, IHost host) where TDbContext : DbContext
         {
-            var result = app.GetApiInfos();
+            var result = host.GetApiInfos();
             var apis = result.Select(api => new Api
             {
                 Name = api.Item1,
@@ -571,9 +580,9 @@ namespace Yu.Data.Infrasturctures
         }
 
         // 更新API数据
-        private static void UpdateApi<TDbContext>(TDbContext dbContext, IApplicationBuilder app) where TDbContext : DbContext
+        private static void UpdateApi<TDbContext>(TDbContext dbContext, IHost host) where TDbContext : DbContext
         {
-            var result = app.GetApiInfos();
+            var result = host.GetApiInfos();
             var apis = result.Select(api => new Api
             {
                 Name = api.Item1,

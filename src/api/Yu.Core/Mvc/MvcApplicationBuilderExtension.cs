@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,11 +20,11 @@ namespace Yu.Core.Mvc
         /// </summary>
         /// <param name="builder"></param>
         /// <returns>列表（api描述，api所属控制器，http类型，api地址）</returns>
-        public static List<(string, string, string, string)> GetApiInfos(this IApplicationBuilder builder)
+        public static List<(string, string, string, string)> GetApiInfos(this IHost host)
         {
             var result = new List<(string, string, string, string)>();
 
-            var _partManager = builder.ApplicationServices.GetRequiredService<ApplicationPartManager>();
+            var _partManager = host.Services.GetRequiredService<ApplicationPartManager>();
 
             var controllerFeature = new ControllerFeature();
 

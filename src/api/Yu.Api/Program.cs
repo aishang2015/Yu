@@ -5,6 +5,7 @@ using Microsoft.AspNetCore;
 using NLog.Web;
 using System;
 using MQTTnet.AspNetCore;
+using Yu.Data.Infrasturctures;
 
 namespace Yu.Api
 {
@@ -13,16 +14,18 @@ namespace Yu.Api
         public static void Main(string[] args)
         {
             // 创建nlog捕捉异常
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
             try
             {
-                logger.Debug("init main");
-                CreateHostBuilder(args).Build().Run();
+                logger.Debug("Program start!");
+                var host = CreateHostBuilder(args).Build();
+                host.InitialDataBase();
+                host.Run();
             }
             catch (Exception ex)
             {
                 // 捕捉启动异常
-                logger.Error(ex, "Stopped program because of exception");
+                logger.Error(ex, "Program stopped because of exception");
                 throw;
             }
             finally
