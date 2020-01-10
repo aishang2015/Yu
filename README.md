@@ -8,7 +8,7 @@
 
 ![img](https://github.com/aishang2015/Yu/blob/master/screenshots/2.png)
 
-![img](https://github.com/aishang2015/Yu/blob/master/screenshots/2.png)
+![img](https://github.com/aishang2015/Yu/blob/master/screenshots/3.png)
 
 ### 实现功能
 
