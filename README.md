@@ -2,11 +2,13 @@
 
 基于aspnetcore 和angular8 开发，在asp net core identity权限框架基础上开发的权限管理系统。
 
-### 示例
+### 一些截图
 
-[http://140.143.189.32] 
+![img](https://github.com/aishang2015/Yu/blob/master/screenshots/1.png)
 
-数据会在每天早晨自动重置。
+![img](https://github.com/aishang2015/Yu/blob/master/screenshots/2.png)
+
+![img](https://github.com/aishang2015/Yu/blob/master/screenshots/2.png)
 
 ### 实现功能
 
