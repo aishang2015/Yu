@@ -1,5 +1,9 @@
 # YU
 
+**由于部分代码效率较低，逻辑不合理，所以进行了重构。把业务和框架进行了分离，增删了部分功能。**
+
+**[最新地址](https://github.com/aishang2015/Convenience)**
+
 基于aspnetcore 和angular8 开发，在asp net core identity权限框架基础上开发的权限管理系统。
 
 ### 一些截图
